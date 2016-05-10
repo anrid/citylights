@@ -1,0 +1,22 @@
+
+@import '../styles/colors';
+
+.pl-overview {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  background-position: center;
+  background-size: cover;
+  background-color: $c-gray700;
+  padding: 20px;
+
+  &__buttons {
+    display: flex;
+    button + button {
+      margin-left: 10px;
+    }
+  }
+}

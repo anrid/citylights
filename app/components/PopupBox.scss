@@ -1,0 +1,18 @@
+
+@import '../styles/colors';
+
+.pl-popup-box {
+  width: 250px;
+  min-height: 80px;
+  border-radius: 3px;
+  padding: 20px;
+  border: 1px solid $c-gray500;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: $c-red400;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+}

@@ -1,0 +1,75 @@
+
+@import "../styles/colors";
+
+.pl-input-field {
+  width: 100%;
+  border-radius: 3px;
+  border: 1px solid $c-gray500;
+  font-size: 18px;
+  font-weight: 600;
+  height: 40px;
+  line-height: 40px;
+  padding: 0 6px;
+  color: $c-gray600;
+  text-shadow: 0 0 1px rgba(0, 0, 0, .2);
+}
+
+.pl-input-field--top {
+  @extend .pl-input-field;
+  border-radius: 0;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+.pl-input-field--bottom {
+  @extend .pl-input-field;
+  border-radius: 0;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-top: 0;
+}
+
+.pl-heading {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 2px 2px rgba(0, 0, 0, .35);
+}
+
+.pl-heading--large {
+  @extend .pl-heading;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.pl-title {
+  height: 3.5rem;
+  font-size: 3rem;
+  line-height: 3.5rem;
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  color: white;
+  text-shadow: 0 3px 1px rgba(0,0,0,.2);
+}
+
+.pl-title--turbo {
+  @extend .pl-heading;
+  height: 6rem;
+  font-size: 5.5rem;
+  line-height: 6.5rem;
+  letter-spacing: -2px;
+}
+
+.pl-link-text {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 1px rgba(50, 50, 50, 0.75);
+  cursor: pointer;
+  em {
+    background-color: $c-teal500;
+    font-style: normal;
+    padding: 1px 4px 2px;
+    border-radius: 1.5px;
+  }
+}

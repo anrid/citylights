@@ -1,0 +1,50 @@
+
+@import "colors";
+
+body {
+  font-family: medium-content-sans-serif-font, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: 400;
+  color: $c-gray700;
+  box-sizing: border-box;
+  * {
+    box-sizing: border-box;
+  }
+}
+
+input, textarea, select, button {
+  font-family: medium-content-sans-serif-font, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: 400;
+  color: $c-gray700;
+}
+
+button {
+  outline: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 1;
+  height: 36px;
+  padding: 0 10px;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  border: 0;
+  border-bottom: 2px solid $c-teal400;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: white;
+  background-color: $c-teal400;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .25);
+  &:hover {
+    border-bottom: 2px solid $c-teal700;
+    background-color: $c-teal500;
+  }
+}
+
+@import "misc";

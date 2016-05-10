@@ -1,0 +1,45 @@
+
+@import '../styles/colors';
+
+.pl-login {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-position: center;
+  background-size: cover;
+  background-color: $c-gray700;
+
+  .pl-popup-box {
+    position: absolute;
+    top: -100px;
+    left: 23px;
+  }
+
+  &__box {
+    width: 300px;
+    position: relative;
+    border-radius: 6px;
+    padding: 20px;
+    background-color: rgba(0,0,0,.4);
+  }
+
+  &__buttons {
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+  }
+
+  &__title {
+    color: white;
+    text-align: center;
+  }
+
+  &__links {
+    color: white;
+    text-align: center;
+  }
+}
