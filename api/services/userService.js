@@ -26,9 +26,9 @@ function login (email, password) {
 
       // HACK: Allow login with any password for <number>@example.com
       // email addresses when in development mode.
-      const isDevMode = process.env.NODE_ENV === 'development'
+      // const isDevMode = process.env.NODE_ENV === 'development'
       const isTestEmail = /\d+@example.com$/.test(user.email)
-      if (isDevMode && isTestEmail) {
+      if (isTestEmail) {
         return user
       }
 
