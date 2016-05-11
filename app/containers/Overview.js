@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import './Overview.scss'
 
 import * as settingsActions from '../actions/settingsActions'
+import SideMenu from '../components/SideMenu'
 
 class Overview extends Component {
   render () {
@@ -42,6 +43,11 @@ class Overview extends Component {
             Log out
           </button>
         </div>
+
+        <div className='pl-overview__main'>
+          <SideMenu />
+        </div>
+
       </section>
     )
   }

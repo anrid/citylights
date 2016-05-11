@@ -18,5 +18,14 @@
     button + button {
       margin-left: 10px;
     }
+    margin-bottom: 20px;
   }
+
+  &__main {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
 }
