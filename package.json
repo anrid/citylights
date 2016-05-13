@@ -1,5 +1,5 @@
 {
-  "name": "planera",
+  "name": "citylights",
   "version": "0.0.6",
   "private": true,
   "scripts": {
@@ -8,8 +8,9 @@
     "build": "webpack --progress",
     "api-dev": "NODE_ENV=development nodemon --watch api/ api/server.js",
     "api": "NODE_ENV=production node api/server.js",
-    "release": "node api/s3.js ../build/manifest.json",
-    "test": "lab -v -C"
+    "release": "node api/lib/s3.js ../../build/manifest.json",
+    "test": "lab -v -C",
+    "patch-release": "npm run build && npm version patch && npm run release"
   },
   "dependencies": {
     "bluebird": "^3.3.5",
