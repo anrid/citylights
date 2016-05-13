@@ -3,7 +3,7 @@
 const P = require('bluebird')
 const Joi = require('joi')
 
-const Jwt = require('../jwt')
+const Jwt = require('../lib/jwt')
 const UserService = require('../services/userService')
 const StarterService = require('../services/starterService')
 const WorkspaceService = require('../services/workspaceService')

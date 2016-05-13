@@ -5,7 +5,7 @@ const Hoek = require('hoek')
 const SocketIO = require('socket.io')
 const Moment = require('moment')
 
-const socketEndpoints = require('./endpoints')
+const socketEndpoints = require('../endpoints')
 
 function handleClientMessage (topic, payload, userId) {
   return P.try(() => {

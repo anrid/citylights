@@ -8,17 +8,19 @@ function connect () {
   P.promisifyAll(Mongoose)
   P.promisifyAll(Mongoose.Model)
 
-  const host = process.env.CITYLIGHTS_MONGO_HOST || 'localhost'
-  const port = process.env.CITYLIGHTS_MONGO_PORT || '27017'
-  const db = process.env.CITYLIGHTS_MONGO_DB || 'microman_dev'
+  const isTest = process.env.NODE_ENV === 'test'
+
+  let host = process.env.CITYLIGHTS_MONGO_HOST || 'localhost'
+  let port = process.env.CITYLIGHTS_MONGO_PORT || '27017'
+  let db = isTest ? 'test_dev' : process.env.CITYLIGHTS_MONGO_DB || 'test_dev'
+  let user = process.env.CITYLIGHTS_MONGO_USER
+  let pass = process.env.CITYLIGHTS_MONGO_PASS
 
   let url = `mongodb://${host}:${port}/${db}`
-  const user = process.env.CITYLIGHTS_MONGO_USER
-  const pass = process.env.CITYLIGHTS_MONGO_PASS
 
   const opts = {
     db: { native_parser: true },
-    server: { poolSize: 5 }
+    server: isTest ? { } : { poolSize: 5 }
   }
   if (user && pass) {
     opts.user = user

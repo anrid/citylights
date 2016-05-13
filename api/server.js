@@ -25,7 +25,7 @@ P.promisifyAll(Fs)
 const Qs = require('qs')
 const Url = require('url')
 
-preStart()
+module.exports = preStart()
 .then((manifest) => {
   const server = createServer()
   return registerPlugins(server)
@@ -33,6 +33,7 @@ preStart()
     setupViews(server, manifest)
     setupRoutes(server)
     startServer(server)
+    return server
   })
 })
 .catch((reason) => (
@@ -42,7 +43,7 @@ preStart()
 function preStart () {
   return P.try(() => {
     // Rock the DB.
-    require('./database')()
+    require('./lib/database')()
 
     if (isProduction) {
       const version = require('../package.json').version
@@ -172,7 +173,7 @@ function setupRoutes (server) {
   })
 
   // Setup Socket API.
-  require('./socket')(server)
+  require('./lib/socket')(server)
 }
 
 function startServer (server) {
