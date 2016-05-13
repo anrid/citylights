@@ -7,15 +7,40 @@ import { connect } from 'react-redux'
 import './Overview.scss'
 
 import * as settingsActions from '../actions/settingsActions'
+
 import SideMenu from '../components/SideMenu'
+import ActivityFeed from '../components/ActivityFeed'
 
 class Overview extends Component {
+  renderButtons () {
+    const { routeTo, clearIdentity } = this.props.actions
+    return (
+      <div className='pl-overview__buttons'>
+        <button onClick={() => routeTo({ url: '/clients' })}>
+          Clients
+        </button>
+
+        <button onClick={() => routeTo({ url: '/create-workspace' })}>
+          Create a new Workspace
+        </button>
+
+        <button onClick={clearIdentity}>
+          Log out
+        </button>
+      </div>
+    )
+  }
+
   render () {
     const { backgrounds, workspace, isAppLoaded } = this.props
-    const { routeTo, clearIdentity } = this.props.actions
     if (!isAppLoaded) {
       return <div>Loading..</div>
     }
+
+    const activity = [
+      { _id: 1, text: 'Ace logged in' },
+      { _id: 2, text: 'Base joined our crew' }
+    ]
 
     return (
       <section
@@ -23,29 +48,12 @@ class Overview extends Component {
         style={{ backgroundImage: `url("${backgrounds.BG4.url}")` }}
       >
         <div className='pl-title'>
-          Workspace: {workspace.name}
-        </div>
-
-        <div className='pl-heading--large'>
-          Overview
-        </div>
-
-        <div className='pl-overview__buttons'>
-          <button onClick={() => routeTo({ url: '/clients' })}>
-            Clients
-          </button>
-
-          <button onClick={() => routeTo({ url: '/create-workspace' })}>
-            Create a new Workspace
-          </button>
-
-          <button onClick={clearIdentity}>
-            Log out
-          </button>
+          {workspace.name}
         </div>
 
         <div className='pl-overview__main'>
           <SideMenu />
+          <ActivityFeed activity={activity} />
         </div>
 
       </section>

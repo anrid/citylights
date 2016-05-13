@@ -13,6 +13,10 @@
   background-color: $c-gray700;
   padding: 20px;
 
+  .pl-side-menu {
+    margin-right: 20px;
+  }
+
   &__buttons {
     display: flex;
     button + button {
@@ -26,6 +30,7 @@
     width: 100%;
     justify-content: flex-start;
     align-items: flex-start;
+    margin-top: 30px;
   }
 
 }
