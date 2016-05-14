@@ -71,17 +71,23 @@ function createServer () {
     }
   })
 
-  const tls = {
-    key: Fs.readFileSync(process.env.CITYLIGHTS_PRIVKEY),
-    cert: Fs.readFileSync(process.env.CITYLIGHTS_CERT),
-    ca: [Fs.readFileSync(process.env.CITYLIGHTS_CA)]
+  if (!process.env.SKIP_TLS) {
+    const tls = {
+      key: Fs.readFileSync(process.env.CITYLIGHTS_PRIVKEY),
+      cert: Fs.readFileSync(process.env.CITYLIGHTS_CERT),
+      ca: [Fs.readFileSync(process.env.CITYLIGHTS_CA)]
+    }
+    s.connection({
+      host: process.env.CITYLIGHTS_HOST,
+      port: process.env.CITYLIGHTS_PORT,
+      tls
+    })
+  } else {
+    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    console.log('!!! Hapi is NOT using HTTPS !!!')
+    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    s.connection({ port: process.env.CITYLIGHTS_PORT })
   }
-
-  s.connection({
-    host: process.env.CITYLIGHTS_HOST,
-    port: process.env.CITYLIGHTS_PORT,
-    tls
-  })
 
   // Switch out the querystring parser.
   function onRequest (request, reply) {

@@ -8,6 +8,9 @@ const HtmlPlugin = require('html-webpack-plugin')
 const AssetsPlugin = require('assets-webpack-plugin')
 
 const TARGET = process.env.npm_lifecycle_event || '(no target)'
+const API_HOST = process.env.SKIP_TLS ? 'dev-home.fina.io' : process.env.CITYLIGHTS_HOST
+const API_PORT = process.env.CITYLIGHTS_PORT
+
 const production = TARGET.match(/build/)
 const startServer = TARGET.match(/dev/)
 const filename = production ? '[name]-[chunkhash:10].js' : '[name]-[hash:10].js'
@@ -44,6 +47,7 @@ const config = {
     new Webpack.optimize.CommonsChunkPlugin({ names: ['vendors', 'manifest'] }),
     new HtmlPlugin({
       title: 'Test App',
+      host: `${API_HOST}:${API_PORT}`,
       template: Path.join(PATHS.app, 'public', 'dev.html'),
       inject: 'body'
     })
@@ -80,16 +84,25 @@ if (startServer) {
     inline: true,
     progress: true,
     headers: { 'X-Awesome': 'yes' },
-    // Keep it secret. Keep it safe.
-    https: true,
-    key: Fs.readFileSync(process.env.CITYLIGHTS_PRIVKEY, 'utf8'),
-    cert: Fs.readFileSync(process.env.CITYLIGHTS_CERT, 'utf8'),
-    cacert: [Fs.readFileSync(process.env.CITYLIGHTS_CA, 'utf8')],
     // Display only errors to reduce the amount of output.
     stats: 'errors-only',
-    // Parse host and port from env so this is easy to customize.
-    host: process.env.CITYLIGHTS_HOST,
+    host: '0.0.0.0',
     port: 8999
+  }
+
+  if (!process.env.SKIP_TLS) {
+    // Keep it secret. Keep it safe.
+    Object.assign(config.devServer, {
+      https: true,
+      key: Fs.readFileSync(process.env.CITYLIGHTS_PRIVKEY, 'utf8'),
+      cert: Fs.readFileSync(process.env.CITYLIGHTS_CERT, 'utf8'),
+      cacert: [Fs.readFileSync(process.env.CITYLIGHTS_CA, 'utf8')],
+      host: process.env.CITYLIGHTS_HOST
+    })
+  } else {
+    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    console.log('!!! Webpack dev server is NOT using HTTPS !!!')
+    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
   }
 
   config.plugins = config.plugins.concat([

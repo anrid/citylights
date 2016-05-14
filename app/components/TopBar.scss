@@ -8,10 +8,10 @@
   align-items: center;
 
   &__info {
+    flex: none;
     position: fixed;
     top: 0;
     right: 0;
-    margin-left: 140px;
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -23,6 +23,7 @@
   }
 
   &__avatar {
+    flex: none;
     width: 30px;
     height: 30px;
     background-position: center;
@@ -33,6 +34,7 @@
   }
 
   &__whoami {
+    flex: none;
     margin-left: 10px;
     line-height: 1;
     font-size: 1.1rem;
@@ -40,11 +42,13 @@
   }
 
   &__sign-out {
+    flex: none;
     line-height: 1;
     margin-left: 10px;
     font-size: 1.1rem;
     color: $c-gray100;
     span {
+      white-space: nowrap;
       cursor: pointer;
       text-decoration: underline;
     }

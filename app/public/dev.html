@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>Planera (Dev)</title>
+    <title><%= htmlWebpackPlugin.options.title %></title>
     <meta charset="utf-8">
     <link rel="icon" type="image/png" href="https://fina.io/img/favicon.png">
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
@@ -29,7 +29,7 @@
 
     <script>
       window.Config = {
-        API_URL: 'wss://citylights-dev.fina.io:9999'
+        API_URL: '//<%= htmlWebpackPlugin.options.host %>'
       }
     </script>
 
@@ -47,7 +47,7 @@
     <i class="fa fa-circle-o-notch fa-spin pl-app-loader"></i>
   </div>
 
-  <script src="https://citylights-dev.fina.io:9999/socket.io/socket.io.js"></script>
+  <script src="//<%= htmlWebpackPlugin.options.host %>/socket.io/socket.io.js"></script>
 
 </body>
 </html>

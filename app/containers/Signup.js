@@ -99,7 +99,7 @@ class Signup extends Component {
 }
 
 function mapStateToProps (state) {
-  console.log('Signup: state=', state)
+  // console.log('Signup: state=', state)
   const { settings } = state
   return {
     backgrounds: settings.backgrounds,
