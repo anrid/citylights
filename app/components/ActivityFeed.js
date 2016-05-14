@@ -4,9 +4,20 @@ import React, { Component } from 'react'
 
 import './ActivityFeed.scss'
 
-import Box from './Box'
+import Dropdown from './Dropdown'
 
 export default class ActivityFeed extends Component {
+  renderActivityRows () {
+    const { activity } = this.props
+    if (!activity || !activity.length) {
+      return <div>Nothing clean, right ..</div>
+    }
+
+    return activity.map((x, i) => (
+      <ActivityRow key={x._id} {...x} />
+    ))
+  }
+
   render () {
     const { activity } = this.props
     let content
@@ -20,18 +31,20 @@ export default class ActivityFeed extends Component {
       ))
     }
 
-    const menu = [
-      { text: 'Dismiss All' }
+    const menuItems = [
+      { _id: 1, text: 'Dismiss All' }
     ]
 
     return (
-      <Box
-        className='pl-activity-feed'
-        style={{ width: 210 }}
-        header='Activity'
-        menu={menu}
-        content={content}
-      />
+      <section className='pl-box pl-activity-feed'>
+        <div className='pl-box__header'>
+          <div>Activity</div>
+          <Dropdown closeOnSelect items={menuItems} caretOnly />
+        </div>
+        <div className='pl-box__content'>
+          {content}
+        </div>
+      </section>
     )
   }
 }
@@ -39,7 +52,8 @@ export default class ActivityFeed extends Component {
 const ActivityRow = (props) => {
   return (
     <div className='pl-activity-feed__row'>
-      {props.text}
+      <div className='pl-activity-feed__row-label' />
+      <div className='pl-activity-feed__row-text'>{props.text}</div>
     </div>
   )
 }

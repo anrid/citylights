@@ -8,7 +8,7 @@ import './Overview.scss'
 
 import * as settingsActions from '../actions/settingsActions'
 
-import SideMenu from '../components/SideMenu'
+import SideMenu from './SideMenu'
 import ActivityFeed from '../components/ActivityFeed'
 
 class Overview extends Component {
@@ -32,9 +32,19 @@ class Overview extends Component {
   }
 
   render () {
-    const { backgrounds, workspace, isAppLoaded } = this.props
+    const {
+      backgrounds,
+      workspace,
+      isAppLoaded,
+      activeTheme
+    } = this.props
+
     if (!isAppLoaded) {
-      return <div>Loading..</div>
+      return (
+        <div className='pl-loading'>
+          Loading..
+        </div>
+      )
     }
 
     const activity = [
@@ -42,11 +52,15 @@ class Overview extends Component {
       { _id: 2, text: 'Base joined our crew' }
     ]
 
+    // Select the theme background.
+    const background = backgrounds[activeTheme]
+    const style = { }
+    if (background.url) {
+      style.backgroundImage = `url("${background.url}")`
+    }
+
     return (
-      <section
-        className='pl-overview'
-        style={{ backgroundImage: `url("${backgrounds.BG4.url}")` }}
-      >
+      <section className='pl-overview' style={style}>
         <div className='pl-title'>
           {workspace.name}
         </div>
@@ -67,6 +81,7 @@ function mapStateToProps (state) {
   const { workspaceId } = state.settings.saved
   return {
     isAppLoaded: state.settings.isAppLoaded,
+    activeTheme: state.settings.saved.activeTheme,
     workspace: state.workspaces.data[workspaceId],
     backgrounds: state.settings.backgrounds
   }

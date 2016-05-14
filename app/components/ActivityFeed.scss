@@ -3,7 +3,36 @@
 
 .pl-activity-feed {
   &__row {
-    font-size: 1.2rem;
-    color: red;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    border-radius: 3px;
+    background-color: transparent;
+    min-height: 29px;
+    // width: auto;
+    cursor: pointer;
+    & + & {
+      margin-top: 3px;
+    }
+  }
+
+  &__row-label {
+    align-self: stretch;
+    background-color: $c-teal500;
+    width: 5px;
+    border-radius: 3px 0 0 3px;
+  }
+
+  &__row-text {
+    flex: none;
+    padding: 3px 16px 3px 12px;
+    font-size: 1rem;
+    color: $c-gray700;
+    font-weight: 400;
+    border-radius: 3px;
+    background-color: white;
+    em {
+      font-weight: 600;
+    }
   }
 }

@@ -73,3 +73,37 @@
     border-radius: 1.5px;
   }
 }
+
+.pl-box {
+  background-color: transparent;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px 0 rgba(50, 50, 50, 0.5);
+  color: $c-gray600;
+  min-width: 700px;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    border-bottom: 1px solid $c-gray200;
+    border-radius: 3px 3px 0 0;
+    background-color: rgba(255, 255, 255, 0.5);
+    background-image: linear-gradient(rgba(255, 255, 255, 0.5), $c-gray100);
+    padding: 0 12px;
+    height: 58px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: 800;
+    line-height: 1;
+    text-shadow: 0 2px 2px rgba(255, 255, 255, 0.55);
+  }
+
+  &__content {
+    flex: 1 1 auto;
+    background-color: rgba(255, 255, 255, 0.75);
+    padding: 12px;
+    border-radius: 0 0 3px 3px;
+  }
+}

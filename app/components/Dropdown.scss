@@ -1,0 +1,89 @@
+
+@import '../styles/colors';
+
+.pl-dropdown {
+  position: relative;
+  flex: 1 0 auto;
+  height: 100%;
+  cursor: pointer;
+  &.caret-only {
+    flex: none;
+    .pl-dropdown__menu {
+      left: auto;
+      right: 0;
+    }
+  }
+
+  &__selected {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &__text {
+      font-size: 0.9rem;
+      line-height: 1;
+      font-weight: normal;
+      color: $c-gray600;
+      height: auto;
+      border-bottom: 1px dotted $c-gray200;
+      @extend .unselectable;
+    }
+
+    i.fa {
+      color: $c-gray400;
+      position: relative;
+      top: -2px;
+      font-size: 0.8rem;
+      text-decoration: none;
+      @extend .unselectable;
+      &.fa-chevron-down {
+        font-size: 1rem;
+        font-weight: 600;
+      }
+    }
+  }
+
+  &__menu-item {
+    flex: 1 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    line-height: 1;
+    font-weight: normal;
+    color: $c-gray600;
+    height: 29px;
+    padding: 0 12px;
+    &:hover {
+      background-color: $c-gray50;
+    }
+  }
+
+  &__outside-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    height: 100vh;
+    width: 100vw;
+    background-color: transparent;
+  }
+
+  &__menu {
+    z-index: 10;
+    position: absolute;
+    top: 30px;
+    width: 250px;
+    min-height: 80px;
+    padding: 7px 0 10px;
+    border-radius: 3px;
+    border: 1px solid $c-gray100;
+    box-shadow: 0 1px 1px 0 rgba($c-gray700, 0.5);
+    background-color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    opacity: 0;
+  }
+}
