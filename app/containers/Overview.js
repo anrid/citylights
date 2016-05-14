@@ -53,9 +53,9 @@ class Overview extends Component {
     ]
 
     // Select the theme background.
-    const background = backgrounds[activeTheme]
+    const background = backgrounds[activeTheme || 'BG4']
     const style = { }
-    if (background.url) {
+    if (background && background.url) {
       style.backgroundImage = `url("${background.url}")`
     }
 
