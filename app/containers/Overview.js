@@ -8,6 +8,7 @@ import './Overview.scss'
 
 import * as settingsActions from '../actions/settingsActions'
 
+import TopBar from '../components/TopBar'
 import SideMenu from './SideMenu'
 import ActivityFeed from '../components/ActivityFeed'
 
@@ -34,7 +35,6 @@ class Overview extends Component {
   render () {
     const {
       backgrounds,
-      workspace,
       isAppLoaded,
       activeTheme
     } = this.props
@@ -61,9 +61,7 @@ class Overview extends Component {
 
     return (
       <section className='pl-overview' style={style}>
-        <div className='pl-title'>
-          {workspace.name}
-        </div>
+        <TopBar {...this.props} onSignOut={this.props.actions.clearIdentity} />
 
         <div className='pl-overview__main'>
           <SideMenu />
@@ -79,8 +77,10 @@ function mapStateToProps (state) {
   // console.log('Overview, state=', state)
   // Currently active workspaceId.
   const { workspaceId } = state.settings.saved
+  const { userId } = state.settings.identity
   return {
     isAppLoaded: state.settings.isAppLoaded,
+    user: state.users.data[userId],
     activeTheme: state.settings.saved.activeTheme,
     workspace: state.workspaces.data[workspaceId],
     backgrounds: state.settings.backgrounds

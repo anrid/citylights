@@ -107,3 +107,23 @@
     border-radius: 0 0 3px 3px;
   }
 }
+
+.pl-loading {
+  // background-image: url("https://c1.staticflickr.com/3/2653/3685458847_e59708aac1_b.jpg");
+  // background-image: url("https://c2.staticflickr.com/4/3622/3300589821_1b89ce29ef_o.jpg");
+  background-image: url("https://c1.staticflickr.com/3/2156/2237176830_a0c7e25372_b.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  position: fixed;
+  display: flex;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  font-size: 6rem;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 4px 4px rgba(50, 50, 50, 0.35);
+}
