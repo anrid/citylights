@@ -47,7 +47,7 @@ function preStart () {
 
     if (isProduction) {
       const version = require('../package.json').version
-      const Https = require('./https')
+      const Https = require('./lib/https')
       const manifestUrl = `${process.env.CITYLIGHTS_CDN}/assets/release-manifest-${version}.json`
       return Https.fetchGzipped(manifestUrl)
       .then((json) => {
