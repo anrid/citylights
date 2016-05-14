@@ -25,24 +25,53 @@ class SideMenu extends Component {
     })
 
     return (
-      <Dropdown selected={background.title} closeOnSelect onSelect={onSelect} items={items} />
+      <Dropdown selected={background.title} onSelect={onSelect} items={items} />
+    )
+  }
+
+  // NOTE: How React truly shines ...
+  renderMenuItem (title, icon, routeName, currentRoute) {
+    const { routeTo } = this.props.actions
+    let cls = 'pl-side-menu__row'
+    let arrow = null
+    if (currentRoute === routeName) {
+      cls += '--active'
+      arrow = <i className='fa fa-fw fa-caret-right' />
+    }
+
+    return (
+      <div className={cls} onClick={() => routeTo(routeName)}>
+        <i className={'fa fa-fw fa-' + icon} />
+        <div className='pl-side-menu__row-inner'>
+          <span>{title}</span>
+          {arrow}
+        </div>
+      </div>
     )
   }
 
   render () {
+    const { routing } = this.props
+    // Default to 'overview'
+    let currentRoute = 'overview'
+    if (routing && routing.locationBeforeTransitions) {
+      currentRoute = routing.locationBeforeTransitions.pathname.replace(/^\//, '')
+    }
+
     return (
       <section className='pl-side-menu'>
         <div className='pl-side-menu__group'>
-          <div className='pl-side-menu__row--active'><i className='fa fa-fw fa-home' /> Overview (Home)</div>
-          <div className='pl-side-menu__row'><i className='fa fa-fw fa-briefcase' /> Clients</div>
-          <div className='pl-side-menu__row'><i className='fa fa-fw fa-users' /> Consultants</div>
+          {this.renderMenuItem('Overview', 'home', 'overview', currentRoute)}
+          {this.renderMenuItem('Clients', 'briefcase', 'clients', currentRoute)}
+          {this.renderMenuItem('Consultants', 'users', 'consultants', currentRoute)}
         </div>
 
         <div className='pl-side-menu__divider'/>
 
         <div className='pl-side-menu__group'>
-          <div className='pl-side-menu__row'><i className='fa fa-fw fa-comment-o' /> Discuss</div>
-          <div className='pl-side-menu__row'><i className='fa fa-fw fa-cog' /> Settings</div>
+          {this.renderMenuItem('Discuss', 'comment-o', 'discuss', currentRoute)}
+          {this.renderMenuItem('Settings', 'cog', 'settings', currentRoute)}
+
           <div className='pl-side-menu__row nope'><i className='fa fa-fw fa-hand-peace-o' />
             {this.renderThemePicker()}
           </div>
@@ -57,6 +86,7 @@ function mapStateToProps (state) {
   // Currently active workspaceId.
   // const { workspaceId } = state.settings.saved
   return {
+    routing: state.routing,
     isLoadingData: state.settings.isLoadingData,
     activeTheme: state.settings.saved.activeTheme,
     backgrounds: state.settings.backgrounds

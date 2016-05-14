@@ -7,6 +7,16 @@ import './ActivityFeed.scss'
 import Dropdown from './Dropdown'
 
 export default class ActivityFeed extends Component {
+  constructor (props) {
+    super(props)
+
+    this.onSelect = this.onSelect.bind(this)
+  }
+
+  onSelect (command) {
+    console.log('TODO: Implement this:', command)
+  }
+
   renderActivityRows () {
     const { activity } = this.props
     if (!activity || !activity.length) {
@@ -39,7 +49,12 @@ export default class ActivityFeed extends Component {
       <section className='pl-box pl-activity-feed'>
         <div className='pl-box__header'>
           <div>Activity</div>
-          <Dropdown closeOnSelect items={menuItems} caretOnly />
+          <Dropdown
+            closeOnSelect
+            items={menuItems}
+            caretOnly
+            onSelect={this.onSelect}
+          />
         </div>
         <div className='pl-box__content'>
           {content}

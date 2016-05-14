@@ -123,9 +123,12 @@ export function validateToken (accessToken) {
   }
 }
 
-export function routeTo (route) {
+export function routeTo (_route) {
   return (dispatch, getState) => {
+    // Support routing to a route name given as a string.
+    const route = typeof _route === 'string' ? { url: _route } : _route
     console.log('Routing to:', route)
+
     // Always reset server error messages between routes.
     dispatch(showServerError(null))
     if (route.back) {

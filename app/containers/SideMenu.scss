@@ -59,6 +59,21 @@
     }
   }
 
+  &__row-inner {
+    flex: 1 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    i.fa {
+      font-size: 29px;
+      position: absolute;
+      top: -7px;
+      right: -32px;
+      color: $c-gray100;
+    }
+  }
+
   &__divider {
     border-bottom: 1px solid #f2f2f2;
     margin: 8px 14px;
@@ -66,10 +81,11 @@
 
   &__row--active {
     @extend .pl-side-menu__row;
-    font-weight: bold;
+    font-weight: 600;
     background-color: $c-gray100;
-    &:hover {
-      color: $c-gray500;
+    color: $c-gray700;
+    & > .fa {
+      color: $c-gray700;
     }
   }
 

@@ -1,6 +1,6 @@
 'use strict'
 
-import React, { Component } from 'react'
+import React, { Component, PropTypes } from 'react'
 import { Motion, spring } from 'react-motion'
 
 import './Dropdown.scss'
@@ -33,14 +33,30 @@ export default class Dropdown extends Component {
   }
 
   renderMenu () {
-    const { items } = this.props
-    const rows = items.map((x) => (
-      <div key={x._id} className='pl-dropdown__menu-item'
-        onClick={() => this.onSelectItem(x)}
-      >
-        {x.text}
-      </div>
-    ))
+    const { items, selected } = this.props
+    const rows = items.map((x) => {
+      let isSelected = null
+      let isSelectedClass = ''
+
+      if (selected && x.text === selected) {
+        isSelected = (
+          <div className='pl-dropdown__checkmark'>
+            <i className='fa fa-fw fa-check' />
+          </div>
+        )
+        isSelectedClass = 'pl-dropdown__menu-item-selected'
+      }
+
+      return (
+        <div key={x._id}
+          className={'pl-dropdown__menu-item ' + isSelectedClass}
+          onClick={() => this.onSelectItem(x)}
+        >
+          <span>{x.text}</span>
+          {isSelected}
+        </div>
+      )
+    })
 
     return (
       <Motion
@@ -93,4 +109,8 @@ export default class Dropdown extends Component {
       </div>
     )
   }
+}
+
+Dropdown.propTypes = {
+  onSelect: PropTypes.func.isRequired
 }

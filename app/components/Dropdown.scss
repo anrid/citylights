@@ -59,6 +59,23 @@
     &:hover {
       background-color: $c-gray50;
     }
+
+    &-selected {
+      font-weight: 600;
+    }
+  }
+
+  &__checkmark {
+    width: 24px;
+    height: 24px;
+    border-radius: 30px;
+    background-color: $c-teal400;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    i.fa {
+      color: white;
+    }
   }
 
   &__outside-overlay {

@@ -8,8 +8,7 @@ import './Overview.scss'
 
 import * as settingsActions from '../actions/settingsActions'
 
-import TopBar from '../components/TopBar'
-import SideMenu from './SideMenu'
+import BasicLayout from './BasicLayout'
 import ActivityFeed from '../components/ActivityFeed'
 
 class Overview extends Component {
@@ -33,57 +32,23 @@ class Overview extends Component {
   }
 
   render () {
-    const {
-      backgrounds,
-      isAppLoaded,
-      activeTheme
-    } = this.props
-
-    if (!isAppLoaded) {
-      return (
-        <div className='pl-loading'>
-          Loading..
-        </div>
-      )
-    }
-
     const activity = [
       { _id: 1, text: 'Ace logged in' },
       { _id: 2, text: 'Base joined our crew' }
     ]
 
-    // Select the theme background.
-    const background = backgrounds[activeTheme || 'BG4']
-    const style = { }
-    if (background && background.url) {
-      style.backgroundImage = `url("${background.url}")`
-    }
-
     return (
-      <section className='pl-overview' style={style}>
-        <TopBar {...this.props} onSignOut={this.props.actions.clearIdentity} />
-
-        <div className='pl-overview__main'>
-          <SideMenu />
-          <ActivityFeed activity={activity} />
-        </div>
-
-      </section>
+      <BasicLayout className='pl-overview'>
+        <ActivityFeed activity={activity} />
+      </BasicLayout>
     )
   }
 }
 
 function mapStateToProps (state) {
-  // console.log('Overview, state=', state)
-  // Currently active workspaceId.
-  const { workspaceId } = state.settings.saved
-  const { userId } = state.settings.identity
   return {
-    isAppLoaded: state.settings.isAppLoaded,
-    user: state.users.data[userId],
-    activeTheme: state.settings.saved.activeTheme,
-    workspace: state.workspaces.data[workspaceId],
-    backgrounds: state.settings.backgrounds
+    // TODO: Load workspace activity here.
+    settings: state.settings
   }
 }
 
