@@ -1,6 +1,6 @@
 {
   "name": "citylights",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "scripts": {
     "start": "parallelshell 'npm run dev' 'npm run api-dev'",
