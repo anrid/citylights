@@ -37,12 +37,26 @@ function onAppStarter (payload) {
     dispatch(userActions.receiveUser(payload.user))
     dispatch(workspaceActions.receiveWorkspaceList(payload.workspaceList))
     dispatch(workspaceActions.receiveWorkspace(payload.workspace))
+
     // Set `settings.saved.workspaceId` to our new workspace.
     dispatch(settingsActions.saveSettings({ workspaceId: payload.workspace._id }))
+
     // Declare app `loaded` at this point.
     dispatch(settingsActions.setAppLoaded(true))
+
     // Finally, route to the Overview page.
-    dispatch(settingsActions.routeTo({ url: '/overview' }))
+    const { routing } = getState()
+    let routeToUrl = '/overview'
+    if (routing && routing.locationBeforeTransitions) {
+      // Preserve current route unless we’re coming from /login or /signup.
+      const currentUrl = routing.locationBeforeTransitions.pathname
+      if (currentUrl !== '/signup' && currentUrl !== '/login') {
+        console.log('Preserving current route:', currentUrl)
+        routeToUrl = currentUrl
+      }
+    }
+
+    dispatch(settingsActions.routeTo({ url: routeToUrl }))
   }
 }
 

@@ -53,24 +53,24 @@ class SideMenu extends Component {
   render () {
     const { routing } = this.props
     // Default to 'overview'
-    let currentRoute = 'overview'
+    let currentRoute = '/overview'
     if (routing && routing.locationBeforeTransitions) {
-      currentRoute = routing.locationBeforeTransitions.pathname.replace(/^\//, '')
+      currentRoute = routing.locationBeforeTransitions.pathname
     }
 
     return (
       <section className='pl-side-menu'>
         <div className='pl-side-menu__group'>
-          {this.renderMenuItem('Overview', 'home', 'overview', currentRoute)}
-          {this.renderMenuItem('Clients', 'briefcase', 'clients', currentRoute)}
-          {this.renderMenuItem('Consultants', 'users', 'consultants', currentRoute)}
+          {this.renderMenuItem('Overview', 'home', '/overview', currentRoute)}
+          {this.renderMenuItem('Clients', 'briefcase', '/clients', currentRoute)}
+          {this.renderMenuItem('Consultants', 'users', '/consultants', currentRoute)}
         </div>
 
         <div className='pl-side-menu__divider'/>
 
         <div className='pl-side-menu__group'>
-          {this.renderMenuItem('Discuss', 'comment-o', 'discuss', currentRoute)}
-          {this.renderMenuItem('Settings', 'cog', 'settings', currentRoute)}
+          {this.renderMenuItem('Discuss', 'comment-o', '/discuss', currentRoute)}
+          {this.renderMenuItem('Settings', 'cog', '/settings', currentRoute)}
 
           <div className='pl-side-menu__row nope'><i className='fa fa-fw fa-hand-peace-o' />
             {this.renderThemePicker()}
