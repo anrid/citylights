@@ -44,7 +44,7 @@ function createNewRelease (_manifestFile) {
     `)
 
     const items = createItems(files)
-    items.push(createReleaseManifest(version, items))
+    items.push(createReleaseManifest(version, items, assets))
 
     // Check if items are already on our CDN.
     return checkItems(items)
@@ -149,12 +149,13 @@ function createItem (file, size, prefix) {
   }
 }
 
-function createReleaseManifest (version, items) {
+function createReleaseManifest (version, items, assets) {
   const manifestFile = `/tmp/release-manifest-${version}.json`
   const manifest = {
     version,
     date: new Date(),
-    assets: items.map((x) => x.key)
+    items: items.map((x) => x.key),
+    assets
   }
   Fs.writeFileSync(manifestFile, JSON.stringify(manifest, false, 2))
   return createItem(manifestFile, 1000)

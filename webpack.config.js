@@ -46,8 +46,7 @@ const config = {
   },
   plugins: [
     new Webpack.optimize.CommonsChunkPlugin({
-      names: ['vendors', 'manifest'],
-      minChunks: 2
+      names: ['vendors', 'manifest']
     }),
     new HtmlPlugin({
       title: 'Test App',
@@ -64,8 +63,8 @@ const config = {
 if (production) {
   config.plugins = config.plugins.concat([
     new AssetsPlugin({ filename: 'manifest.json', path: PATHS.build }),
-    // new Webpack.optimize.OccurenceOrderPlugin(),
-    // new Webpack.optimize.DedupePlugin(),
+    new Webpack.optimize.OccurenceOrderPlugin(),
+    new Webpack.optimize.DedupePlugin(),
     new Webpack.optimize.UglifyJsPlugin({
       compress: { warnings: false },
       comments: false,
