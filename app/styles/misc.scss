@@ -57,10 +57,19 @@
   font-weight: 900;
   letter-spacing: -1.5px;
   color: white;
-  text-shadow: 0 3px 1px rgba(0,0,0,.2);
+  text-shadow: 0 2px 2px rgba(0, 0, 0, .35);
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+}
+
+.pl-title-slogan {
+  font-size: 1rem;
+  line-height: 1rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  color: $c-gray100;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .30);
 }
 
 .pl-title--turbo {
@@ -133,10 +142,12 @@
   height: 100vh;
   justify-content: center;
   align-items: center;
-  font-size: 6rem;
-  font-weight: 600;
-  color: white;
-  text-shadow: 0 4px 4px rgba(50, 50, 50, 0.35);
+  &__text {
+    font-size: 6rem;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 4px 4px rgba(50, 50, 50, 0.35);
+  }
 }
 
 /*

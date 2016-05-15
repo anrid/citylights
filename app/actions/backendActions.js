@@ -24,6 +24,9 @@ export function receiveBackendEvent (store, event) {
     case 'workspace:create':
       return store.dispatch(onWorkspaceCreate(event.payload))
 
+    case 'workspace:update':
+      return store.dispatch(workspaceActions.receiveWorkspace(event.payload.workspace))
+
     case 'auth:successful':
       return store.dispatch(onAuthSuccessful(event.payload))
 

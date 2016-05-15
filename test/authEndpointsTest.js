@@ -7,7 +7,7 @@ const lab = exports.lab = Lab.script()
 const Db = require('./databaseHelper.js')
 const Auth = require('../api/endpoints/authEndpoints.js')
 
-lab.experiment('math', () => {
+lab.experiment('Auth Endpoints', () => {
   // Rock on.
   let ctx
 
@@ -33,7 +33,7 @@ lab.experiment('math', () => {
     })
   })
 
-  lab.test('returns true when 1 + 1 equals 2', (done) => {
+  lab.test('ensures our sanity', (done) => {
     Code.expect(1 + 1).to.equal(2)
     done()
   })

@@ -15,6 +15,19 @@ function getById (workspaceId) {
   })
 }
 
+const update = P.coroutine(function * (workspaceId, update, userId) {
+  T.String(workspaceId)
+  T.Object(update)
+  T.String(userId)
+  yield ensureHasAccess(userId, workspaceId)
+  const workspace = yield Workspace.findOneAndUpdate(
+    { _id: workspaceId },
+    { $set: update },
+    { new: true }
+  )
+  return workspace
+})
+
 function create (name, ownerId) {
   return P.try(() => {
     T.String(name)
@@ -39,6 +52,7 @@ function getWorkspaceInfo (workspace) {
   return {
     _id: workspace._id.toString(),
     name: workspace.name,
+    domain: workspace.domain,
     url: workspace.url,
     membersCount: workspace.members.length,
     admins: workspace.admins,
@@ -65,6 +79,11 @@ function getList (userId) {
   })
 }
 
+function ensureHasAccess (userId, workspaceId) {
+  return getById(workspaceId)
+  .then((workspace) => hasAccess(userId, workspace))
+}
+
 function hasAccess (userId, workspace) {
   if (workspace.ownerId === userId) {
     return true
@@ -81,6 +100,7 @@ function hasAccess (userId, workspace) {
 module.exports = {
   getById,
   create,
+  update,
   getList,
   getWorkspaceInfo,
   hasAccess

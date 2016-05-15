@@ -119,7 +119,7 @@ const logoutSchema = Joi.object().keys({
 })
 
 const appStarterSchema = Joi.object().keys({
-  workspaceId: Joi.string().min(20).optional().description('User client’s current workspace id.')
+  workspaceId: Joi.string().min(20).optional().description('User’s current workspace id.')
 })
 
 module.exports = {

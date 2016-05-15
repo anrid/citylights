@@ -66,11 +66,12 @@
     align-items: center;
     position: relative;
     i.fa {
-      font-size: 29px;
+      font-size: 26px;
       position: absolute;
-      top: -7px;
+      top: -6px;
       right: -32px;
       color: $c-gray100;
+      text-shadow: 1px 0 1px rgba(50, 50, 50, 0.25);
     }
   }
 

@@ -12,10 +12,22 @@ export default class TopBar extends Component {
       onSignOut
     } = this.props
 
+    let slogan = null
+    if (workspace.domain) {
+      slogan = (
+        <div className='pl-title-slogan'>
+          @{workspace.domain.replace('@', '')}
+        </div>
+      )
+    }
+
     return (
       <section className='pl-top-bar'>
-        <div className='pl-title'>
-          {workspace.name}
+        <div className='pl-top-bar__title'>
+          <div className='pl-title'>
+            {workspace.name}
+          </div>
+          {slogan}
         </div>
         <div className='pl-top-bar__info'>
           <div className='pl-top-bar__avatar' />

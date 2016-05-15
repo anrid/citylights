@@ -3,6 +3,7 @@
 const Webpack = require('webpack')
 const Path = require('path')
 const Fs = require('fs')
+const Chalk = require('chalk')
 
 const HtmlPlugin = require('html-webpack-plugin')
 const AssetsPlugin = require('assets-webpack-plugin')
@@ -44,7 +45,10 @@ const config = {
     publicPath: production ? '/assets/' : '/'
   },
   plugins: [
-    new Webpack.optimize.CommonsChunkPlugin({ names: ['vendors', 'manifest'] }),
+    new Webpack.optimize.CommonsChunkPlugin({
+      names: ['vendors', 'manifest'],
+      minChunks: 2
+    }),
     new HtmlPlugin({
       title: 'Test App',
       host: `${API_HOST}:${API_PORT}`,
@@ -60,8 +64,8 @@ const config = {
 if (production) {
   config.plugins = config.plugins.concat([
     new AssetsPlugin({ filename: 'manifest.json', path: PATHS.build }),
-    new Webpack.optimize.OccurenceOrderPlugin(),
-    new Webpack.optimize.DedupePlugin(),
+    // new Webpack.optimize.OccurenceOrderPlugin(),
+    // new Webpack.optimize.DedupePlugin(),
     new Webpack.optimize.UglifyJsPlugin({
       compress: { warnings: false },
       comments: false,
@@ -100,9 +104,7 @@ if (startServer) {
       host: process.env.CITYLIGHTS_HOST
     })
   } else {
-    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    console.log('!!! Webpack dev server is NOT using HTTPS !!!')
-    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    console.log(Chalk.bgYellow.black('Webpack Dev Server is NOT using HTTPS'))
   }
 
   config.plugins = config.plugins.concat([

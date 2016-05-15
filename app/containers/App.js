@@ -6,7 +6,7 @@ import '../styles/normalize.css'
 import '../styles/global.scss'
 
 import configureStore from '../lib/configureStore'
-import { Router, Route, IndexRoute, hashHistory } from 'react-router'
+import { Router, Route, hashHistory } from 'react-router'
 import { syncHistoryWithStore } from 'react-router-redux'
 
 import * as apiClient from '../lib/apiClient'

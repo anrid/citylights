@@ -18,7 +18,14 @@ const schema = new Schema({
   updated: { type: Date, default: Date.now },
   tags: [String],
   members: [String],
-  admins: [String]
+  admins: [String],
+  domain: {
+    type: String,
+    unique: true,
+    lowercase: true,
+    trim: true,
+    sparse: true
+  }
 })
 
 module.exports = Mongoose.model('workspace', schema)

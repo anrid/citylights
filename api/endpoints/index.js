@@ -19,7 +19,8 @@ const socketEndpoints = {
   'echo': { func: echo, auth: false },
   'heartbeat': { func: echo, auth: false },
   'app:starter': { func: Auth.appStarter, auth: true },
-  'workspace:create': { func: Workspace.create, auth: true }
+  'workspace:create': { func: Workspace.create, auth: true },
+  'workspace:update': { func: Workspace.update, auth: true }
 }
 
 module.exports = socketEndpoints

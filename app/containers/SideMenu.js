@@ -18,7 +18,9 @@ class SideMenu extends Component {
       actions.saveSettings({ activeTheme: item._id })
     }
 
-    const availableThemes = ['BG2', 'BG3', 'BG4', 'BG5', 'BG6', 'BG7', 'BG8']
+    const availableThemes = [
+      'BG2', 'BG3', 'BG4', 'BG5', 'BG6', 'BG7', 'BG8', 'BG9', 'BG10'
+    ]
     const items = availableThemes.map((x) => {
       const bg = backgrounds[x]
       return { _id: bg._id, text: bg.title }

@@ -2,8 +2,11 @@
 
 const P = require('bluebird')
 const Mongoose = require('mongoose')
+const Chalk = require('chalk')
 
 function connect () {
+  console.log('MongoDB: initializing ..')
+
   Mongoose.Promise = P
   P.promisifyAll(Mongoose)
   P.promisifyAll(Mongoose.Model)
@@ -22,6 +25,7 @@ function connect () {
     db: { native_parser: true },
     server: isTest ? { } : { poolSize: 5 }
   }
+
   if (user && pass) {
     opts.user = user
     opts.pass = pass
@@ -29,6 +33,8 @@ function connect () {
     if (user === 'admin') {
       url += '?authSource=admin'
     }
+  } else {
+    console.log(Chalk.bgYellow.black('MongoDB is NOT using authentication'))
   }
   // console.log('Connecting to MongoDB url:', url)
 

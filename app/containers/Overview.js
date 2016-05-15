@@ -10,6 +10,7 @@ import * as settingsActions from '../actions/settingsActions'
 
 import BasicLayout from './BasicLayout'
 import ActivityFeed from '../components/ActivityFeed'
+import Loader from './Loader'
 
 class Overview extends Component {
   renderButtons () {
@@ -60,7 +61,13 @@ function mapDispatchToProps (dispatch) {
   }
 }
 
-export default connect(
+const ConnectedOverview = connect(
   mapStateToProps,
   mapDispatchToProps
 )(Overview)
+
+const OverviewPage = () => (
+  <Loader page={ConnectedOverview} />
+)
+
+export default OverviewPage

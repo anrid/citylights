@@ -19,6 +19,8 @@ const isProduction = process.env.NODE_ENV === 'production'
 const Hapi = require('hapi')
 const Path = require('path')
 const Fs = require('fs')
+const Chalk = require('chalk')
+
 const P = require('bluebird')
 P.promisifyAll(Fs)
 
@@ -83,9 +85,7 @@ function createServer () {
       tls
     })
   } else {
-    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    console.log('!!! Hapi is NOT using HTTPS !!!')
-    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    console.log(Chalk.bgYellow.black('Hapi is NOT using HTTPS'))
     s.connection({ port: process.env.CITYLIGHTS_PORT })
   }
 

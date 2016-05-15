@@ -7,6 +7,7 @@ require('../api/lib/database.js')()
 
 const User = require('../api/services/userModel.js')
 const Crypt = require('../api/services/cryptService.js')
+const Workspace = require('../api/services/workspaceModel.js')
 
 module.exports = {
   _chain: P.resolve(),
@@ -33,7 +34,12 @@ module.exports = {
   },
 
   reset () {
-    return this.queue(User.remove({ email: /@test.test$/ }))
+    const removeAllTestData = P.all([
+      User.remove({ email: /@test\.test$/ }),
+      Workspace.remove({ name: /test\.test/ })
+    ])
+
+    return this.queue(removeAllTestData)
   },
 
   user (name) {

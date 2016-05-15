@@ -15,26 +15,22 @@ class BasicLayout extends Component {
   render () {
     const {
       backgrounds,
-      isAppLoaded,
       activeTheme,
       className,
       actions,
       children
     } = this.props
 
-    if (!isAppLoaded) {
-      return (
-        <div className='pl-loading'>
-          Loading..
-        </div>
-      )
-    }
-
     // Select the theme background.
     const background = backgrounds[activeTheme || 'BG4']
     const style = { }
-    if (background && background.url) {
-      style.backgroundImage = `url("${background.url}")`
+    if (background) {
+      if (background.url) {
+        style.backgroundImage = `url("${background.url}")`
+      }
+      if (background.color) {
+        style.backgroundColor = background.color
+      }
     }
 
     return (
@@ -57,7 +53,6 @@ function mapStateToProps (state) {
   const { workspaceId } = state.settings.saved
   const { userId } = state.settings.identity
   return {
-    isAppLoaded: state.settings.isAppLoaded,
     user: state.users.data[userId],
     workspace: state.workspaces.data[workspaceId],
     activeTheme: state.settings.saved.activeTheme,
