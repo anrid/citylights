@@ -14,6 +14,19 @@
       left: 3px;
       bottom: -7px;
     }
+
+    .pl-dropdown {
+      position: absolute;
+      right: -30px;
+      top: 0;
+      &__menu {
+        top: 60px;
+      }
+      i.fa {
+        color: white;
+        text-shadow: 0 2px 2px rgba(0, 0, 0, .35);
+      }
+    }
   }
 
   &__info {

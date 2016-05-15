@@ -54,7 +54,11 @@ function getWorkspaceInfo (workspace) {
     name: workspace.name,
     domain: workspace.domain,
     url: workspace.url,
-    membersCount: workspace.members.length,
+    membersCount: new Set([].concat(
+      workspace.ownerId,
+      workspace.admins,
+      workspace.members
+    )).size,
     admins: workspace.admins,
     ownerId: workspace.ownerId,
     created: workspace.created

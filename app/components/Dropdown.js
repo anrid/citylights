@@ -33,7 +33,8 @@ export default class Dropdown extends Component {
   }
 
   renderMenu () {
-    const { items, selected } = this.props
+    const { items, selected, heading } = this.props
+
     const rows = items.map((x) => {
       let isSelected = null
       let isSelectedClass = ''
@@ -47,16 +48,27 @@ export default class Dropdown extends Component {
         isSelectedClass = 'pl-dropdown__menu-item-selected'
       }
 
+      let info = null
+      if (x.info) {
+        info = <span className='pl-dropdown__menu-item-info'>{x.info}</span>
+      }
+
       return (
         <div key={x._id}
           className={'pl-dropdown__menu-item ' + isSelectedClass}
           onClick={() => this.onSelectItem(x)}
         >
           <span>{x.text}</span>
+          {info}
           {isSelected}
         </div>
       )
     })
+
+    let headingRow = null
+    if (heading) {
+      headingRow = <div key='heading' className='pl-dropdown__menu-heading'>{heading}</div>
+    }
 
     return (
       <Motion
@@ -72,6 +84,7 @@ export default class Dropdown extends Component {
                 opacity: fade
               }}
             >
+              {headingRow}
               {rows}
             </div>
           </div>

@@ -52,9 +52,13 @@ function mapStateToProps (state) {
   // Currently active workspaceId.
   const { workspaceId } = state.settings.saved
   const { userId } = state.settings.identity
+  const workspaceList = state.workspaces.order.map((x) => (
+    state.workspaces.data[x]
+  ))
   return {
     user: state.users.data[userId],
     workspace: state.workspaces.data[workspaceId],
+    workspaceList,
     activeTheme: state.settings.saved.activeTheme,
     backgrounds: state.settings.backgrounds
   }
