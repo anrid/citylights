@@ -54,7 +54,11 @@ function preStart () {
       return Https.fetchGzipped(manifestUrl)
       .then((json) => {
         const manifest = JSON.parse(json)
-        Hoek.assert(manifest && manifest.assets.length, 'Fetched invalid manifest:', manifest)
+        Hoek.assert(manifest &&
+          manifest.assets &&
+          manifest.items.length,
+          'Fetched invalid manifest: ' + JSON.stringify(manifest, false, 2)
+        )
         console.log('Loaded app manifest:', manifest)
         return manifest
       })
@@ -140,9 +144,9 @@ function setupDefaultViewContext (server, manifest) {
     const assets = manifest.assets
     // TODO: Don’t rely on manifest file order !
     context.js = {
-      manifest: `${context.cdn}/${assets[0]}`,
-      vendors: `${context.cdn}/${assets[1]}`,
-      app: `${context.cdn}/${assets[2]}`
+      manifest: context.cdn + assets.manifest.js,
+      vendors: context.cdn + assets.vendors.js,
+      app: context.cdn + assets.app.js
     }
   }
   return context
