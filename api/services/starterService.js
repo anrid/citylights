@@ -5,6 +5,7 @@ const T = require('tcomb')
 
 const UserService = require('./userService')
 const WorkspaceService = require('./workspaceService')
+const AccessService = require('./accessService')
 
 const getStarter = P.coroutine(function * (workspaceId, userId) {
   T.String(userId)
@@ -13,28 +14,27 @@ const getStarter = P.coroutine(function * (workspaceId, userId) {
 
   let workspaceList = yield WorkspaceService.getList(userId)
   let workspace = null
-  let id = workspaceId
+  let currentWorkspaceId = workspaceId
 
   // Make sure we’ve got at least one workspace.
   if (!workspaceList.length) {
     // No workspaces found for user, create a new one on-the-fly.
     workspace = yield WorkspaceService.create('My Workspace', userId)
     workspaceList = [ WorkspaceService.getWorkspaceInfo(workspace) ]
-    id = workspace._id.toString()
+    currentWorkspaceId = workspace._id.toString()
   }
 
-  if (!id) {
+  if (!currentWorkspaceId) {
     // Pick the first workspace from our list if we weren’t supplied
     // with an id.
-    id = workspaceList[0]._id
+    currentWorkspaceId = workspaceList[0]._id
   }
 
   // Fetch the active workspace.
   if (!workspace) {
-    workspace = yield WorkspaceService.getById(id)
+    // Make sure we can access the workspace.
+    workspace = yield AccessService.ensureHasWorkspaceAccess(userId, currentWorkspaceId)
   }
-  // Make sure we can access it.
-  WorkspaceService.hasAccess(userId, workspace)
 
   return {
     user,

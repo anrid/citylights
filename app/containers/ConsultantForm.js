@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
 import * as settingsActions from '../actions/settingsActions'
-import * as consultantActions from '../actions/workspaceActions'
+import * as userActions from '../actions/userActions'
 
 class ConsultantForm extends Component {
   constructor (props) {
@@ -22,8 +22,12 @@ class ConsultantForm extends Component {
   }
 
   onSaveConsultantForm () {
-    const { actions } = this.props
-    actions.updateConsultant(this.state)
+    const { actions, workspaceId } = this.props
+    const data = {
+      ...this.state,
+      workspaceId
+    }
+    actions.inviteUser(data)
   }
 
   render () {
@@ -37,6 +41,18 @@ class ConsultantForm extends Component {
 
           <div className='pl-form__row'>
             <div className='pl-form__section-label'>Basic information</div>
+            <div className='pl-form__input'>
+              <div className='pl-form__label'>Email</div>
+              <input type='email'
+                placeholder='e.g. ace@base.se'
+                defaultValue={consultant.email}
+                onChange={this.onValueChange('email')}
+              />
+            </div>
+          </div>
+
+          <div className='pl-form__row'>
+            <div className='pl-form__section-label'/>
             <div className='pl-form__input'>
               <div className='pl-form__label'>First name</div>
               <input type='text'
@@ -89,10 +105,10 @@ ConsultantForm.propTypes = {
 }
 
 function mapStateToProps (state) {
-  // console.log('=== ConsultantForm: state=', state)
-  // Currently active consultantId.
-  // const { consultantId } = state.settings.saved
+  // Currently active workspaceId.
+  const { workspaceId } = state.settings.saved
   return {
+    workspaceId,
     consultant: { } // state.consultants.data[consultantId]
   }
 }
@@ -101,7 +117,7 @@ function mapDispatchToProps (dispatch) {
   return {
     actions: bindActionCreators({
       ...settingsActions,
-      ...consultantActions
+      ...userActions
     }, dispatch)
   }
 }

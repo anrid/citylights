@@ -3,10 +3,10 @@
 const P = require('bluebird')
 const T = require('tcomb')
 const Shortid = require('shortid')
-const Boom = require('boom')
 
 const Workspace = require('./workspaceModel')
 const UserService = require('./userService')
+const AccessService = require('./accessService')
 
 function getById (workspaceId) {
   return P.try(() => {
@@ -15,11 +15,13 @@ function getById (workspaceId) {
   })
 }
 
-const update = P.coroutine(function * (workspaceId, update, userId) {
+const update = P.coroutine(function * (workspaceId, update, actorId) {
   T.String(workspaceId)
   T.Object(update)
-  T.String(userId)
-  yield ensureHasAccess(userId, workspaceId)
+  T.String(actorId)
+
+  yield AccessService.ensureHasWorkspaceAccess(actorId, workspaceId)
+
   const workspace = yield Workspace.findOneAndUpdate(
     { _id: workspaceId },
     { $set: update },
@@ -28,20 +30,20 @@ const update = P.coroutine(function * (workspaceId, update, userId) {
   return workspace
 })
 
-function create (name, ownerId) {
+function create (name, actorId) {
   return P.try(() => {
     T.String(name)
-    T.String(ownerId)
+    T.String(actorId)
     const url = Shortid.generate()
     return Workspace.create({
       name,
-      ownerId,
+      ownerId: actorId,
       url,
-      admins: [ownerId]
+      admins: [actorId]
     })
     .then((workspace) => {
       return UserService.addUserToWorkspace(
-        ownerId, workspace._id.toString()
+        actorId, workspace._id.toString()
       )
       .then(() => workspace)
     })
@@ -83,29 +85,10 @@ function getList (userId) {
   })
 }
 
-function ensureHasAccess (userId, workspaceId) {
-  return getById(workspaceId)
-  .then((workspace) => hasAccess(userId, workspace))
-}
-
-function hasAccess (userId, workspace) {
-  if (workspace.ownerId === userId) {
-    return true
-  }
-  if (workspace.admins.find((x) => x === userId)) {
-    return true
-  }
-  if (workspace.members.find((x) => x === userId)) {
-    return true
-  }
-  throw Boom.unauthorized('Cannot access workspace')
-}
-
 module.exports = {
   getById,
   create,
   update,
   getList,
-  getWorkspaceInfo,
-  hasAccess
+  getWorkspaceInfo
 }

@@ -6,11 +6,19 @@ const T = require('tcomb')
 
 const User = require('./userModel')
 const Crypt = require('./cryptService')
+const AccessService = require('./accessService')
 
 function getById (userId) {
   return P.try(() => {
     T.String(userId)
     return User.findOne({ _id: userId })
+  })
+}
+
+function getByEmail (email) {
+  return P.try(() => {
+    T.String(email)
+    return User.findOne({ email })
   })
 }
 
@@ -58,6 +66,31 @@ function signup (opts) {
   })
 }
 
+const invite = P.coroutine(function * (opts, actorId) {
+  T.String(opts.email)
+  T.String(opts.workspaceId)
+  T.String(actorId)
+
+  yield AccessService.ensureHasWorkspaceAccess(actorId, opts.workspaceId)
+
+  let user = yield User.findOne({ email: opts.email })
+  if (!user) {
+    // Create a new user on-the-fly.
+    const newPassword = yield Crypt.createRandomPassword()
+    user = yield User.create({
+      email: opts.email,
+      passwordHash: newPassword.hash,
+      passwordSalt: newPassword.salt,
+      'profile.firstName': opts.firstName,
+      'profile.lastName': opts.lastName,
+      'profile.phoneWork': opts.phoneWork
+    })
+  }
+
+  yield addUserToWorkspace(user._id.toString(), opts.workspaceId)
+  return user
+})
+
 function logout (accessToken) {
   return P.try(() => {
     T.String(accessToken)
@@ -65,23 +98,23 @@ function logout (accessToken) {
   })
 }
 
-function addUserToWorkspace (ownerId, workspaceId) {
+function addUserToWorkspace (userId, workspaceId) {
   return P.try(() => {
-    T.String(ownerId)
+    T.String(userId)
     T.String(workspaceId)
     return P.resolve(User.findOneAndUpdate(
-      { _id: ownerId },
+      { _id: userId },
       { $addToSet: { inWorkspaces: workspaceId } }
     ))
   })
 }
 
-function setLastWorkspace (ownerId, workspaceId) {
+function setLastWorkspace (userId, workspaceId) {
   return P.try(() => {
-    T.String(ownerId)
+    T.String(userId)
     T.String(workspaceId)
     return P.resolve(User.findOneAndUpdate(
-      { _id: ownerId },
+      { _id: userId },
       { $set: { lastWorkspace: workspaceId } }
     ))
   })
@@ -97,8 +130,10 @@ function isValid (user) {
 module.exports = {
   login,
   signup,
+  invite,
   logout,
   getById,
+  getByEmail,
   addUserToWorkspace,
   setLastWorkspace,
   isValid

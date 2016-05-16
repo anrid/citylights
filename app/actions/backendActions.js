@@ -30,6 +30,9 @@ export function receiveBackendEvent (store, event) {
     case 'auth:successful':
       return store.dispatch(onAuthSuccessful(event.payload))
 
+    case 'user:invite:successful':
+      return store.dispatch(userActions.receiveUser(event.payload.user))
+
     default:
       console.log('Unknown event=', event)
   }

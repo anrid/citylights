@@ -20,7 +20,9 @@ const schema = new Schema({
   isOnboarded: { type: Boolean, default: false },
 
   passwordHash: { type: String, required: true, min: 32 },
-  passwordSalt: { type: String, required: true, min: 32 }
+  passwordSalt: { type: String, required: true, min: 32 },
+
+  profile: { type: Object, default: { } }
 })
 
 schema.set('toJSON', {

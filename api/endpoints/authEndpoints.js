@@ -108,12 +108,6 @@ const signupFormSimpleSchema = Joi.object().keys({
   email: Joi.string().email().required().description('User email address.')
 })
 
-// const signupFormSchema = Joi.object().keys({
-//   email: Joi.string().email().required().description('User email address.'),
-//   password: Joi.string().min(6).max(64).required().description('User password.'),
-//   confirmPassword: Joi.string().valid(Joi.ref('password')).required().description('User password (again).')
-// })
-
 const logoutSchema = Joi.object().keys({
   accessToken: Joi.string().min(30).required().description('User access token.')
 })

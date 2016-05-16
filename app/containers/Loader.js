@@ -54,7 +54,7 @@ Loader.propTypes = {
 }
 
 function mapStateToProps (state, props) {
-  console.log('Loader: props=', props, props.location)
+  // console.log('Loader: props=', props, props.location)
   return {
     isAppLoaded: state.settings.isAppLoaded
   }

@@ -1,6 +1,7 @@
 'use strict'
 
 const Auth = require('./authEndpoints')
+const User = require('./userEndpoints')
 const Workspace = require('./workspaceEndpoints')
 
 function echo (payload) {
@@ -20,7 +21,8 @@ const socketEndpoints = {
   'heartbeat': { func: echo, auth: false },
   'app:starter': { func: Auth.appStarter, auth: true },
   'workspace:create': { func: Workspace.create, auth: true },
-  'workspace:update': { func: Workspace.update, auth: true }
+  'workspace:update': { func: Workspace.update, auth: true },
+  'user:invite': { func: User.invite, auth: true }
 }
 
 module.exports = socketEndpoints
