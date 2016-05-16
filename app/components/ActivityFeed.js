@@ -57,7 +57,9 @@ export default class ActivityFeed extends Component {
           />
         </div>
         <div className='pl-box__content'>
-          {content}
+          <div className='pl-activity-feed__rows'>
+            {content}
+          </div>
         </div>
       </section>
     )

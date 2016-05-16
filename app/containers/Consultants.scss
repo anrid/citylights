@@ -1,0 +1,12 @@
+
+@import '../styles/colors';
+
+.pl-consultants {
+  &__buttons {
+    display: flex;
+    button + button {
+      margin-left: 10px;
+    }
+    margin-bottom: 20px;
+  }
+}

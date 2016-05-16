@@ -53,7 +53,8 @@ Loader.propTypes = {
   page: React.PropTypes.any.isRequired
 }
 
-function mapStateToProps (state) {
+function mapStateToProps (state, props) {
+  console.log('Loader: props=', props, props.location)
   return {
     isAppLoaded: state.settings.isAppLoaded
   }

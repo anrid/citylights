@@ -35,6 +35,7 @@ apiClient.connect({ url: window.Config.API_URL })
 import Login from '../containers/Login'
 import Signup from '../containers/Signup'
 import Overview from '../containers/Overview'
+import Consultants from '../containers/Consultants'
 import Settings from '../containers/Settings'
 
 const NoMatch = () => <div>NoMatch.</div>
@@ -81,6 +82,9 @@ export default class App extends Component {
           <Route path='/' component={Overview} onEnter={requireAuth} />
           <Route path='account' component={Account} onEnter={requireAuth} />
           <Route path='overview' component={Overview} onEnter={requireAuth} />
+          <Route path='consultants' component={Consultants} onEnter={requireAuth}>
+            <Route path='add' component={Consultants} />
+          </Route>
           <Route path='settings' component={Settings} onEnter={requireAuth} />
 
           <Route path='login' component={Login} onEnter={skipIfAuth} />

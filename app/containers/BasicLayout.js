@@ -48,7 +48,6 @@ class BasicLayout extends Component {
 }
 
 function mapStateToProps (state) {
-  // console.log('BasicLayout, state=', state)
   // Currently active workspaceId.
   const { workspaceId } = state.settings.saved
   const { userId } = state.settings.identity

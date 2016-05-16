@@ -36,7 +36,7 @@ class SideMenu extends Component {
     const { routeTo } = this.props.actions
     let cls = 'pl-side-menu__row'
     let arrow = null
-    if (currentRoute === routeName) {
+    if (currentRoute.indexOf(routeName) === 0) {
       cls += '--active'
       arrow = <i className='fa fa-fw fa-caret-right' />
     }
@@ -64,8 +64,8 @@ class SideMenu extends Component {
       <section className='pl-side-menu'>
         <div className='pl-side-menu__group'>
           {this.renderMenuItem('Overview', 'home', '/overview', currentRoute)}
-          {this.renderMenuItem('Clients', 'briefcase', '/clients', currentRoute)}
           {this.renderMenuItem('Consultants', 'users', '/consultants', currentRoute)}
+          {this.renderMenuItem('Clients', 'briefcase', '/clients', currentRoute)}
         </div>
 
         <div className='pl-side-menu__divider'/>
