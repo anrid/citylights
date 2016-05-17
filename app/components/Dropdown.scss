@@ -60,10 +60,22 @@
     margin-bottom: 3px;
   }
 
+  &__menu-item-text {
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 140px;
+    text-overflow: ellipsis;
+  }
+
   &__menu-item-info {
     font-size: 0.8rem;
     font-weight: normal;
     color: $c-gray400;
+    white-space: nowrap;
+    i.fa {
+      font-size: 0.9rem;
+      color: $c-gray300;
+    }
   }
 
   &__menu-item {

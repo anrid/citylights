@@ -50,7 +50,11 @@ export default class Dropdown extends Component {
 
       let info = null
       if (x.info) {
-        info = <span className='pl-dropdown__menu-item-info'>{x.info}</span>
+        info = (
+          <span className='pl-dropdown__menu-item-info'>
+            {x.info}
+          </span>
+        )
       }
 
       return (
@@ -58,7 +62,7 @@ export default class Dropdown extends Component {
           className={'pl-dropdown__menu-item ' + isSelectedClass}
           onClick={() => this.onSelectItem(x)}
         >
-          <span>{x.text}</span>
+          <span className='pl-dropdown__menu-item-text'>{x.text}</span>
           {info}
           {isSelected}
         </div>

@@ -16,6 +16,15 @@ function checkAccessToken (payload) {
     const userId = decoded.userId
     return UserService.getById(userId)
     .then((user) => {
+      if (!user) {
+        return {
+          topic: 'auth:failed',
+          payload: {
+            error: 'user account not found'
+          }
+        }
+      }
+
       return {
         topic: 'auth:successful',
         payload: {

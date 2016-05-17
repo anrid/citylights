@@ -22,6 +22,7 @@ export default function users (state = initialState, action = {}) {
       const { user } = action.payload
       n = { ...state }
       n.order = n.order.concat(user._id)
+      n.order = [ ...new Set(n.order) ] // Ensure it’s unique.
       n.data[user._id] = user
       return n
 

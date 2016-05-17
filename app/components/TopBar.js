@@ -36,7 +36,8 @@ export default class TopBar extends Component {
 
     const menuItems = workspaceList.map((x) => {
       const count = getWorkspaceMemberCount(x)
-      return { _id: x._id, text: x.name, info: `(${count} members)` }
+      const icon = <span><i className='fa fa-fw fa-male' /> {count}</span>
+      return { _id: x._id, text: x.name, info: icon }
     })
 
     return (

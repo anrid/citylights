@@ -27,11 +27,17 @@ export function receiveBackendEvent (store, event) {
     case 'workspace:update':
       return store.dispatch(workspaceActions.receiveWorkspace(event.payload.workspace))
 
+    case 'auth:valid':
     case 'auth:successful':
       return store.dispatch(onAuthSuccessful(event.payload))
 
+    case 'auth:failed':
+      return store.dispatch(settingsActions.clearIdentity())
+
     case 'user:invite:successful':
-      return store.dispatch(userActions.receiveUser(event.payload.user))
+      store.dispatch(userActions.receiveUser(event.payload.user))
+      store.dispatch(workspaceActions.receiveWorkspace(event.payload.workspace))
+      return
 
     default:
       console.log('Unknown event=', event)
