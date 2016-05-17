@@ -17,8 +17,7 @@ const schema = new Schema({
   created: { type: Date, default: Date.now },
   updated: { type: Date, default: Date.now },
   tags: [String],
-  members: [String],
-  admins: [String],
+  membersCount: { type: Number, default: 1 },
   domain: {
     type: String,
     unique: true,

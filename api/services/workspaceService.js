@@ -38,33 +38,15 @@ function create (name, actorId) {
     return Workspace.create({
       name,
       ownerId: actorId,
-      url,
-      admins: [actorId]
+      url
     })
     .then((workspace) => {
       return UserService.addUserToWorkspace(
-        actorId, workspace._id.toString()
+        actorId, workspace._id.toString(), { admin: true }
       )
       .then(() => workspace)
     })
   })
-}
-
-function getWorkspaceInfo (workspace) {
-  return {
-    _id: workspace._id.toString(),
-    name: workspace.name,
-    domain: workspace.domain,
-    url: workspace.url,
-    membersCount: new Set([].concat(
-      workspace.ownerId,
-      workspace.admins,
-      workspace.members
-    )).size,
-    admins: workspace.admins,
-    ownerId: workspace.ownerId,
-    created: workspace.created
-  }
 }
 
 function getList (userId) {
@@ -81,7 +63,6 @@ function getList (userId) {
     })
     .sort('name')
     .exec()
-    .then((workspaces) => workspaces.map(getWorkspaceInfo))
   })
 }
 
@@ -89,6 +70,5 @@ module.exports = {
   getById,
   create,
   update,
-  getList,
-  getWorkspaceInfo
+  getList
 }

@@ -31,6 +31,7 @@ lab.experiment('Workspace Endpoints', () => {
       Code.expect(res.topic).to.equal('workspace:create')
       Code.expect(res.payload.workspace.ownerId).to.equal(user1.userId)
       Code.expect(res.payload.workspace.url.length > 4).to.be.true()
+      Code.expect(res.payload.workspace.membersCount).to.equal(1)
       workspace1 = res.payload.workspace
       done()
     })

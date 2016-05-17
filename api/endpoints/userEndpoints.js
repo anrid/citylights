@@ -4,7 +4,6 @@ const P = require('bluebird')
 const Joi = require('joi')
 
 const UserService = require('../services/userService')
-const WorkspaceService = require('../services/workspaceService')
 const Schemas = require('./schemas')
 const Broadcast = require('./broadcastHelper')
 
@@ -12,14 +11,15 @@ const invite = P.coroutine(function * (payload, context) {
   const valid = Schemas.validateOrThrow(payload, inviteFormSchema)
 
   // Invite user and broadcast invite.
-  const user = yield UserService.invite(valid, context.userId)
-  const workspace = yield WorkspaceService.getById(valid.workspaceId)
+  const result = yield UserService.invite(valid, context.userId)
+  const user = result.user
+  const workspace = result.workspace
 
   console.log(`TODO: send invitation email to ${user.email}`)
 
   const response = {
     user,
-    workspaceId: workspace._id.toString()
+    workspace
   }
 
   // Broadcast to workspace.

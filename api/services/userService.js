@@ -4,8 +4,10 @@ const P = require('bluebird')
 const Boom = require('boom')
 const T = require('tcomb')
 
+const Workspace = require('./workspaceModel')
+const WorkspaceMembers = require('./workspaceMembersModel')
 const User = require('./userModel')
-const Crypt = require('./cryptService')
+const UserPassword = require('./userPasswordModel')
 const AccessService = require('./accessService')
 
 function getById (userId) {
@@ -22,49 +24,49 @@ function getByEmail (email) {
   })
 }
 
-function login (email, password) {
-  return P.try(() => {
-    T.String(email)
-    T.String(password)
-    return User.findOne({ email })
-    .then((user) => {
-      if (!user) {
-        throw Boom.badRequest('Invalid email or password.')
-      }
+// @returns user
+const login = P.coroutine(function * (email, password) {
+  T.String(email)
+  T.String(password)
+  const user = yield User.findOne({ email })
+  if (!user) {
+    throw Boom.badRequest('Invalid email or password.')
+  }
 
-      // HACK: Allow login with any password for <number>@example.com
-      // email addresses when in development mode.
-      // const isDevMode = process.env.NODE_ENV === 'development'
-      const isTestEmail = /\d+@example.com$/.test(user.email)
-      if (isTestEmail) {
-        return user
-      }
+  // HACK: Allow login with any password for <number>@example.com
+  // email addresses when in development mode.
+  // const isDevMode = process.env.NODE_ENV === 'development'
+  const isTestEmail = /\d+@example.com$/.test(user.email)
+  if (isTestEmail) {
+    return user
+  }
 
-      return Crypt.verifyPassword(password, user.passwordHash, user.passwordSalt)
-      .then(() => user)
-    })
+  yield UserPassword.verifyPassword(password, user)
+  return user
+})
+
+const signup = P.coroutine(function * (opts) {
+  T.String(opts.email)
+
+  const user = yield User.findOne({ email: opts.email })
+  if (user) {
+    throw Boom.badRequest('Email address already registered.')
+  }
+
+  const newUser = yield User.create({
+    email: opts.email,
+    firstName: opts.firstName,
+    lastName: opts.lastName
   })
-}
 
-function signup (opts) {
-  return P.try(() => {
-    T.String(opts.email)
-    return User.findOne({ email: opts.email })
-    .then((user) => {
-      if (user) {
-        throw Boom.badRequest('Email address already registered.')
-      }
-      return Crypt.createRandomPassword()
-    })
-    .then((newPassword) => {
-      return User.create({
-        email: opts.email,
-        passwordHash: newPassword.hash,
-        passwordSalt: newPassword.salt
-      })
-    })
-  })
-}
+  if (!opts.password) {
+    yield UserPassword.createRandomPassword(newUser)
+  } else {
+    yield UserPassword.createPassword(opts.password, newUser)
+  }
+
+  return newUser
+})
 
 const invite = P.coroutine(function * (opts, actorId) {
   T.String(opts.email)
@@ -76,19 +78,18 @@ const invite = P.coroutine(function * (opts, actorId) {
   let user = yield User.findOne({ email: opts.email })
   if (!user) {
     // Create a new user on-the-fly.
-    const newPassword = yield Crypt.createRandomPassword()
     user = yield User.create({
       email: opts.email,
-      passwordHash: newPassword.hash,
-      passwordSalt: newPassword.salt,
       'profile.firstName': opts.firstName,
       'profile.lastName': opts.lastName,
       'profile.phoneWork': opts.phoneWork
     })
+    // Create a temporary password.
+    UserPassword.createRandomPassword(user)
   }
 
-  yield addUserToWorkspace(user._id.toString(), opts.workspaceId)
-  return user
+  const updatedUser = yield addUserToWorkspace(user._id.toString(), opts.workspaceId)
+  return updatedUser
 })
 
 function logout (accessToken) {
@@ -98,14 +99,49 @@ function logout (accessToken) {
   })
 }
 
-function addUserToWorkspace (userId, workspaceId) {
+function addUserToWorkspace (userId, workspaceId, _opts) {
   return P.try(() => {
     T.String(userId)
     T.String(workspaceId)
+    const opts = _opts || { }
+
     return P.resolve(User.findOneAndUpdate(
       { _id: userId },
-      { $addToSet: { inWorkspaces: workspaceId } }
+      { $addToSet: { inWorkspaces: workspaceId } },
+      { new: true }
     ))
+    .then((user) => {
+      // Add to either members or admins depending on given flag.
+      const memberField = opts.admin ? 'admins' : 'members'
+      return P.resolve(WorkspaceMembers.findOneAndUpdate(
+        { workspaceId },
+        {
+          // Set user as owner if there’s currently no doc for this workspace.
+          $setOnInsert: { ownerId: userId },
+          $addToSet: { [memberField]: userId }
+        },
+        { new: true, upsert: true }
+      ))
+      // Recalculate members stats and update the workspace.
+      .then((workspaceMembers) => {
+        const membersCount = new Set([].concat(
+          workspaceMembers.ownerId,
+          workspaceMembers.admins,
+          workspaceMembers.members
+        )).size
+        return P.resolve(Workspace.findOneAndUpdate(
+          { _id: workspaceId },
+          { $set: { membersCount } },
+          { new: true }
+        ))
+      })
+      .then((workspace) => {
+        return {
+          user,
+          workspace
+        }
+      })
+    })
   })
 }
 
