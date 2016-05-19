@@ -62,7 +62,7 @@ export default class Dropdown extends Component {
           className={'pl-dropdown__menu-item ' + isSelectedClass}
           onClick={() => this.onSelectItem(x)}
         >
-          <span className='pl-dropdown__menu-item-text'>{x.text}</span>
+          <div className='pl-dropdown__menu-item-text'>{x.text}</div>
           {info}
           {isSelected}
         </div>

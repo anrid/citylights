@@ -34,8 +34,8 @@
     i.fa {
       color: $c-gray400;
       position: relative;
-      top: -2px;
-      font-size: 0.8rem;
+      top: -1px;
+      font-size: 0.9rem;
       text-decoration: none;
       @extend .unselectable;
       &.fa-chevron-down {
@@ -65,6 +65,8 @@
     overflow: hidden;
     max-width: 140px;
     text-overflow: ellipsis;
+    height: 100%;
+    line-height: 30px;
   }
 
   &__menu-item-info {
@@ -87,7 +89,7 @@
     line-height: 1;
     font-weight: normal;
     color: $c-gray600;
-    height: 29px;
+    height: 30px;
     padding: 0 12px;
     &:hover {
       background-color: $c-gray50;
