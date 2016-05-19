@@ -27,11 +27,10 @@ class Consultants extends Component {
 }
 
 function mapStateToProps (state) {
-  // console.log('Consultant state=', state)
-  const allUsers = state.users.order.map((x) => (
-    state.users.data[x]
-  ))
-
+  const allUsers = state.users.order.map((x) => {
+    return state.users.data[x]
+  })
+  // console.log('Consultant allUsers=', allUsers)
   return {
     consultants: allUsers,
     route: getRoute(state.routing)

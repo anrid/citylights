@@ -35,9 +35,9 @@
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
-    background-image: url("https://c2.staticflickr.com/8/7218/7402376150_6b508dff90_t.jpg");
+    background-color: $c-gray100;
     border-radius: 100px;
-    margin: 0 5px;
+    margin: 0 10px;
   }
 
   &__row-info {
@@ -48,7 +48,7 @@
     align-items: flex-start;
     justify-content: center;
     flex-direction: column;
-    padding: 0 5px;
+    padding-right: 10px;
 
     &__name {
       font-size: 1rem;

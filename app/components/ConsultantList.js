@@ -74,10 +74,12 @@ const ConsultantRow = (props) => {
   return (
     <div className='pl-consultant-list__row'>
       <div className='pl-consultant-list__row-label' />
-      <div className='pl-consultant-list__row-avatar' />
+      <div className='pl-consultant-list__row-avatar'
+        style={{ backgroundImage: `url(${props.photo})` }}
+      />
       <div className='pl-consultant-list__row-info'>
         <div className='pl-consultant-list__row-info__name'>
-          Jane Doe
+          {props.firstName}{' '}{props.lastName}
         </div>
         <div className='pl-consultant-list__row-info__personal'>
           {props.email}
