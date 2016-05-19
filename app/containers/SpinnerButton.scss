@@ -1,0 +1,16 @@
+
+@import '../styles/colors';
+
+.pl-spinner-button {
+  &--disabled {
+    color: white;
+    text-shadow: none;
+    background-color: $c-gray200;
+    border-bottom: 2px solid $c-gray200;
+    opacity: 0.8;
+  }
+
+  &--disabled:hover {
+    @extend .pl-spinner-button--disabled;
+  }
+}

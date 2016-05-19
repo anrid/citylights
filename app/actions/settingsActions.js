@@ -3,10 +3,8 @@
 import { push, pop } from 'react-router-redux'
 
 import * as types from './actionTypes'
-import {
-  send,
-  request
-} from '../lib/apiClient'
+import { apiRequest, publicApiRequest } from './backendActions'
+import { authenticate } from '../lib/apiClient'
 
 import * as Storage from '../lib/storage'
 
@@ -17,7 +15,6 @@ export function restoreState (store) {
 
   // Restore saved settings.
   if (saved) {
-    console.log('Restoring saved:', saved)
     store.dispatch({
       type: types.SET_SETTING,
       payload: { saved }
@@ -26,26 +23,24 @@ export function restoreState (store) {
 
   // Restore identity.
   if (identity) {
-    console.log('Restoring identity:', identity)
     store.dispatch({
       type: types.SET_SETTING,
       payload: { identity }
     })
   }
 
-  console.log('Restored saved state:', store.getState())
+  console.log('Restored state:', store.getState())
 }
 
 export function initApp () {
   return (dispatch, getState) => {
     console.log('Initializing app.')
-    const { identity } = getState().settings
-    if (identity && identity.userId && identity.accessToken) {
-      console.log('Using existing identity:', identity)
-      dispatch(validateToken(identity.accessToken))
-    } else {
+    const { identity, saved } = getState().settings
+    if (!identity || !identity.accessToken || !saved.email) {
       dispatch(clearIdentity())
+      return
     }
+    console.log('Using existing identity:', identity)
   }
 }
 
@@ -82,7 +77,7 @@ export function fetchAppStarter (workspaceId) {
     setAppLoaded(false)
     const payload = { workspaceId }
     console.log('Fetching app starter:', payload)
-    send('app:starter', payload)
+    dispatch(apiRequest('app:starter', payload))
   }
 }
 
@@ -105,21 +100,14 @@ export function clearIdentity () {
 export function signup (companyName, email) {
   return (dispatch) => {
     dispatch(showServerError(null))
-    request('signup', { companyName, email })
+    dispatch(publicApiRequest('signup', { companyName, email }))
   }
 }
 
 export function login (email, password) {
   return (dispatch) => {
     dispatch(showServerError(null))
-    request('auth', { email, password })
-  }
-}
-
-export function validateToken (accessToken) {
-  return (dispatch) => {
-    dispatch(showServerError(null))
-    send('auth:token', { accessToken })
+    authenticate(email, password)
   }
 }
 

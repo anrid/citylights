@@ -11,6 +11,7 @@ import * as workspaceActions from '../actions/workspaceActions'
 
 import BasicLayout from './BasicLayout'
 import Loader from './Loader'
+import SpinnerButton from './SpinnerButton'
 
 class Settings extends Component {
   constructor (props) {
@@ -22,6 +23,7 @@ class Settings extends Component {
         domain: workspace.domain
       }
     }
+    this.onSaveWorkspaceSettings = this.onSaveWorkspaceSettings.bind(this)
   }
 
   onSaveWorkspaceSettings () {
@@ -76,9 +78,9 @@ class Settings extends Component {
           </div>
 
           <div className='pl-form__footer'>
-            <button onClick={() => this.onSaveWorkspaceSettings()}>
+            <SpinnerButton onClick={this.onSaveWorkspaceSettings}>
               Save
-            </button>
+            </SpinnerButton>
           </div>
         </section>
       </BasicLayout>

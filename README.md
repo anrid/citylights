@@ -1,2 +1,2 @@
-# citylights
-A web application framework based on React, Redux and WebSockets.
+# Citylights Web App.
+A bundle of joy built with React, Redux, WebSockets and MongoDB.

@@ -1,33 +1,55 @@
 'use strict'
 
 import React, { Component, PropTypes } from 'react'
-import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
+import { request } from '../lib/apiClient'
 import * as settingsActions from '../actions/settingsActions'
-import * as userActions from '../actions/userActions'
+
+import SpinnerButton from './SpinnerButton'
 
 class ConsultantForm extends Component {
   constructor (props) {
     super(props)
     const { consultant } = this.props
-    this.state = { ...consultant }
+    this.state = {
+      consultant,
+      error: null
+    }
     this.onValueChange = this.onValueChange.bind(this)
+    this.onSaveConsultantForm = this.onSaveConsultantForm.bind(this)
   }
 
   onValueChange (fieldName) {
     return (event) => {
-      this.setState({ [fieldName]: event.target.value })
+      const consultant = Object.assign(
+        this.state.consultant,
+        { [fieldName]: event.target.value }
+      )
+      this.setState({ consultant })
     }
   }
 
   onSaveConsultantForm () {
-    const { actions, workspaceId } = this.props
+    const { workspaceId, dispatch } = this.props
     const data = {
       ...this.state,
       workspaceId
     }
-    actions.inviteUser(data)
+
+    // Reset form errors on submit.
+    this.setState({ error: null })
+
+    request('user:invite', data)
+    .then(() => {
+      console.log('INVITE SUCCESS: ROUTE SOMEWHERE!')
+      dispatch(settingsActions.routeTo('/consultants'))
+    })
+    .catch((error) => {
+      if (error.info) {
+        console.log('INVITE FAILED: SHOW ERROR MESSAGE, error=', error.info)
+      }
+    })
   }
 
   render () {
@@ -91,9 +113,9 @@ class ConsultantForm extends Component {
         </div>
 
         <div className='pl-form__footer'>
-          <button onClick={() => this.onSaveConsultantForm()}>
+          <SpinnerButton onClick={this.onSaveConsultantForm}>
             Create
-          </button>
+          </SpinnerButton>
         </div>
       </section>
     )
@@ -113,18 +135,6 @@ function mapStateToProps (state) {
   }
 }
 
-function mapDispatchToProps (dispatch) {
-  return {
-    actions: bindActionCreators({
-      ...settingsActions,
-      ...userActions
-    }, dispatch)
-  }
-}
-
-const ConnectedConsultantForm = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ConsultantForm)
+const ConnectedConsultantForm = connect(mapStateToProps, null)(ConsultantForm)
 
 export default ConnectedConsultantForm

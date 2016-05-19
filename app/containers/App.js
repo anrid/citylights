@@ -11,6 +11,7 @@ import { syncHistoryWithStore } from 'react-router-redux'
 
 import * as apiClient from '../lib/apiClient'
 import * as settingsActions from '../actions/settingsActions'
+import { receiveBackendEvent } from '../actions/backendActions'
 
 // Check app config.
 if (!window.Config) {
@@ -26,10 +27,18 @@ settingsActions.restoreState(store)
 const history = syncHistoryWithStore(hashHistory, store)
 
 // Connect our store to the API client.
-apiClient.setStore(store)
+apiClient.addEventListener((event) => {
+  store.dispatch(receiveBackendEvent(event))
+})
+
+// Fetch identity from store, if we have one.
+const identity = store.getState().settings.identity
 
 // Connect to our backend.
-apiClient.connect({ url: window.Config.API_URL })
+apiClient.connect({
+  url: window.Config.API_URL,
+  accessToken: identity && identity.accessToken
+})
 
 // All our pages.
 import Login from '../containers/Login'

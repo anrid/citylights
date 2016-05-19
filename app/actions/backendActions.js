@@ -3,44 +3,62 @@ import * as userActions from './userActions'
 import * as settingsActions from './settingsActions'
 import * as workspaceActions from './workspaceActions'
 
-export function receiveBackendEvent (store, event) {
-  console.log('Received backend event, payload=', event)
-  switch (event.topic) {
-    case 'connected':
-      return store.dispatch(settingsActions.setConnectedToServer(true))
+import { request } from '../lib/apiClient'
 
-    case 'disconnected':
-      return store.dispatch(settingsActions.setConnectedToServer(false))
+export function publicApiRequest (topic, payload) {
+  return apiRequest(topic, payload, { requireAuth: false })
+}
 
-    case 'echo':
-      return store.dispatch(settingsActions.increaseEchoCounter())
+export function apiRequest (topic, payload, opts = { }) {
+  return (dispatch, getState) => {
+    dispatch(settingsActions.setRequestInProgress(true))
+    request(topic, payload, opts)
+    .finally(() => {
+      dispatch(settingsActions.setRequestInProgress(false))
+    })
+  }
+}
 
-    case 'error':
-      return store.dispatch(settingsActions.showServerError(event.payload))
+export function receiveBackendEvent (event) {
+  return (dispatch, getState) => {
+    console.log('Received backend event, payload=', event)
+    switch (event.topic) {
+      case 'connected':
+        return dispatch(settingsActions.setConnectedToServer(true))
 
-    case 'app:starter':
-      return store.dispatch(onAppStarter(event.payload))
+      case 'disconnected':
+        return dispatch(settingsActions.setConnectedToServer(false))
 
-    case 'workspace:create':
-      return store.dispatch(onWorkspaceCreate(event.payload))
+      case 'echo':
+        return dispatch(settingsActions.increaseEchoCounter())
 
-    case 'workspace:update':
-      return store.dispatch(workspaceActions.receiveWorkspace(event.payload.workspace))
+      case 'error':
+        return dispatch(settingsActions.showServerError(event.payload))
 
-    case 'auth:valid':
-    case 'auth:successful':
-      return store.dispatch(onAuthSuccessful(event.payload))
+      case 'app:starter':
+        return dispatch(onAppStarter(event.payload))
 
-    case 'auth:failed':
-      return store.dispatch(settingsActions.clearIdentity())
+      case 'workspace:create':
+        return dispatch(onWorkspaceCreate(event.payload))
 
-    case 'user:invite:successful':
-      store.dispatch(userActions.receiveUser(event.payload.user))
-      store.dispatch(workspaceActions.receiveWorkspace(event.payload.workspace))
-      return
+      case 'workspace:update':
+        return dispatch(workspaceActions.receiveWorkspace(event.payload.workspace))
 
-    default:
-      console.log('Unknown event=', event)
+      case 'auth:valid':
+      case 'auth:successful':
+        return dispatch(onAuthSuccessful(event.payload))
+
+      case 'auth:failed':
+        return dispatch(settingsActions.clearIdentity())
+
+      case 'user:invite:successful':
+        dispatch(userActions.receiveUser(event.payload.user))
+        dispatch(workspaceActions.receiveWorkspace(event.payload.workspace))
+        return
+
+      default:
+        console.log('Unknown event=', event)
+    }
   }
 }
 

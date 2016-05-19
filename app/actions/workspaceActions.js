@@ -1,13 +1,13 @@
 'use strict'
 
 import * as settingsActions from './settingsActions'
+import { apiRequest } from './backendActions'
 import * as types from './actionTypes'
-import { send, request } from '../lib/apiClient'
 
 export function createWorkspace (name) {
   return (dispatch) => {
     dispatch(settingsActions.showServerError(null))
-    request('workspace:create', { name })
+    dispatch(apiRequest('workspace:create', { name }))
   }
 }
 
@@ -19,7 +19,7 @@ export function updateWorkspace (updates) {
     Object.keys(updates).forEach((key) => {
       const value = updates[key]
       if (typeof value !== 'undefined') {
-        send('workspace:update', { workspaceId, update: { [key]: value } })
+        dispatch(apiRequest('workspace:update', { workspaceId, update: { [key]: value } }))
       }
     })
   }

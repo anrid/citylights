@@ -26,9 +26,55 @@ function handleClientMessage (topic, payload, userId) {
   })
 }
 
+function getErrorHandler (message, socket) {
+  return (error) => {
+    // Send back some error message that makes sense.
+    const response = {
+      requestId: message.requestId
+    }
+    // Handle all Boom errors.
+    if (error.isBoom) {
+      response.error = error.output.payload
+      response.code = error.output.statusCode
+    // Handle other shiz..
+    } else {
+      response.error = error.toString()
+    }
+    console.error('Socket API error:', error)
+    console.error('Stack:', error.stack)
+    console.error('Caused by message:', message)
+
+    socket.emit('server:error', response)
+  }
+}
+
+function authenticateSocket (socket) {
+  return (response) => {
+    // Authenticate socket connection for this user.
+    socket.userId = response.payload.userId
+    socket.email = response.payload.email
+    console.log(`API: authenticated socket for ${socket.userId} (${socket.email}).`)
+    socket.emit('server:auth', response)
+  }
+}
+
 function setupSocketHandlers (socket) {
   console.log('Socket connected:', socket.id)
 
+  // Handle auth events separately !
+  socket.on('client:auth', (message) => {
+    return handleClientMessage('auth', message)
+    .then(authenticateSocket(socket))
+    .catch(getErrorHandler(message, socket))
+  })
+
+  socket.on('client:auth:token', (message) => {
+    return handleClientMessage('auth:token', message)
+    .then(authenticateSocket(socket))
+    .catch(getErrorHandler(message, socket))
+  })
+
+  // Handle API calls.
   socket.on('client:message', (message, ack) => {
     return P.try(() => {
       Hoek.assert(message.topic, 'missing `topic` prop')
@@ -39,48 +85,24 @@ function setupSocketHandlers (socket) {
       const id = socket.userId || socket.id
       console.log('API: client message, topic=', message.topic, id, Moment().format())
 
-      // Ack incoming message.
-      ack({
-        topic: message.topic + ':ack',
-        requestId: message.requestId || 'n/a'
-      })
+      if (ack) {
+        // Ack incoming message.
+        ack({
+          topic: message.topic + ':ack',
+          requestId: message.requestId || 'n/a'
+        })
+      }
 
       // Handle incoming message.
       // NOTE: Adds userId as final argument if client is authenticated.
       return handleClientMessage(message.topic, message.payload, socket.userId)
     })
     .then((response) => {
-      // Handle certain response topics.
-      if (response.topic === 'auth:successful') {
-        // Authenticate socket connection for this user.
-        socket.userId = response.payload.userId
-        socket.email = response.payload.email
-        console.log(`API: authenticated socket for ${socket.userId} (${socket.email}).`)
-      }
-
       // Send response.
       response.requestId = message.requestId
       socket.emit('server:message', response)
     })
-    .catch((error) => {
-      // Send back some error message that makes sense.
-      const response = {
-        requestId: message.requestId
-      }
-      // Handle all Boom errors.
-      if (error.isBoom) {
-        response.error = error.output.payload
-        response.code = error.output.statusCode
-      // Handle other shiz.
-      } else {
-        response.error = error.toString()
-      }
-      console.error('Socket API error:', error)
-      console.error('Stack:', error.stack)
-      console.error('Caused by message:', message)
-
-      socket.emit('server:error', response)
-    })
+    .catch(getErrorHandler(message, socket))
   })
 }
 
