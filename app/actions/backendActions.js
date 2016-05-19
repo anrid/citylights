@@ -65,6 +65,8 @@ export function receiveBackendEvent (event) {
 function onAppStarter (payload) {
   return (dispatch, getState) => {
     dispatch(userActions.receiveUser(payload.user))
+    dispatch(userActions.receiveUserList(payload.userList))
+
     dispatch(workspaceActions.receiveWorkspaceList(payload.workspaceList))
     dispatch(workspaceActions.receiveWorkspace(payload.workspace))
 

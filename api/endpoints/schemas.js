@@ -11,6 +11,10 @@ function validateOrThrow (data, schema) {
   if (result.error) {
     const e = Boom.badRequest('Validation error')
     e.output.payload.message = result.error.details.map((x) => x.message).join(', ')
+    e.output.payload.details = result.error.details.reduce((acc, x) => {
+      acc[x.path] = x.message
+      return acc
+    }, { })
     throw e
   }
   return result.value

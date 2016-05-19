@@ -20,7 +20,7 @@ class Consultants extends Component {
     return (
       <BasicLayout className='pl-consultants'>
         {route === '/consultants/add' && <ConsultantForm create />}
-        {route === '/consultants' && <ConsultantList {...this.props} consultants={[]} />}
+        {route === '/consultants' && <ConsultantList {...this.props} />}
       </BasicLayout>
     )
   }
@@ -28,9 +28,12 @@ class Consultants extends Component {
 
 function mapStateToProps (state) {
   // console.log('Consultant state=', state)
+  const allUsers = state.users.order.map((x) => (
+    state.users.data[x]
+  ))
+
   return {
-    // TODO: Load workspace activity here.
-    settings: state.settings,
+    consultants: allUsers,
     route: getRoute(state.routing)
   }
 }

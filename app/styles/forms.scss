@@ -51,6 +51,15 @@
     }
   }
 
+  &__row--error {
+    @extend .pl-form__row;
+    .pl-form__input {
+      input {
+        border-color: $c-red400;
+      }
+    }
+  }
+
   &__section-label {
     flex: none;
     min-width: 175px;
@@ -77,6 +86,10 @@
     color: $c-gray400;
     max-width: 250px;
     margin-bottom: 3px;
+  }
+  &__error-text {
+    @extend .pl-form__help-text;
+    color: $c-red500;
   }
 
   &__input {

@@ -61,7 +61,9 @@ export default class ConsultantList extends Component {
           />
         </div>
         <div className='pl-box__content'>
-          {content}
+          <div className='pl-consultant-list__rows'>
+            {content}
+          </div>
         </div>
       </section>
     )
@@ -72,7 +74,15 @@ const ConsultantRow = (props) => {
   return (
     <div className='pl-consultant-list__row'>
       <div className='pl-consultant-list__row-label' />
-      <div className='pl-consultant-list__row-text'>{props.text}</div>
+      <div className='pl-consultant-list__row-avatar' />
+      <div className='pl-consultant-list__row-info'>
+        <div className='pl-consultant-list__row-info__name'>
+          Jane Doe
+        </div>
+        <div className='pl-consultant-list__row-info__personal'>
+          {props.email}
+        </div>
+      </div>
     </div>
   )
 }

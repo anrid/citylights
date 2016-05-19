@@ -26,6 +26,21 @@ export default function users (state = initialState, action = {}) {
       n.data[user._id] = user
       return n
 
+    case types.RECEIVE_USER_LIST:
+      const { userList } = action.payload
+      n = { ...state }
+
+      // Replace all local state.
+      n.order = userList.map((x) => x._id)
+      n.order = [ ...new Set(n.order) ]
+      n.order.sort()
+
+      n.data = userList.reduce((acc, x) => {
+        acc[x._id] = x
+        return acc
+      }, { })
+      return n
+
     default:
       return state
   }

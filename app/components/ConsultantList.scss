@@ -2,13 +2,18 @@
 @import '../styles/colors';
 
 .pl-consultant-list {
+  &__rows {
+    width: 100%;
+  }
+
   &__row {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     border-radius: 3px;
-    background-color: transparent;
-    min-height: 29px;
+    background-color: rgba(255, 255, 255, 0.9);
+    width: 100%;
+    min-height: 50px;
     // width: auto;
     cursor: pointer;
     & + & {
@@ -18,21 +23,42 @@
 
   &__row-label {
     align-self: stretch;
-    background-color: $c-teal500;
+    background-color: $c-green500;
     width: 5px;
     border-radius: 3px 0 0 3px;
   }
 
-  &__row-text {
+  &__row-avatar {
     flex: none;
-    padding: 3px 16px 3px 12px;
-    font-size: 1rem;
-    color: $c-gray700;
-    font-weight: 400;
-    border-radius: 3px;
-    background-color: white;
-    em {
-      font-weight: 600;
+    width: 40px;
+    height: 40px;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url("https://c2.staticflickr.com/8/7218/7402376150_6b508dff90_t.jpg");
+    border-radius: 100px;
+    margin: 0 5px;
+  }
+
+  &__row-info {
+    flex: none;
+    align-self: stretch;
+    border-radius: 0 3px 3px 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 5px;
+
+    &__name {
+      font-size: 1rem;
+      color: $c-gray700;
+      font-weight: 400;
+      line-height: 1.1rem;
+    }
+    &__personal {
+      font-size: 0.8rem;
+      color: $c-gray400;
     }
   }
 }

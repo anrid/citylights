@@ -24,6 +24,21 @@ function getByEmail (email) {
   })
 }
 
+function getByWorkspaceId (workspaceId) {
+  return P.try(() => {
+    T.String(workspaceId)
+    return WorkspaceMembers.findOne({ workspaceId })
+    .then((members) => {
+      const all = [
+        members.ownerId,
+        ...members.members,
+        ...members.admins
+      ]
+      return User.find({ _id: { $in: all } }).exec()
+    })
+  })
+}
+
 // @returns user
 const login = P.coroutine(function * (email, password) {
   T.String(email)
@@ -170,6 +185,7 @@ module.exports = {
   logout,
   getById,
   getByEmail,
+  getByWorkspaceId,
   addUserToWorkspace,
   setLastWorkspace,
   isValid

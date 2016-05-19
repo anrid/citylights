@@ -36,8 +36,12 @@ const getStarter = P.coroutine(function * (workspaceId, userId) {
     workspace = yield AccessService.ensureHasWorkspaceAccess(userId, currentWorkspaceId)
   }
 
+  // Fetch all members of the current workspace.
+  const userList = yield UserService.getByWorkspaceId(currentWorkspaceId)
+
   return {
     user,
+    userList,
     workspace,
     workspaceList
   }
