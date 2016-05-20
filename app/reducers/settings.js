@@ -17,6 +17,10 @@ const initialState = {
     workspaceId: null,
     activeTheme: 'BG4' // Default theme is BG4, i.e. “Reading Comics”.
   },
+  search: {
+    consultants: null,
+    clients: null
+  },
   backgrounds: {
     BG1: { _id: 'BG1', title: 'Tokyo Tower', url: 'https://c2.staticflickr.com/8/7332/13907706121_b1606f09b2_o.jpg' },
     BG2: { _id: 'BG2', title: 'Train Tracks', url: 'https://c2.staticflickr.com/8/7296/8723330484_f624b5940b_o.jpg' },

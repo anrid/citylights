@@ -7,6 +7,8 @@ import { connect } from 'react-redux'
 import './Consultants.scss'
 
 import * as settingsActions from '../actions/settingsActions'
+import { filteredConsultantsSelector } from '../selectors/users'
+
 import { getRoute } from '../selectors/routing'
 
 import BasicLayout from './BasicLayout'
@@ -27,12 +29,9 @@ class Consultants extends Component {
 }
 
 function mapStateToProps (state) {
-  const allUsers = state.users.order.map((x) => {
-    return state.users.data[x]
-  })
-  // console.log('Consultant allUsers=', allUsers)
+  // console.log('Consultants, state=', state)
   return {
-    consultants: allUsers,
+    consultants: filteredConsultantsSelector(state),
     route: getRoute(state.routing)
   }
 }

@@ -1,6 +1,7 @@
 'use strict'
 
 import React, { Component } from 'react'
+import debounce from 'lodash.debounce'
 
 import './ConsultantList.scss'
 
@@ -10,10 +11,23 @@ export default class ConsultantList extends Component {
   constructor (props) {
     super(props)
     this.onSelect = this.onSelect.bind(this)
+    this.onSearch = this.onSearch.bind(this)
+    this._doSearch = debounce(this._doSearch.bind(this), 350)
   }
 
   onSelect (command) {
-    console.log('TODO: Implement this:', command)
+    console.log('TODO: Show consultant, command=', command)
+  }
+
+  onSearch (e) {
+    const query = e.target.value
+    this._doSearch(query)
+  }
+
+  _doSearch (query) {
+    const { actions } = this.props
+    console.log('Searching consultants, query=', query)
+    actions.setSearchQuery({ consultants: query })
   }
 
   renderConsultantRows () {
@@ -29,7 +43,7 @@ export default class ConsultantList extends Component {
         <i className='fa fa-fw fa-search' />
         <input type='text'
           placeholder='Search for a Consultant'
-          onChange={() => console.log('TODO: implement this')}
+          onChange={this.onSearch}
         />
       </div>
     )
@@ -80,9 +94,13 @@ export default class ConsultantList extends Component {
         </div>
       )
     } else {
-      content = consultants.map((x, i) => (
-        <ConsultantRow key={x._id} {...x} />
-      ))
+      content = (
+        <div className='pl-consultant-list__rows'>
+          {consultants.map((x, i) => (
+            <ConsultantRow key={x._id} {...x} />
+          ))}
+        </div>
+      )
     }
 
     return (
@@ -96,13 +114,15 @@ export default class ConsultantList extends Component {
           {this.renderDropdown()}
         </div>
         <div className='pl-box__content'>
-          <div className='pl-consultant-list__rows'>
-            {content}
-          </div>
+          {content}
         </div>
       </section>
     )
   }
+}
+
+ConsultantList.propTypes = {
+  actions: React.PropTypes.object.isRequired
 }
 
 const ConsultantRow = (props) => {

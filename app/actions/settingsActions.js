@@ -175,6 +175,18 @@ export function setRequestInProgress (status) {
   }
 }
 
+export function setSearchQuery (obj) {
+  return (dispatch, getState) => {
+    const search = Object.assign(
+      { }, getState().settings.search, obj
+    )
+    dispatch({
+      type: types.SET_SETTING,
+      payload: { search }
+    })
+  }
+}
+
 export function showServerError (error) {
   return {
     type: types.SET_SETTING,

@@ -35,6 +35,8 @@ const config = {
       'react-motion',
       'moment',
       'bluebird',
+      'reselect',
+      'metaphone',
       Path.join(PATHS.app, 'styles', 'medium-font.css')
     ]
   },
