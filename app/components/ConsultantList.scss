@@ -6,6 +6,17 @@
     width: 100%;
   }
 
+  &__header-panel {
+    flex: 5 0 auto;
+    margin-left: 20px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    button {
+      margin-left: 5px;
+    }
+  }
+
   &__row {
     display: flex;
     justify-content: flex-start;

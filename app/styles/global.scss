@@ -38,10 +38,11 @@ button {
   align-items: center;
   line-height: 1;
   height: 36px;
-  padding: 0 10px;
+  padding: 0 14px;
   cursor: pointer;
   border-radius: 0.25rem;
   border: 0;
+  border-top: 2px solid transparent;
   border-bottom: 2px solid $c-teal400;
   text-decoration: none;
   font-size: 1.1rem;

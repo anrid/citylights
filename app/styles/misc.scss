@@ -6,6 +6,27 @@
   height: 100%;
 }
 
+.pl-form-button {
+  height: 31px;
+  font-size: 0.9rem;
+  border-radius: 2px;
+  i.fa {
+    font-size: 0.9rem;
+    padding-right: 2px;
+  }
+}
+
+.pl-cancel-button {
+  color: white;
+  background-color: $c-gray200;
+  border-bottom: 2px solid $c-gray200;
+  text-shadow: none;
+  &:hover {
+    background-color: $c-gray300;
+    border-bottom: 2px solid $c-gray400;
+  }
+}
+
 .pl-input-field {
   width: 100%;
   border-radius: 3px;

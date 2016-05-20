@@ -18,6 +18,7 @@ class ConsultantForm extends Component {
     }
     this.onValueChange = this.onValueChange.bind(this)
     this.onSaveConsultantForm = this.onSaveConsultantForm.bind(this)
+    this.onReturn = this.onReturn.bind(this)
   }
 
   onValueChange (fieldName) {
@@ -31,7 +32,7 @@ class ConsultantForm extends Component {
   }
 
   onSaveConsultantForm () {
-    const { workspaceId, dispatch } = this.props
+    const { workspaceId } = this.props
     const data = {
       ...this.state.consultant,
       workspaceId
@@ -41,14 +42,17 @@ class ConsultantForm extends Component {
     // this.setState({ errors: null })
 
     request('user:invite', data)
-    .then(() => {
-      dispatch(settingsActions.routeTo('/consultants'))
-    })
+    .then(this.onReturn)
     .catch((reason) => {
       if (reason.info && reason.info.error) {
         this.setState({ errors: reason.info.error.details })
       }
     })
+  }
+
+  onReturn () {
+    const { dispatch } = this.props
+    dispatch(settingsActions.routeTo('/consultants'))
   }
 
   hasError (name) {
@@ -134,6 +138,12 @@ class ConsultantForm extends Component {
         </div>
 
         <div className='pl-form__footer'>
+          <button
+            className='pl-cancel-button'
+            onClick={this.onReturn}
+          >
+            Back
+          </button>
           <SpinnerButton onClick={this.onSaveConsultantForm}>
             Create
           </SpinnerButton>
