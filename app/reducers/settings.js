@@ -29,9 +29,7 @@ const initialState = {
     BG5: { _id: 'BG5', title: 'Starbucks At Night', url: 'https://c1.staticflickr.com/9/8626/16092073333_59fe6924b2_h.jpg' },
     BG6: { _id: 'BG6', title: 'Cinnamon Rolls', url: 'https://c2.staticflickr.com/8/7022/6543926217_6fe23834d9_b.jpg' },
     BG7: { _id: 'BG7', title: 'Stockholm Pagoda', url: 'https://c2.staticflickr.com/8/7378/14164486735_d878d82af6_h.jpg' },
-    BG8: { _id: 'BG8', title: 'Flat — Light', url: null, color: '#f3f4f5' },
-    BG9: { _id: 'BG9', title: 'Flat — Gray', url: null, color: '#e6e8ec' },
-    BG10: { _id: 'BG10', title: 'Flat — Blue', url: null, color: '#1b70b9' }
+    BG8: { _id: 'BG8', title: 'Flat — Blue', url: null, color: '#1b70b9' }
   }
 }
 

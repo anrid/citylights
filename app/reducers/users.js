@@ -20,6 +20,17 @@ const initialState = {
   }
 }
 
+function fillInMissingUserInfo (user) {
+  // Set a temp avatar if user doesn’t have one yet !
+  if (!user.photo) {
+    user.photo = getRandomAvatar(user.created)
+  }
+  if (!user.firstName && !user.lastName) {
+    user.firstName = getRandomFirstName(user.created)
+    user.lastName = getRandomLastName(user.email)
+  }
+}
+
 export default function users (state = initialState, action = {}) {
   let n
   switch (action.type) {
@@ -28,6 +39,10 @@ export default function users (state = initialState, action = {}) {
       n = { ...state }
       n.order = n.order.concat(user._id)
       n.order = [ ...new Set(n.order) ] // Ensure it’s unique.
+
+      // TODO: Remove this later !
+      fillInMissingUserInfo(user)
+
       n.data[user._id] = user
       return n
 
@@ -42,14 +57,7 @@ export default function users (state = initialState, action = {}) {
 
       n.data = userList.reduce((acc, x) => {
         // TODO: Remove this later !
-        // Set a temp avatar if user doesn’t have one yet !
-        if (!x.photo) {
-          x.photo = getRandomAvatar(x.created)
-        }
-        if (!x.firstName && !x.lastName) {
-          x.firstName = getRandomFirstName(x.created)
-          x.lastName = getRandomLastName(x.email)
-        }
+        fillInMissingUserInfo(x)
 
         acc[x._id] = x
         return acc

@@ -26,18 +26,20 @@ lab.experiment('User Endpoints', () => {
     })
   })
 
-  lab.test('user1 invites friend1', (done) => {
-    UserEndpoints.invite(
-      { email: 'friend1@test.test', workspaceId },
-      { userId: user1.userId }
-    )
+  lab.test('user1 invites friend1', () => {
+    return UserEndpoints.invite({
+      email: 'friend1@test.test',
+      firstName: 'Friendly',
+      lastName: 'Buddy',
+      workspaceId
+    },
+    { userId: user1.userId })
     .then((res) => {
       // console.log('res=', res)
       Code.expect(res.topic).to.equal('user:invite:successful')
       Code.expect(res.payload.user.email).to.equal('friend1@test.test')
       Code.expect(res.payload.workspace._id.toString()).to.equal(workspaceId)
       Code.expect(res.payload.workspace.membersCount).to.equal(2)
-      done()
     })
   })
 })

@@ -16,6 +16,7 @@ const invite = P.coroutine(function * (payload, context) {
   const workspace = result.workspace
 
   console.log(`TODO: send invitation email to ${user.email}`)
+  // console.log('result=', result)
 
   const response = {
     user,
@@ -39,7 +40,6 @@ const invite = P.coroutine(function * (payload, context) {
 const inviteFormSchema = Joi.object().keys({
   email: Joi.string().email().required().description('User email address.'),
   workspaceId: Joi.string().min(20).required().description('Invite user to this workspace id.'),
-
   firstName: Joi.string().min(1).description('User first name.'),
   lastName: Joi.string().min(1).description('User last name.'),
   phoneWork: Joi.string().min(6).description('User work contact number.')

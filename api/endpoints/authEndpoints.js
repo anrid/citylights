@@ -7,101 +7,99 @@ const Jwt = require('../lib/jwt')
 const UserService = require('../services/userService')
 const StarterService = require('../services/starterService')
 const WorkspaceService = require('../services/workspaceService')
+const AccessService = require('../services/accessService')
 const Schemas = require('./schemas')
 
-function checkAccessToken (payload) {
-  return P.try(() => {
-    const valid = Schemas.validateOrThrow(payload, checkAccessTokenSchema)
-    const decoded = Jwt.verifyToken(valid.accessToken)
-    const userId = decoded.userId
-    return UserService.getById(userId)
-    .then((user) => {
-      if (!user) {
-        return {
-          topic: 'auth:failed',
-          payload: {
-            error: 'user account not found'
-          }
-        }
-      }
+const checkAccessToken = P.coroutine(function * (payload) {
+  const valid = Schemas.validateOrThrow(payload, checkAccessTokenSchema)
 
-      return {
-        topic: 'auth:successful',
-        payload: {
-          userId,
-          email: user.email,
-          accessToken: valid.accessToken
-        }
-      }
-    })
-  })
-}
+  const decoded = Jwt.verifyToken(valid.accessToken)
+  const userId = decoded.userId
 
-function login (payload) {
-  return P.try(() => {
-    const valid = Schemas.validateOrThrow(payload, loginFormSchema)
-    return UserService.login(valid.email, valid.password)
-    .then((user) => {
-      const userId = user._id.toString()
-      return {
-        topic: 'auth:successful',
-        payload: {
-          userId,
-          email: user.email,
-          accessToken: Jwt.createToken({ userId })
-        }
-      }
-    })
-  })
-}
+  // Get user or throw if the account has been disabled, deleted, or doesn’t exist !
+  const user = yield AccessService.requireUser(userId)
 
-function signup (payload) {
-  return P.try(() => {
-    const valid = Schemas.validateOrThrow(payload, signupFormSimpleSchema)
-    return UserService.signup(valid)
-    .then((user) => {
-      const userId = user._id.toString()
-      return WorkspaceService.create(valid.companyName, userId)
-      .then((workspace) => {
-        return {
-          topic: 'auth:successful',
-          payload: {
-            userId,
-            workspaceId: workspace._id.toString(),
-            email: user.email,
-            accessToken: Jwt.createToken({ userId })
-          }
-        }
-      })
-    })
-  })
-}
+  return {
+    topic: 'auth:token:successful',
+    payload: {
+      identity: { userId: user._id.toString() },
+      info: { email: user.email }
+    }
+  }
+})
 
-function logout (payload) {
-  return P.try(() => {
-    const valid = Schemas.validateOrThrow(payload, logoutSchema)
-    return UserService.logout(valid.accessToken)
-    .then((user) => {
-      return {
-        topic: 'logout:successful',
-        payload: { ok: 1 }
-      }
-    })
-  })
-}
+const login = P.coroutine(function * (payload) {
+  const valid = Schemas.validateOrThrow(payload, loginFormSchema)
 
-function appStarter (payload, context) {
-  return P.try(() => {
-    const valid = Schemas.validateOrThrow(payload, appStarterSchema)
-    return StarterService.getStarter(valid.workspaceId, context.userId)
-    .then((payload) => {
-      return {
-        topic: 'app:starter',
-        payload
+  const user = yield UserService.login(valid.email, valid.password)
+  const userId = user._id.toString()
+
+  let workspaceId = user.lastWorkspaceId
+  if (!workspaceId) {
+    let workspaceList = yield WorkspaceService.getList(userId)
+    // Make sure we’ve got at least one workspace.
+    if (!workspaceList.length) {
+      // No workspaces found for user, create a new one on-the-fly.
+      const workspace = yield WorkspaceService.create('My Workspace', userId)
+      workspaceList = [ workspace ]
+    }
+    workspaceId = workspaceList[0]._id.toString()
+  }
+
+  return {
+    topic: 'auth:successful',
+    payload: {
+      identity: {
+        userId,
+        accessToken: Jwt.createToken({ userId })
+      },
+      info: {
+        email: user.email,
+        workspaceId
       }
-    })
-  })
-}
+    }
+  }
+})
+
+const signup = P.coroutine(function * (payload) {
+  const valid = Schemas.validateOrThrow(payload, signupFormSimpleSchema)
+
+  const user = yield UserService.signup(valid)
+  const userId = user._id.toString()
+  const workspace = yield WorkspaceService.create(valid.companyName, userId)
+
+  return {
+    topic: 'auth:successful',
+    payload: {
+      identity: {
+        userId,
+        accessToken: Jwt.createToken({ userId })
+      },
+      info: {
+        email: user.email,
+        workspaceId: workspace._id.toString()
+      }
+    }
+  }
+})
+
+const logout = P.coroutine(function * (payload) {
+  const valid = Schemas.validateOrThrow(payload, logoutSchema)
+  yield UserService.logout(valid.accessToken)
+  return {
+    topic: 'logout:successful',
+    payload: { ok: 1 }
+  }
+})
+
+const appStarter = P.coroutine(function * (payload, context) {
+  const valid = Schemas.validateOrThrow(payload, appStarterSchema)
+  const starter = yield StarterService.getStarter(valid.workspaceId, context.userId)
+  return {
+    topic: 'app:starter',
+    payload: starter
+  }
+})
 
 const checkAccessTokenSchema = Joi.object().keys({
   accessToken: Joi.string().min(30).required().description('User access token.')
@@ -114,7 +112,8 @@ const loginFormSchema = Joi.object().keys({
 
 const signupFormSimpleSchema = Joi.object().keys({
   companyName: Joi.string().min(3).required().description('The name of the company this user represents.'),
-  email: Joi.string().email().required().description('User email address.')
+  email: Joi.string().email().required().description('User email address.'),
+  password: Joi.string().min(6).description('User password (optional).')
 })
 
 const logoutSchema = Joi.object().keys({
@@ -122,7 +121,7 @@ const logoutSchema = Joi.object().keys({
 })
 
 const appStarterSchema = Joi.object().keys({
-  workspaceId: Joi.string().min(20).optional().description('User’s current workspace id.')
+  workspaceId: Joi.string().min(20).required().description('Current workspace id.')
 })
 
 module.exports = {

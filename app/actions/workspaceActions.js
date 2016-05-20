@@ -13,8 +13,7 @@ export function createWorkspace (name) {
 
 export function updateWorkspace (updates) {
   return (dispatch, getState) => {
-    const { workspaceId } = getState().settings.saved
-
+    const { workspaceId } = getState().settings
     // Update every field separately.
     Object.keys(updates).forEach((key) => {
       const value = updates[key]
@@ -26,9 +25,17 @@ export function updateWorkspace (updates) {
 }
 
 export function receiveWorkspace (workspace) {
-  return {
-    type: types.RECEIVE_WORKSPACE,
-    payload: { workspace }
+  return (dispatch) => {
+    // NOTE: Receiving a single workspace makes it the active workspace.
+    // The `app:starter` payload must contain the currently active workspace as a single entry.
+    dispatch({
+      type: types.SET_SETTING,
+      payload: { workspaceId: workspace._id }
+    })
+    dispatch({
+      type: types.RECEIVE_WORKSPACE,
+      payload: { workspace }
+    })
   }
 }
 

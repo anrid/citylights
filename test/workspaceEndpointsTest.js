@@ -24,8 +24,8 @@ lab.experiment('Workspace Endpoints', () => {
     })
   })
 
-  lab.test('user1 creates a new workspace', (done) => {
-    Ws.create({ name: 'test.test' }, { userId: user1.userId })
+  lab.test('user1 creates a new workspace', () => {
+    return Ws.create({ name: 'test.test' }, { userId: user1.userId })
     .then((res) => {
       // console.log('result:', res)
       Code.expect(res.topic).to.equal('workspace:create')
@@ -33,21 +33,19 @@ lab.experiment('Workspace Endpoints', () => {
       Code.expect(res.payload.workspace.url.length > 4).to.be.true()
       Code.expect(res.payload.workspace.membersCount).to.equal(1)
       workspace1 = res.payload.workspace
-      done()
     })
   })
 
-  lab.test('user1 updates the workspace name', (done) => {
+  lab.test('user1 updates the workspace name', () => {
     const payload = {
       workspaceId: workspace1._id.toString(),
       update: { name: 'test.test.update' }
     }
-    Ws.update(payload, { userId: user1.userId })
+    return Ws.update(payload, { userId: user1.userId })
     .then((res) => {
       // console.log('result:', res)
       Code.expect(res.topic).to.equal('workspace:update')
       Code.expect(res.payload.workspace.name).to.equal(payload.update.name)
-      done()
     })
   })
 })

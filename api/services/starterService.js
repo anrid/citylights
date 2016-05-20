@@ -8,36 +8,20 @@ const WorkspaceService = require('./workspaceService')
 const AccessService = require('./accessService')
 
 const getStarter = P.coroutine(function * (workspaceId, userId) {
+  T.String(workspaceId)
   T.String(userId)
-  const user = yield UserService.getById(userId)
-  UserService.isValid(user)
 
+  // Ensure all is well in the world.
+  const user = yield AccessService.requireUser(userId)
+
+  // Fetch the workspace, or throw if it’s not accessible for some reason.
+  let workspace = yield AccessService.requireWorkspace(workspaceId, userId)
+
+  // Fetch a list of available, accessible workspaces.
   let workspaceList = yield WorkspaceService.getList(userId)
-  let workspace = null
-  let currentWorkspaceId = workspaceId
-
-  // Make sure we’ve got at least one workspace.
-  if (!workspaceList.length) {
-    // No workspaces found for user, create a new one on-the-fly.
-    workspace = yield WorkspaceService.create('My Workspace', userId)
-    workspaceList = [ WorkspaceService.getWorkspaceInfo(workspace) ]
-    currentWorkspaceId = workspace._id.toString()
-  }
-
-  if (!currentWorkspaceId) {
-    // Pick the first workspace from our list if we weren’t supplied
-    // with an id.
-    currentWorkspaceId = workspaceList[0]._id
-  }
-
-  // Fetch the active workspace.
-  if (!workspace) {
-    // Make sure we can access the workspace.
-    workspace = yield AccessService.ensureHasWorkspaceAccess(userId, currentWorkspaceId)
-  }
 
   // Fetch all members of the current workspace.
-  const userList = yield UserService.getByWorkspaceId(currentWorkspaceId)
+  const userList = yield UserService.getByWorkspaceId(workspace._id.toString())
 
   return {
     user,

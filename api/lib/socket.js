@@ -50,10 +50,15 @@ function getErrorHandler (message, socket) {
 
 function authenticateSocket (socket) {
   return (response) => {
+    Hoek.assert(response.payload.identity.userId, 'Auth response missing `identity.userId`')
+    Hoek.assert(response.payload.info.email, 'Auth response missing `info.email`')
+
     // Authenticate socket connection for this user.
-    socket.userId = response.payload.userId
-    socket.email = response.payload.email
+    socket.userId = response.payload.identity.userId
+    socket.email = response.payload.info.email
+
     console.log(`API: authenticated socket for ${socket.userId} (${socket.email}).`)
+
     socket.emit('server:auth', response)
   }
 }
@@ -98,6 +103,12 @@ function setupSocketHandlers (socket) {
       return handleClientMessage(message.topic, message.payload, socket.userId)
     })
     .then((response) => {
+      // NOTE: `auth:successful` will be sent this way on successful signup via
+      // the public socket API.
+      if (response.topic === 'auth:successful') {
+        authenticateSocket(socket)(response)
+      }
+
       // Send response.
       response.requestId = message.requestId
       socket.emit('server:message', response)

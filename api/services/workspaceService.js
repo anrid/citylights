@@ -5,8 +5,8 @@ const T = require('tcomb')
 const Shortid = require('shortid')
 
 const Workspace = require('./workspaceModel')
-const UserService = require('./userService')
 const AccessService = require('./accessService')
+const MemberService = require('./memberService')
 
 function getById (workspaceId) {
   return P.try(() => {
@@ -20,7 +20,7 @@ const update = P.coroutine(function * (workspaceId, update, actorId) {
   T.Object(update)
   T.String(actorId)
 
-  yield AccessService.ensureHasWorkspaceAccess(actorId, workspaceId)
+  yield AccessService.requireWorkspace(workspaceId, actorId)
 
   const workspace = yield Workspace.findOneAndUpdate(
     { _id: workspaceId },
@@ -41,7 +41,7 @@ function create (name, actorId) {
       url
     })
     .then((workspace) => {
-      return UserService.addUserToWorkspace(
+      return MemberService.addUserToWorkspace(
         actorId, workspace._id.toString(), { admin: true }
       )
       .then(() => workspace)

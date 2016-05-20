@@ -17,7 +17,7 @@ const schema = new Schema({
   updated: { type: Date, default: Date.now },
   tags: [String],
   inWorkspaces: [String],
-  lastWorkspace: String,
+  lastWorkspaceId: String,
   isOnboarded: { type: Boolean, default: false },
   profile: { type: Object, default: { } }
 })

@@ -6,11 +6,14 @@ const Hoek = require('hoek')
 
 require('../api/lib/database.js')()
 
-const User = require('../api/services/userModel.js')
+const User = require('../api/services/userModel')
 const UserService = require('../api/services/userService')
 
-const Workspace = require('../api/services/workspaceModel.js')
+const Workspace = require('../api/services/workspaceModel')
 const WorkspaceService = require('../api/services/workspaceService')
+
+const UserPassword = require('../api/services/userPasswordModel')
+const WorkspaceMembers = require('../api/services/workspaceMembersModel')
 
 module.exports = {
   _chain: P.resolve(),
@@ -41,8 +44,10 @@ module.exports = {
 
   reset () {
     const removeAllTestData = P.all([
-      User.remove({ email: /@test\.test$/ }),
-      Workspace.remove({ name: /test\.test/ })
+      User.remove(),
+      Workspace.remove(),
+      WorkspaceMembers.remove(),
+      UserPassword.remove()
     ])
     return this.queue(() => removeAllTestData)
   },

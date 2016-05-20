@@ -4,11 +4,11 @@ const P = require('bluebird')
 const Boom = require('boom')
 const T = require('tcomb')
 
-const Workspace = require('./workspaceModel')
-const WorkspaceMembers = require('./workspaceMembersModel')
+const AccessService = require('./accessService')
+const MemberService = require('./memberService')
+
 const User = require('./userModel')
 const UserPassword = require('./userPasswordModel')
-const AccessService = require('./accessService')
 
 function getById (userId) {
   return P.try(() => {
@@ -27,19 +27,11 @@ function getByEmail (email) {
 function getByWorkspaceId (workspaceId) {
   return P.try(() => {
     T.String(workspaceId)
-    return WorkspaceMembers.findOne({ workspaceId })
-    .then((members) => {
-      const all = [
-        members.ownerId,
-        ...members.members,
-        ...members.admins
-      ]
-      return User.find({ _id: { $in: all } }).exec()
-    })
+    return MemberService.getAllMembers(workspaceId)
+    .then((all) => User.find({ _id: { $in: all } }).exec())
   })
 }
 
-// @returns user
 const login = P.coroutine(function * (email, password) {
   T.String(email)
   T.String(password)
@@ -88,23 +80,25 @@ const invite = P.coroutine(function * (opts, actorId) {
   T.String(opts.workspaceId)
   T.String(actorId)
 
-  yield AccessService.ensureHasWorkspaceAccess(actorId, opts.workspaceId)
+  yield AccessService.requireWorkspace(opts.workspaceId, actorId)
 
   let user = yield User.findOne({ email: opts.email })
+  // Sign-up user on-the-fly if they’re not our system.
   if (!user) {
-    // Create a new user on-the-fly.
     user = yield User.create({
       email: opts.email,
-      'profile.firstName': opts.firstName,
-      'profile.lastName': opts.lastName,
+      firstName: opts.firstName,
+      lastName: opts.lastName,
       'profile.phoneWork': opts.phoneWork
     })
     // Create a temporary password.
     UserPassword.createRandomPassword(user)
   }
 
-  const updatedUser = yield addUserToWorkspace(user._id.toString(), opts.workspaceId)
-  return updatedUser
+  const updatedUserAndWorkspace = yield MemberService.addUserToWorkspace(
+    user._id.toString(), opts.workspaceId
+  )
+  return updatedUserAndWorkspace
 })
 
 function logout (accessToken) {
@@ -114,65 +108,19 @@ function logout (accessToken) {
   })
 }
 
-function addUserToWorkspace (userId, workspaceId, _opts) {
-  return P.try(() => {
-    T.String(userId)
-    T.String(workspaceId)
-    const opts = _opts || { }
-
-    return P.resolve(User.findOneAndUpdate(
-      { _id: userId },
-      { $addToSet: { inWorkspaces: workspaceId } },
-      { new: true }
-    ))
-    .then((user) => {
-      // Add to either members or admins depending on given flag.
-      const memberField = opts.admin ? 'admins' : 'members'
-      return P.resolve(WorkspaceMembers.findOneAndUpdate(
-        { workspaceId },
-        {
-          // Set user as owner if there’s currently no doc for this workspace.
-          $setOnInsert: { ownerId: userId },
-          $addToSet: { [memberField]: userId }
-        },
-        { new: true, upsert: true }
-      ))
-      // Recalculate members stats and update the workspace.
-      .then((workspaceMembers) => {
-        const membersCount = new Set([].concat(
-          workspaceMembers.ownerId,
-          workspaceMembers.admins,
-          workspaceMembers.members
-        )).size
-        return P.resolve(Workspace.findOneAndUpdate(
-          { _id: workspaceId },
-          { $set: { membersCount } },
-          { new: true }
-        ))
-      })
-      .then((workspace) => {
-        return {
-          user,
-          workspace
-        }
-      })
-    })
-  })
-}
-
 function setLastWorkspace (userId, workspaceId) {
   return P.try(() => {
     T.String(userId)
     T.String(workspaceId)
     return P.resolve(User.findOneAndUpdate(
       { _id: userId },
-      { $set: { lastWorkspace: workspaceId } }
+      { $set: { lastWorkspaceId: workspaceId } }
     ))
   })
 }
 
 function isValid (user) {
-  if (user.isEnabled && !user.isDeleted) {
+  if (user && user.isEnabled && !user.isDeleted) {
     return true
   }
   throw Boom.unauthorized('User account is suspended or deleted.')
@@ -186,7 +134,6 @@ module.exports = {
   getById,
   getByEmail,
   getByWorkspaceId,
-  addUserToWorkspace,
   setLastWorkspace,
   isValid
 }

@@ -44,9 +44,11 @@ export function receiveBackendEvent (event) {
       case 'workspace:update':
         return dispatch(workspaceActions.receiveWorkspace(event.payload.workspace))
 
-      case 'auth:valid':
       case 'auth:successful':
         return dispatch(onAuthSuccessful(event.payload))
+
+      case 'auth:token:successful':
+        return dispatch(onAuthTokenSuccessful(event.payload))
 
       case 'auth:failed':
         return dispatch(settingsActions.clearIdentity())
@@ -70,9 +72,6 @@ function onAppStarter (payload) {
     dispatch(workspaceActions.receiveWorkspaceList(payload.workspaceList))
     dispatch(workspaceActions.receiveWorkspace(payload.workspace))
 
-    // Set `settings.saved.workspaceId` to our new workspace.
-    dispatch(settingsActions.saveSettings({ workspaceId: payload.workspace._id }))
-
     // Declare app `loaded` at this point.
     dispatch(settingsActions.setAppLoaded(true))
 
@@ -95,7 +94,6 @@ function onAppStarter (payload) {
 function onWorkspaceCreate (payload) {
   return (dispatch, getState) => {
     dispatch(workspaceActions.receiveWorkspace(payload.workspace))
-    dispatch(settingsActions.saveSettings({ workspaceId: payload.workspace._id }))
     // Switch to the new workspace.
     dispatch(settingsActions.routeTo({ url: '/switch-workspace' }))
   }
@@ -103,13 +101,23 @@ function onWorkspaceCreate (payload) {
 
 function onAuthSuccessful (payload) {
   return (dispatch, getState) => {
-    const settings = { email: payload.email }
-    // NOTE: `payload.workspaceId` will be set if this auth is part of a
-    // successful signup.
-    if (payload.workspaceId) {
-      settings.workspaceId = payload.workspaceId
-    }
+    const settings = { ...payload.info }
     dispatch(settingsActions.saveSettings(settings))
-    dispatch(settingsActions.setIdentity(payload.userId, payload.accessToken))
+    dispatch(settingsActions.setIdentity(payload))
+    // Fetch an app starter for the workspaceId returned from the backend.
+    dispatch(settingsActions.fetchAppStarter(payload.info.workspaceId))
+  }
+}
+
+function onAuthTokenSuccessful (payload) {
+  return (dispatch, getState) => {
+    const { workspaceId } = getState().settings.saved
+    if (!workspaceId) {
+      // No workspaceId stored at this points ? That won’t do.
+      dispatch(settingsActions.clearIdentity())
+      return
+    }
+    // Fetch an app starter for the previously used workspaceId.
+    dispatch(settingsActions.fetchAppStarter(workspaceId))
   }
 }

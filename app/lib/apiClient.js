@@ -61,6 +61,7 @@ export function request (topic, payload, opts = { }) {
 
     // Check if this is a public API call.
     if (opts.requireAuth === false) {
+      console.log('API: Emitting unbuffered public API message:', message)
       // Emit an unbuffered message without waiting for acknowledgement.
       _ws.emit('client:message', message)
       return
@@ -69,16 +70,13 @@ export function request (topic, payload, opts = { }) {
     // Buffer message to be sent later.
     _buffer.add(message)
   })
-  .tap((response) => (
-    console.log('API: Got response: topic=', topic, 'response=', response))
-  )
   .timeout(REQUEST_TIMEOUT)
   .catch((reason) => {
     console.log('API: Request error:', reason)
     throw reason
   })
   .finally(() => {
-    console.log('API: Deleted request id:', requestId)
+    // console.log('API: Deleted request id:', requestId)
     delete requests[requestId]
   })
 }

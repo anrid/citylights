@@ -3,8 +3,8 @@
 import { push, pop } from 'react-router-redux'
 
 import * as types from './actionTypes'
-import { apiRequest, publicApiRequest } from './backendActions'
-import { authenticate } from '../lib/apiClient'
+import { publicApiRequest } from './backendActions'
+import { authenticate, request } from '../lib/apiClient'
 
 import * as Storage from '../lib/storage'
 
@@ -29,14 +29,15 @@ export function restoreState (store) {
     })
   }
 
-  console.log('Restored state:', store.getState())
+  console.log('Restored app state:', store.getState())
 }
 
 export function initApp () {
   return (dispatch, getState) => {
     console.log('Initializing app.')
-    const { identity, saved } = getState().settings
-    if (!identity || !identity.accessToken || !saved.email) {
+    const { identity } = getState().settings
+    const hasValidIdentity = identity && identity.userId && identity.accessToken
+    if (!hasValidIdentity) {
       dispatch(clearIdentity())
       return
     }
@@ -55,43 +56,39 @@ export function saveSettings (settings = { }) {
   }
 }
 
-export function setIdentity (userId, accessToken) {
+export function setIdentity (payload) {
   return (dispatch, getState) => {
-    const identity = { userId, accessToken }
-    // Save for a long time.
-    Storage.setIdentity(identity)
-
-    // Dispatch !
+    // Stay a while... Stay Forever !
+    Storage.setIdentity(payload.identity)
+    // Set our identity here.
     dispatch({
       type: types.SET_IDENTITY,
-      payload: identity
+      payload: payload.identity
     })
-
-    const { saved } = getState().settings
-    dispatch(fetchAppStarter(saved.workspaceId))
   }
 }
 
 export function fetchAppStarter (workspaceId) {
   return (dispatch) => {
     setAppLoaded(false)
-    const payload = { workspaceId }
-    console.log('Fetching app starter:', payload)
-    dispatch(apiRequest('app:starter', payload))
+    console.log('Fetching app starter for workspaceId:', workspaceId)
+    request('app:starter', { workspaceId })
+    .catch((error) => {
+      console.log('Couldn’t fetch app starter! Bailing out with error=', error)
+      dispatch(clearIdentity())
+    })
   }
 }
 
 export function clearIdentity () {
   return (dispatch) => {
-    // Remove from AsyncStorage.
+    // Remove from long-term storage.
     Storage.removeIdentity()
-
-    // Dispatch !
+    // Clear identity until next successful login.
     dispatch({
       type: types.CLEAR_IDENTITY,
       payload: { }
     })
-
     // Go to login page.
     dispatch(routeTo({ url: '/login' }))
   }

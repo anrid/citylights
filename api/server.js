@@ -20,6 +20,7 @@ const Hapi = require('hapi')
 const Path = require('path')
 const Fs = require('fs')
 const Chalk = require('chalk')
+const Moment = require('moment')
 
 const P = require('bluebird')
 P.promisifyAll(Fs)
@@ -160,25 +161,14 @@ function setupRoutes (server) {
     path: '/',
     config: { cors: true },
     handler (request, reply) {
+      console.log('[/]', Moment().format())
+
       // Server the app in production mode !
       if (isProduction) {
         return reply.view('app.html')
       }
       // Take a chill pill otherwise.
       reply(`Server in dev mode.\n\nStay a while, and Listen.`)
-    }
-  })
-
-  server.route({
-    method: 'GET',
-    path: '/assets/{param*}',
-    config: {
-      cors: true
-    },
-    handler: {
-      directory: {
-        path: Path.join(__dirname, '..', 'build')
-      }
     }
   })
 

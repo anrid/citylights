@@ -3,11 +3,19 @@
 import metaphone from 'metaphone'
 import { createSelector } from 'reselect'
 
+function getSwedishMetaphoneValue (value) {
+  let adjusted = value
+  .replace(/[åÅ]/g, 'aa')
+  .replace(/[äÄ]/g, 'ae')
+  .replace(/[öÖ]/g, 'oe')
+  return metaphone(adjusted)
+}
+
 const allUsersSelector = (state) => (
   Object.keys(state.users.data).map((x) => {
     const user = Object.assign({ }, state.users.data[x])
-    user._firstNameMeta = metaphone(user.firstName)
-    user._lastNameMeta = metaphone(user.lastName)
+    user._firstNameMeta = getSwedishMetaphoneValue(user.firstName)
+    user._lastNameMeta = getSwedishMetaphoneValue(user.lastName)
     return user
   })
 )
@@ -27,7 +35,7 @@ export const filteredConsultantsSelector = createSelector(
     const parts = query.trim().split(/[\t\s]+/)
     for (const part of parts) {
       const re = new RegExp('^' + part, 'i')
-      const queryMeta = metaphone(part)
+      const queryMeta = getSwedishMetaphoneValue(part)
 
       // TODO: For each subquery, exclude previously matched field !
       filtered = users.filter((x) => {

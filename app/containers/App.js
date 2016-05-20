@@ -48,11 +48,7 @@ import Consultants from '../containers/Consultants'
 import Settings from '../containers/Settings'
 
 const NoMatch = () => <div>NoMatch.</div>
-const Account = () => <div>Account.</div>
-// const Login = () => <div>Login.</div>
-// const Signup = () => <div>Signup.</div>
 const Logout = () => <div>Logout.</div>
-// const Overview = () => <div>Overview.</div>
 
 function requireAuth (nextState, replace) {
   const { identity } = store.getState().settings
@@ -87,19 +83,15 @@ export default class App extends Component {
     return (
       <Provider store={store}>
         <Router history={history}>
-
           <Route path='/' component={Overview} onEnter={requireAuth} />
-          <Route path='account' component={Account} onEnter={requireAuth} />
-          <Route path='overview' component={Overview} onEnter={requireAuth} />
-          <Route path='consultants' component={Consultants} onEnter={requireAuth}>
+          <Route path='/overview' component={Overview} onEnter={requireAuth} />
+          <Route path='/consultants' component={Consultants} onEnter={requireAuth}>
             <Route path='add' component={Consultants} />
           </Route>
-          <Route path='settings' component={Settings} onEnter={requireAuth} />
-
-          <Route path='login' component={Login} onEnter={skipIfAuth} />
-          <Route path='logout' component={Logout} />
-          <Route path='signup' component={Signup} onEnter={skipIfAuth} />
-
+          <Route path='/settings' component={Settings} onEnter={requireAuth} />
+          <Route path='/login' component={Login} onEnter={skipIfAuth} />
+          <Route path='/signup' component={Signup} onEnter={skipIfAuth} />
+          <Route path='/logout' component={Logout} />
           <Route path='*' component={NoMatch} />
         </Router>
       </Provider>
