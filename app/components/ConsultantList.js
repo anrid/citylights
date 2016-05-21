@@ -116,6 +116,11 @@ export default class ConsultantList extends Component {
         <div className='pl-box__content'>
           {content}
         </div>
+        <div className='pl-box__footer'>
+          <div className='pl-box__footer__info'>
+            Showing {consultants.length} Consultants.
+          </div>
+        </div>
       </section>
     )
   }

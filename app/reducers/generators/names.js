@@ -10,7 +10,30 @@ export function getRandomAvatar (createdDate) {
     'https://c1.staticflickr.com/9/8464/8415646985_f10e90b893_q.jpg',
     'https://c1.staticflickr.com/7/6162/6199777163_17d444259b_t.jpg',
     'https://c2.staticflickr.com/6/5185/5771365116_86fed7a801_q.jpg',
-    'https://c2.staticflickr.com/6/5253/5416395598_cf8b3890c9_q.jpg'
+    'https://c2.staticflickr.com/6/5253/5416395598_cf8b3890c9_q.jpg',
+    'https://c2.staticflickr.com/6/5093/5457465126_109b8f663d_q.jpg',
+    'https://c2.staticflickr.com/8/7473/15983789842_e0354c90ac_q.jpg',
+    'https://c2.staticflickr.com/4/3834/11994460066_c9395b2eab_q.jpg',
+    'https://c1.staticflickr.com/5/4053/5122105075_f1260e024f_q.jpg',
+    'https://c2.staticflickr.com/8/7456/15884442613_356a458922_q.jpg',
+    'https://c2.staticflickr.com/8/7413/11977563774_aa31eb350d_q.jpg',
+    'https://c1.staticflickr.com/3/2629/3834455942_158f670dd3_q.jpg',
+    'https://c2.staticflickr.com/4/3399/4651044764_47516fe827_q.jpg',
+    'https://c2.staticflickr.com/8/7425/12362769364_b7bdb84d57_q.jpg',
+    'https://c1.staticflickr.com/5/4013/4356500957_1799d0ef86_q.jpg',
+    'https://c2.staticflickr.com/6/5565/14522163340_586eaf45a2_q.jpg',
+    'https://c1.staticflickr.com/9/8423/7573671046_a816fd649d_q.jpg',
+    'https://c1.staticflickr.com/1/772/23028118211_c1bd042de4_q.jpg',
+    'https://c1.staticflickr.com/3/2105/5718669801_53257818b5_q.jpg',
+    'https://c1.staticflickr.com/9/8406/8683564555_0d877ffa5c_q.jpg',
+    'https://c1.staticflickr.com/9/8613/16274653845_a6e2e0c9fb_q.jpg',
+    'https://c1.staticflickr.com/7/6137/5964490044_fc1278801f_q.jpg',
+    'https://c1.staticflickr.com/3/2945/15494531826_69619b0f6e_q.jpg',
+    'https://c2.staticflickr.com/8/7308/16431022125_2fa9bc29fc_q.jpg',
+    'https://c1.staticflickr.com/9/8063/8190641738_53f22905c7_q.jpg',
+    'https://c2.staticflickr.com/8/7306/16555071181_aecc3ec49b_q.jpg',
+    'https://c2.staticflickr.com/8/7455/11505850665_3a59f13dc5_q.jpg',
+    'https://c1.staticflickr.com/3/2947/15460908505_5bb616050b_q.jpg'
   ]
   const avatarIndex = (Moment(createdDate).unix() % avatarUrls.length)
   return avatarUrls[avatarIndex]

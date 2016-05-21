@@ -21,6 +21,7 @@ class BasicLayout extends Component {
       children
     } = this.props
 
+    let cls = className || ''
     // Select the theme background.
     const background = backgrounds[activeTheme || 'BG4']
     const style = { }
@@ -31,10 +32,13 @@ class BasicLayout extends Component {
       if (background.color) {
         style.backgroundColor = background.color
       }
+      if (background.compact) {
+        cls += ' pl-basic-layout--compact'
+      }
     }
 
     return (
-      <section className={'pl-basic-layout ' + (className || '')} style={style}>
+      <section className={'pl-basic-layout ' + cls} style={style}>
         <TopBar {...this.props} onSignOut={actions.clearIdentity} />
         <div className='pl-basic-layout__main'>
           <SideMenu />
