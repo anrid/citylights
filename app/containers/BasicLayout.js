@@ -10,6 +10,7 @@ import * as settingsActions from '../actions/settingsActions'
 
 import TopBar from '../components/TopBar'
 import SideMenu from './SideMenu'
+import PropertiesPanel from './PropertiesPanel'
 
 class BasicLayout extends Component {
   render () {
@@ -45,6 +46,7 @@ class BasicLayout extends Component {
           <div className='pl-basic-layout__main-contents'>
             {children}
           </div>
+          <PropertiesPanel />
         </div>
       </section>
     )

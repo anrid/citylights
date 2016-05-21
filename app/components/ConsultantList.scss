@@ -2,6 +2,11 @@
 @import '../styles/colors';
 
 .pl-consultant-list {
+
+  &.pl-box {
+    min-width: 600px;
+  }
+
   &__rows {
     width: 100%;
   }

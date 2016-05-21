@@ -113,7 +113,7 @@ export default class ConsultantList extends Component {
           </div>
           {this.renderDropdown()}
         </div>
-        <div className='pl-box__content'>
+        <div className='pl-box__content--with-footer'>
           {content}
         </div>
         <div className='pl-box__footer'>

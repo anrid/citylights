@@ -13,7 +13,7 @@
   border: 1px solid $c-gray50;
   border-radius: 3px;
   color: $c-gray600;
-  min-width: 640px;
+  min-width: 600px;
   min-height: 200px;
   box-shadow: 0 1px 2px 0 rgba(50, 50, 50, 0.35);
 
@@ -65,7 +65,7 @@
 
   &__section-label {
     flex: none;
-    min-width: 175px;
+    min-width: 160px;
     font-size: 1rem;
     font-weight: 400;
   }
