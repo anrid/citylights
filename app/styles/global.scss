@@ -4,13 +4,15 @@
 html {
   width: 100%;
   height: 100%;
+  font-size: 14px;
 }
 
 body {
+  // font-family: "Helvetica Neue", medium-content-sans-serif-font, Helvetica, Arial, sans-serif;
   font-family: medium-content-sans-serif-font, "Helvetica Neue", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: 1rem;
+  line-height: 1.38rem;
   font-weight: 400;
   color: $c-gray700;
   background-color: $c-gray50;
@@ -23,10 +25,11 @@ body {
 }
 
 input, textarea, select, button {
+  // font-family: "Helvetica Neue", medium-content-sans-serif-font, Helvetica, Arial, sans-serif;
   font-family: medium-content-sans-serif-font, "Helvetica Neue", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: 1rem;
+  line-height: 1.38rem;
   font-weight: 400;
   color: $c-gray700;
 }

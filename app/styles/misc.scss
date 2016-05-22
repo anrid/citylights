@@ -24,10 +24,10 @@
 
 .pl-form-button {
   height: 31px;
-  font-size: 0.9rem;
+  font-size: 1rem;
   border-radius: 2px;
   i.fa {
-    font-size: 0.9rem;
+    font-size: 1rem;
     padding-right: 2px;
   }
 }
@@ -100,12 +100,12 @@
 }
 
 .pl-title-slogan {
-  font-size: 1rem;
+  font-size: 1.1rem;
   line-height: 1rem;
   font-weight: 900;
   letter-spacing: -0.5px;
   color: $c-gray100;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, .30);
+  text-shadow: 0 1px 1px rgba(0,0,0,.40);
 }
 
 .pl-title--turbo {
@@ -116,7 +116,7 @@
 }
 
 .pl-link {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: 400;
   color: $c-gray600;
   cursor: pointer;
@@ -127,7 +127,7 @@
 }
 
 .pl-link-text {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: white;
   text-shadow: 0 1px 1px rgba(50, 50, 50, 0.75);

@@ -22,7 +22,7 @@
     align-items: center;
 
     &__text {
-      font-size: 0.9rem;
+      font-size: 1rem;
       line-height: 1;
       font-weight: normal;
       color: $c-gray600;
@@ -35,7 +35,7 @@
       color: $c-gray400;
       position: relative;
       top: -1px;
-      font-size: 0.9rem;
+      font-size: 1rem;
       text-decoration: none;
       @extend .unselectable;
       &.fa-chevron-down {
@@ -70,12 +70,12 @@
   }
 
   &__menu-item-info {
-    font-size: 0.8rem;
+    font-size: 1rem;
     font-weight: normal;
     color: $c-gray400;
     white-space: nowrap;
     i.fa {
-      font-size: 0.9rem;
+      font-size: 1rem;
       color: $c-gray300;
     }
   }
@@ -85,7 +85,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.9rem;
+    font-size: 1rem;
     line-height: 1;
     font-weight: normal;
     color: $c-gray600;

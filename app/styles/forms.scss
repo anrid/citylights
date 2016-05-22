@@ -24,7 +24,7 @@
     align-items: center;
     font-size: 1rem;
     font-weight: 600;
-    padding: 0 17px;
+    padding: 0 12px;
     border-bottom: 1px solid $c-gray50;
   }
 
@@ -33,7 +33,7 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    padding: 0 17px;
+    padding: 0 12px;
     border-top: 1px solid $c-gray50;
     button + button {
       margin-left: 5px;
@@ -48,9 +48,12 @@
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
-    padding: 0 17px;
+    padding: 0 12px;
     & + & {
-      margin-top: 4px;
+      margin-top: 10px;
+    }
+    .pl-form__input, pl-form__input--with-icon {
+      margin-top: 3px;
     }
   }
 
@@ -64,7 +67,7 @@
   }
 
   &__section {
-    padding: 8px 0 24px 0;
+    padding: 12px 0;
 
     & + & {
       margin-top: 24px;
@@ -79,7 +82,7 @@
   &__section-label {
     flex: none;
     min-width: 160px;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 400;
   }
 
@@ -89,16 +92,17 @@
     justify-content: flex-start;
     align-items: center;
     min-width: 200px;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
+    line-height: 1.3;
     font-weight: 600;
     margin-bottom: 3px;
   }
 
   &__help-text {
     padding: 6px 0;
-    font-size: 0.8rem;
-    line-height: 1.1rem;
+    font-size: 0.9rem;
     font-weight: 400;
+    line-height: 1.3;
     color: $c-gray400;
     max-width: 250px;
     margin-bottom: 3px;
@@ -110,7 +114,6 @@
 
   &__input {
     flex: none;
-    margin: 3px 0;
 
     &.pl-form__input-disabled {
       input {
@@ -130,14 +133,14 @@
       height: 31px;
       min-width: 250px;
       padding: 0 8px;
-      font-size: 0.9rem;
+      font-size: 1rem;
       font-weight: 400;
       border-radius: 2px;
       line-height: 31px;
       background-color: $c-gray50;
       border: 1px solid $c-gray300;
       @include placeholder {
-        font-size: 0.9rem;
+        font-size: 1rem;
         font-weight: 400;
       }
     }
@@ -148,9 +151,9 @@
     position: relative;
     i.fa {
       position: absolute;
-      top: 9px;
-      left: 7px;
-      font-size: 0.85rem;
+      top: 10px;
+      left: 8px;
+      font-size: 0.9rem;
       color: $c-gray400;
     }
     input {

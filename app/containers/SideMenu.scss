@@ -23,7 +23,7 @@
       border-radius: 30px;
       line-height: 1;
       text-align: center;
-      font-size: 0.9rem;
+      font-size: 1rem;
       font-weight: normal;
       color: $c-teal500;
       border: 1px solid $c-teal500;
@@ -42,7 +42,7 @@
     justify-content: flex-start;
     align-items: center;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 1rem;
     line-height: 1;
     &:hover:not(.nope) {
       color: $c-gray700;
@@ -51,7 +51,7 @@
       }
     }
     & > .fa {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       color: rgb(97, 104, 122);
       margin-right: 6px;
       // position: relative;
