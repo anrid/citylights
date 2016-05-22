@@ -63,6 +63,19 @@
     }
   }
 
+  &__section {
+    padding: 8px 0 24px 0;
+
+    & + & {
+      margin-top: 24px;
+      border-top: 1px solid $c-gray100;
+      padding-top: 12px;
+    }
+    &:last-child {
+      padding-bottom: 48px;
+    }
+  }
+
   &__section-label {
     flex: none;
     min-width: 160px;
@@ -98,6 +111,13 @@
   &__input {
     flex: none;
     margin: 3px 0;
+
+    &.pl-form__input-disabled {
+      input {
+        background-color: white;
+        border: 1px dotted $c-gray200;
+      }
+    }
 
     textarea:focus, input:focus {
       border-color: #acbdcb;

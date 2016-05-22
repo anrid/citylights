@@ -2,6 +2,11 @@
 @import '../styles/colors';
 
 .pl-consultant-properties {
+
+  &__profile {
+    padding: 12px;
+  }
+  
   &__profile-block {
     flex: 1;
     display: flex;

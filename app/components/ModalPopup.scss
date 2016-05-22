@@ -22,7 +22,7 @@
     max-height: none;
     overflow: visible;
     margin-bottom: 50px;
-    &__content, &__content--with-footer {
+    &__content {
       background-color: rgba(255,255,255,1);
       max-height: none;
       flex-direction: column;

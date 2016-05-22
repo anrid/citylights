@@ -115,6 +115,17 @@
   letter-spacing: -2px;
 }
 
+.pl-link {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: $c-gray600;
+  cursor: pointer;
+  &:hover {
+    color: $c-gray700;
+    text-decoration: underline;
+  }
+}
+
 .pl-link-text {
   font-size: 0.8rem;
   font-weight: 600;
@@ -144,7 +155,7 @@
       background-color: rgba($c-gray50, 0.9);
       // background-image: linear-gradient(rgba($c-gray50, 0.9), $c-gray100);
     }
-    .pl-box__content, .pl-box__content--with-footer {
+    .pl-box__content {
       background-color: rgba(white, 0.9);
     }
   }
@@ -200,11 +211,12 @@
     background-color: rgba(255, 255, 255, 0.75);
     padding: 12px;
     border-radius: 0 0 3px 3px;
-  }
-
-  &__content--with-footer {
-    @extend .pl-box__content;
-    border-radius: 0;
+    &.pl-box__content--with-footer {
+      border-radius: 0;
+    }
+    &.pl-box__content--no-padding {
+      padding: 0;
+    }
   }
 
   &__footer {
@@ -218,6 +230,7 @@
     // border-top: 1px solid $c-gray300;
     background-color: rgba(255, 255, 255, 0.5);
     background-image: linear-gradient(rgba(255, 255, 255, 0.5), $c-gray100);
+    color: $c-gray600;
     &__info {
       font-size: 0.9rem;
       color: $c-gray600;
