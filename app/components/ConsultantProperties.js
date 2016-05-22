@@ -97,7 +97,7 @@ export default class ConsultantProperties extends Component {
           {this.renderProfile()}
         </div>
         <div className='pl-box__footer'>
-          Ace of Base.
+          Status: Inloggad.
         </div>
       </section>
     )
