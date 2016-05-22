@@ -44,7 +44,9 @@ export function getRandomAvatar (createdDate) {
     'https://c1.staticflickr.com/3/2679/4297616433_94222466f4_q.jpg',
     'https://c1.staticflickr.com/3/2679/4297616433_94222466f4_q.jpg',
     'https://c1.staticflickr.com/5/4102/5409879573_3be6931ef3_q.jpg',
-    'https://c2.staticflickr.com/2/1408/1311336545_2690b02252_q.jpg'
+    'https://c2.staticflickr.com/2/1408/1311336545_2690b02252_q.jpg',
+    'https://c2.staticflickr.com/8/7381/9743878242_c912c5983a_q.jpg',
+    'https://c2.staticflickr.com/8/7017/6578339495_b09dac4a67_q.jpg'
   ]
   const avatarIndex = (Moment(createdDate).unix() % avatarUrls.length)
   return avatarUrls[avatarIndex]
