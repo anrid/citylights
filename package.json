@@ -10,7 +10,8 @@
     "api": "NODE_ENV=production node api/server.js",
     "release": "node api/lib/s3.js ../../build/manifest.json",
     "test": "lab -v -C ./test",
-    "patch": "npm version patch && npm run build && npm run release && git push"
+    "patch": "npm version patch && npm run build && npm run release && git push",
+    "live": "npm run patch && ssh mrdev@citylights.io 'cd ~; ./release-citylights.sh'"
   },
   "dependencies": {
     "bluebird": "^3.3.5",
