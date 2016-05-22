@@ -33,7 +33,18 @@ export function getRandomAvatar (createdDate) {
     'https://c1.staticflickr.com/9/8063/8190641738_53f22905c7_q.jpg',
     'https://c2.staticflickr.com/8/7306/16555071181_aecc3ec49b_q.jpg',
     'https://c2.staticflickr.com/8/7455/11505850665_3a59f13dc5_q.jpg',
-    'https://c1.staticflickr.com/3/2947/15460908505_5bb616050b_q.jpg'
+    'https://c1.staticflickr.com/3/2947/15460908505_5bb616050b_q.jpg',
+    'https://c2.staticflickr.com/8/7447/12389509955_9ef5d35a96_q.jpg',
+    'https://c2.staticflickr.com/8/7395/9765251713_f0176f78ae_q.jpg',
+    'https://c1.staticflickr.com/9/8606/15847044565_b89c612ed5_q.jpg',
+    'https://c1.staticflickr.com/3/2922/14190330207_e72b130597_q.jpg',
+    'https://c2.staticflickr.com/4/3928/15444165866_05516d064e_q.jpg',
+    'https://c2.staticflickr.com/8/7552/15760059165_f8d43250fd_q.jpg',
+    'https://c2.staticflickr.com/6/5579/14939862299_a8f8fb9c90_q.jpg',
+    'https://c1.staticflickr.com/3/2679/4297616433_94222466f4_q.jpg',
+    'https://c1.staticflickr.com/3/2679/4297616433_94222466f4_q.jpg',
+    'https://c1.staticflickr.com/5/4102/5409879573_3be6931ef3_q.jpg',
+    'https://c2.staticflickr.com/2/1408/1311336545_2690b02252_q.jpg'
   ]
   const avatarIndex = (Moment(createdDate).unix() % avatarUrls.length)
   return avatarUrls[avatarIndex]
@@ -89,9 +100,15 @@ function getHashCode (str) {
 
 function getLastNamesTable () {
   // Surname stats taken from Statistiska centralbyrån (www.scb.se).
-  const lastNames = [
+  /*
+    Real surname occurrence stats a bit too high for my liking.
     'Andersson', '241854', 'Johansson', '241685', 'Karlsson', '214920', 'Nilsson', '165106', 'Eriksson', '143219', 'Larsson', '120795',
     'Olsson', '109964', 'Persson', '104111', 'Svensson', '97761', 'Gustafsson', '94403', 'Pettersson', '92275', 'Jonsson', '71774',
+  */
+
+  const lastNames = [
+    'Andersson', '75000', 'Johansson', '75000', 'Karlsson', '75000', 'Nilsson', '75000', 'Eriksson', '75000', 'Larsson', '75000',
+    'Olsson', '75000', 'Persson', '75000', 'Svensson', '75000', 'Gustafsson', '75000', 'Pettersson', '75000', 'Jonsson', '71774',
     'Jansson', '48437', 'Hansson', '42569', 'Bengtsson', '33196', 'Jönsson', '30925', 'Lindberg', '27602', 'Jakobsson', '26381',
     'Magnusson', '26099', 'Olofsson', '25761', 'Lindström', '24917', 'Lindqvist', '22917', 'Lindgren', '22801', 'Axelsson', '22452',
     'Berg', '21672', 'Bergström', '21166', 'Lundberg', '21102', 'Lundgren', '20453', 'Lind', '20181', 'Lundqvist', '20114',

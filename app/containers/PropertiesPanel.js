@@ -9,46 +9,77 @@ import './PropertiesPanel.scss'
 import * as settingsActions from '../actions/settingsActions'
 import { getRoute } from '../selectors/routing'
 
-import Dropdown from '../components/Dropdown'
+import ModalPopup from '../components/ModalPopup'
+import ConsultantProperties from '../components/ConsultantProperties'
 
 class PropertiesPanel extends Component {
-  renderDropdown () {
-    const menuItems = [
-      { _id: 1, text: 'Action #1' },
-      { _id: 2, text: 'Action #2' }
-    ]
-
+  renderMessage (message) {
     return (
-      <Dropdown
-        closeOnSelect
-        items={menuItems}
-        caretOnly
-        onSelect={this.onSelect}
-      />
+      <div className='pl-box__content-empty'>
+        <div className='pl-box__content-empty__text'>
+          {message}
+        </div>
+      </div>
     )
   }
 
+  renderContent () {
+    const {
+      panelType,
+      panelData,
+      isLoadingData,
+      actions
+    } = this.props
+
+    if (!panelData) {
+      return this.renderMessage('Hmm.. that’s odd. No data was set for this panel.')
+    }
+    if (isLoadingData) {
+      return this.renderMessage('Loading ..')
+    }
+
+    switch (panelType) {
+      case 'consultant':
+        return <ConsultantProperties consultant={panelData} actions={actions} />
+
+      default:
+        return this.renderMessage(`Woh.. can’t handle the ${panelType} panel type yet.`)
+    }
+  }
+
   render () {
-    const { route } = this.props
+    const { settings, actions } = this.props
+    if (!settings.isPropertiesPanelOpen) {
+      return null
+    }
+
     return (
-      <section className='pl-properties-panel'>
-        <section className='pl-box'>
-          <div className='pl-box__header'>
-            <div>Properties</div>
-            {this.renderDropdown()}
-          </div>
-          <div className='pl-box__content'>
-            Hello ! {route}
-          </div>
-        </section>
-      </section>
+      <ModalPopup onClose={() => actions.setPropertiesPanelOpen(false)}>
+        {this.renderContent()}
+      </ModalPopup>
     )
   }
 }
 
 function mapStateToProps (state) {
-  console.log('PropertiesPanel, state=', state)
+  // console.log('PropertiesPanel, state=', state)
+  let panelType = null
+  let panelData = null
+  const data = state.settings.propertiesPanelData
+  if (data && data.type) {
+    panelType = data.type
+    switch (panelType) {
+      case 'consultant':
+        panelData = state.users.data[data.userId]
+        break
+    }
+  }
+
   return {
+    panelType,
+    panelData,
+    isLoadingData: false,
+    settings: state.settings,
     route: getRoute(state.routing)
   }
 }

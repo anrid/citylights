@@ -193,6 +193,28 @@ export function showServerError (error) {
   }
 }
 
+export function showConsultantProperties (userId) {
+  return {
+    type: types.SET_SETTING,
+    payload: {
+      isPropertiesPanelOpen: true,
+      propertiesPanelData: {
+        type: 'consultant',
+        userId
+      }
+    }
+  }
+}
+
+export function setPropertiesPanelOpen (value) {
+  return {
+    type: types.SET_SETTING,
+    payload: {
+      isPropertiesPanelOpen: value
+    }
+  }
+}
+
 export function increaseEchoCounter () {
   return {
     type: types.INC_SETTING,

@@ -12,6 +12,11 @@ const initialState = {
   navigator: null,
   isAppLoading: true,
   isAppLoaded: false,
+  isPropertiesPanelOpen: true,
+  propertiesPanelData: {
+    type: 'consultant',
+    userId: '573fe9c254ee58ce1d557a35'
+  },
   saved: {
     email: null,
     workspaceId: null,

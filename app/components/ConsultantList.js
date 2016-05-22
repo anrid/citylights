@@ -10,13 +10,19 @@ import Dropdown from './Dropdown'
 export default class ConsultantList extends Component {
   constructor (props) {
     super(props)
-    this.onSelect = this.onSelect.bind(this)
+    this.onDropdownSelect = this.onDropdownSelect.bind(this)
     this.onSearch = this.onSearch.bind(this)
     this._doSearch = debounce(this._doSearch.bind(this), 350)
+    this.onRowSelect = this.onRowSelect.bind(this)
   }
 
-  onSelect (command) {
-    console.log('TODO: Show consultant, command=', command)
+  onRowSelect (command) {
+    const { actions } = this.props
+    actions.showConsultantProperties(command.userId)
+  }
+
+  onDropdownSelect (command) {
+    console.log('TODO: Perform some dropdown action, command=', command)
   }
 
   onSearch (e) {
@@ -32,9 +38,13 @@ export default class ConsultantList extends Component {
 
   renderConsultantRows () {
     const { consultants } = this.props
-    return consultants.map((x, i) => (
-      <ConsultantRow key={x._id} {...x} />
-    ))
+    return (
+      <div className='pl-consultant-list__rows'>
+        {consultants.map((x, i) => (
+          <ConsultantRow key={x._id} data={x} onClick={this.onRowSelect} />
+        ))}
+      </div>
+    )
   }
 
   renderSearchBox () {
@@ -73,7 +83,7 @@ export default class ConsultantList extends Component {
         closeOnSelect
         items={menuItems}
         caretOnly
-        onSelect={this.onSelect}
+        onSelect={this.onDropdownSelect}
       />
     )
   }
@@ -94,13 +104,7 @@ export default class ConsultantList extends Component {
         </div>
       )
     } else {
-      content = (
-        <div className='pl-consultant-list__rows'>
-          {consultants.map((x, i) => (
-            <ConsultantRow key={x._id} {...x} />
-          ))}
-        </div>
-      )
+      content = this.renderConsultantRows()
     }
 
     return (
@@ -130,19 +134,19 @@ ConsultantList.propTypes = {
   actions: React.PropTypes.object.isRequired
 }
 
-const ConsultantRow = (props) => {
+const ConsultantRow = ({ data, onClick }) => {
   return (
-    <div className='pl-consultant-list__row'>
+    <div className='pl-consultant-list__row' onClick={() => onClick({ userId: data._id })}>
       <div className='pl-consultant-list__row-label' />
       <div className='pl-consultant-list__row-avatar'
-        style={{ backgroundImage: `url(${props.photo})` }}
+        style={{ backgroundImage: `url(${data.photo})` }}
       />
       <div className='pl-consultant-list__row-info'>
         <div className='pl-consultant-list__row-info__name'>
-          {props.firstName}{' '}{props.lastName}
+          {data.firstName}{' '}{data.lastName}
         </div>
         <div className='pl-consultant-list__row-info__personal'>
-          {props.email}
+          {data.email}
         </div>
       </div>
     </div>
