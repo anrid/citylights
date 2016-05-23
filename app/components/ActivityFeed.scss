@@ -9,6 +9,7 @@
     border-radius: 3px;
     background-color: transparent;
     min-height: 29px;
+    background-color: white;
     // width: auto;
     cursor: pointer;
     & + & {
@@ -25,12 +26,11 @@
 
   &__row-text {
     flex: none;
-    padding: 3px 16px 3px 12px;
+    padding: 0 16px 0 12px;
     font-size: 1rem;
     color: $c-gray700;
     font-weight: 400;
-    border-radius: 3px;
-    background-color: white;
+    background-color: transparent;
     em {
       font-weight: 600;
     }

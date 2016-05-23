@@ -1,0 +1,33 @@
+
+@import '../styles/colors';
+
+.pl-input-widget {
+  width: auto;
+  min-height: 100px;
+  border-radius: 3px;
+  border: 1px solid $c-gray500;
+  background-color: white;
+  box-shadow: 0 1px 1px 0 rgba($c-gray700, 0.5);
+
+  &__header {
+    padding: 12px;
+  }
+
+  &__footer {
+    flex: none;
+    height: 34px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 0 0 3px 3px;
+    padding: 0 12px;
+    border-top: 1px solid $c-gray50;
+    // background-color: rgba(255, 255, 255, 0.5);
+    // background-image: linear-gradient(rgba(255, 255, 255, 0.5), $c-gray100);
+    color: $c-gray600;
+    &__info {
+      font-size: 0.9rem;
+      color: $c-gray600;
+    }
+  }
+}

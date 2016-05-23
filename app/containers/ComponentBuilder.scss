@@ -1,0 +1,18 @@
+
+@import '../styles/colors';
+
+.pl-component-builder {
+
+  &__comment {
+    color: $c-gray600;
+    font-style: italic;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+  }
+
+  &__components {
+    min-height: 50px;
+    flex: 1;
+  }
+}

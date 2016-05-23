@@ -46,6 +46,7 @@ import Signup from '../containers/Signup'
 import Overview from '../containers/Overview'
 import Consultants from '../containers/Consultants'
 import Settings from '../containers/Settings'
+import ComponentBuilder from '../containers/ComponentBuilder'
 
 const NoMatch = () => <div>NoMatch.</div>
 const Logout = () => <div>Logout.</div>
@@ -92,6 +93,7 @@ export default class App extends Component {
           <Route path='/login' component={Login} onEnter={skipIfAuth} />
           <Route path='/signup' component={Signup} onEnter={skipIfAuth} />
           <Route path='/logout' component={Logout} />
+          <Route path='/builder' component={ComponentBuilder} onEnter={requireAuth} />
           <Route path='*' component={NoMatch} />
         </Router>
       </Provider>
