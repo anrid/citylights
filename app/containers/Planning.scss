@@ -1,0 +1,102 @@
+
+@import '../styles/colors';
+
+.pl-planning {
+  .pl-basic-layout__main {
+    width: 100%;
+    flex: 1;
+  }
+  .pl-basic-layout__main-contents {
+    width: 100%;
+    align-self: stretch;
+    display: flex;
+  }
+}
+
+.pl-planning-box {
+  background-color: rgba(255,255,255,0.95);
+  border-radius: 3px;
+  box-shadow: 0 1px 2px 0 rgba(50, 50, 50, 0.35);
+  color: $c-gray600;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex: 1;
+}
+
+
+.pl-planning-left-column {
+  width: 200px;
+  border-radius: 3px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  &__section {
+    flex: 1;
+    padding: 20px;
+  }
+}
+
+.pl-planning-left-axis {
+  width: 60px;
+  align-self: stretch;
+}
+
+.pl-planning-main-column {
+  width: auto;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.pl-planning-main-area {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.pl-planning-top-axis {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  &__month {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    &__name {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 30px;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    &__dates {
+      flex: 1;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+
+      div {
+        display: flex;
+        flex-direction: column;
+        align-self: stretch;
+        flex: 1;
+        width: 18px;
+        text-align: center;
+        border: 1px solid $c-gray100;
+        border-right: 0;
+        font-size: 0.85rem;
+        &:first-child {
+          border-left: 1px solid $c-gray200;
+        }
+        &:last-child {
+          border-right: 1px solid $c-gray200;
+        }
+      }
+    }
+  }
+}

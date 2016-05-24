@@ -1,5 +1,7 @@
 'use strict'
 
+import Moment from 'moment'
+
 import * as types from '../actions/actionTypes'
 import {
   getRandomFirstName,
@@ -31,8 +33,10 @@ function fillInMissingUserInfo (user) {
     user.lastName = getRandomLastName(user.email)
   }
   if (!user.profile) {
+    const from20to35 = Moment(user.created).unix() % 15
     user.profile = {
-      title: getRandomConsultantTitle(user.created)
+      title: getRandomConsultantTitle(user.created),
+      age: Math.floor(Math.random() * from20to35) + 20
     }
   }
 }
