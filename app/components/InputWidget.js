@@ -3,6 +3,7 @@
 import React, { Component } from 'react'
 import { Motion, spring } from 'react-motion'
 import debounce from 'lodash.debounce'
+import PureRenderMixin from 'react-addons-pure-render-mixin'
 
 import './InputWidget.scss'
 
@@ -14,23 +15,36 @@ const springModel = {
 export default class InputWidget extends Component {
   constructor (props) {
     super(props)
+    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this)
     this.onSearch = this.onSearch.bind(this)
-    this._doSearch = debounce(this._doSearch.bind(this), 350)
-    this.onRowSelect = this.onRowSelect.bind(this)
+    this._doSearch = debounce(this.props.onSearch, 350)
+    this.state = {
+      page: 1,
+      max: 6
+    }
+    this.onNextPage = this.onNextPage.bind(this)
   }
 
-  onRowSelect (command) {
-    console.log('TODO: onRowSelect, command=', command)
+  onNextPage (direction) {
+    const { items } = this.props
+    const { page, max } = this.state
+
+    const pages = Math.ceil(items.length / max)
+    let next = page + direction
+
+    if (next < 1) {
+      next = 1
+    } else if (next > pages) {
+      next = pages
+    }
+
+    this.setState({ page: next })
   }
 
   onSearch (e) {
     const query = e.target.value
+    this.setState({ page: 1 })
     this._doSearch(query)
-  }
-
-  _doSearch (query) {
-    // const { actions } = this.props
-    console.log('TODO: _doSearch, query=', query)
   }
 
   renderSearchBox () {
@@ -55,7 +69,23 @@ export default class InputWidget extends Component {
       }
     }
 
-    const { items } = this.props
+    const { items, selected, onSelect } = this.props
+    const { page, max } = this.state
+    const pages = Math.ceil(items.length / max)
+
+    const rows = items
+    .filter((x, i) => { // Only items on the current page
+      const onPage = Math.ceil((i + 1) / max)
+      // console.log('onPage=', onPage, 'x.text=', x.text)
+      return onPage === page
+    })
+    .map((x) => {
+      const isSelected = selected && selected.length && selected.indexOf(x._id) !== -1
+      return (
+        <InputWidgetItemWithPhoto key={x._id} item={x}
+          selected={isSelected} onSelect={onSelect} />
+      )
+    })
 
     return (
       <section className='pl-input-widget' style={style}>
@@ -63,10 +93,16 @@ export default class InputWidget extends Component {
           {this.renderSearchBox()}
         </div>
         <div className='pl-input-widget__items'>
-          {items.map((x) => <div key={x._id}>{x.text}</div>)}
+          {rows}
         </div>
         <div className='pl-input-widget__footer'>
-          Showing {items.length} items.
+          <div className='pl-input-widget__footer__info'>
+            Found {items.length} items. Page {page} of {pages}.
+          </div>
+          <div className='pl-input-widget__footer__info'>
+            {page > 1 ? <i className='fa fa-angle-left' onClick={() => this.onNextPage(-1)} /> : null}
+            {page !== pages ? <i className='fa fa-angle-right' onClick={() => this.onNextPage(1)} /> : null}
+          </div>
         </div>
       </section>
     )
@@ -92,7 +128,27 @@ export default class InputWidget extends Component {
   }
 }
 
+const InputWidgetItemWithPhoto = ({ item, onSelect, selected }) => (
+  <div className='pl-input-widget-item' onClick={() => onSelect(item._id, item.type)}>
+    {item.photo && (
+      <div className='pl-input-widget-item__photo'
+        style={{ backgroundImage: `url(${item.photo})` }} />
+    )}
+    <div className='pl-input-widget-item__text'>
+      <div className='pl-input-widget-item__text__main'>{item.text}</div>
+      {item.sub && <div className='pl-input-widget-item__text__sub'>{item.sub}</div>}
+    </div>
+    {selected === true && (
+      <div className='pl-input-widget-item__selected'>
+        <i className='fa fa-check' />
+      </div>
+    )}
+  </div>
+)
+
 InputWidget.propTypes = {
   items: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
+  onSearch: React.PropTypes.func.isRequired,
+  onSelect: React.PropTypes.func.isRequired,
   animate: React.PropTypes.bool
 }

@@ -4,11 +4,14 @@
 .pl-component-builder {
 
   &__comment {
-    color: $c-gray600;
-    font-style: italic;
-    min-height: 50px;
+    color: $c-gray50;
+    min-height: 30px;
     display: flex;
     align-items: center;
+    background-color: rgba($c-gray700, 0.5);
+    padding: 0 10px;
+    margin: 20px 0;
+    border-radius: 2px;
   }
 
   &__components {

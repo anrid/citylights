@@ -142,6 +142,87 @@ function getLastNamesTable () {
   }, { total: 0, names: { }, last: null })
 }
 
+export function getRandomConsultantTitle (createdDate) {
+  // A bunch of consultant job titles.
+  const titles = [
+    'Advertising Consultant',
+    'Activation Consultant',
+    'Associate',
+    'Brand Management Consultant',
+    'Business Analyst',
+    'Business Consultant',
+    'Change Management Consultant',
+    'Commercial Print Management Consultant',
+    'Compensation Consultant',
+    'Compensation Survey Analyst',
+    'Consultant, Federal Health',
+    'Consultant - Human Services',
+    'Consultant Employment Specialist',
+    'Consulting Advisor',
+    'Creative Consultant',
+    'Customer Service Improvement Consultant',
+    'Cyber Security Strategy Consultant',
+    'Dynamics AX - Functional Consultant',
+    'Economic Consultant',
+    'Educational Consultant',
+    'Environmental Air Quality Consultant',
+    'Environmental Audit Consultant',
+    'Environmental Consultant',
+    'Environmental Field Consultant',
+    'Environmental Project Manager',
+    'Field Technical Consultant',
+    'Financial Consultant',
+    'Foreclosure Consultant',
+    'Fundraising Consultant',
+    'Government Contract Consultant',
+    'Healthcare Change Capture Senior Staff Consultant',
+    'Healthcare Consultant',
+    'Healthcare Management Consultant',
+    'Healthcare Market Research Consultant',
+    'Human Capital Consultant',
+    'Human Resources Consultant',
+    'Implementation Consultant',
+    'International Consultant',
+    'Lactation Consultant',
+    'Lawyer',
+    'Lead Consulting Engineer',
+    'Legal Consultant',
+    'Legal Nurse Consultant',
+    'Management Consultant',
+    'Marketing Consultant',
+    'Marketing Data Consultant',
+    'Medicaid/Medicare Consultant',
+    'Organizational Development Consultant',
+    'Political Campaign Consultant',
+    'Political Consultant',
+    'Political Strategist',
+    'Principal Consultant - Infrastructure',
+    'Project Manager',
+    'Recruitment Consultant',
+    'Research Assistant',
+    'Retail Sales Consultant',
+    'Safety Consultant',
+    'Sales Consultant',
+    'Sap Security Consultant',
+    'Senior Benefits Consultant',
+    'Senior Lync Consultant',
+    'Senior Risk Control Consultant',
+    'Software Implementation Consultant',
+    'Solutions Consultant - Electrical Engineering',
+    'Staffing and Employee Relations Consultant',
+    'Strategy Consultant',
+    'Tax Advisor',
+    'Technology Consultant',
+    'Telecom Analyst',
+    'Websphere Consultant',
+    'Wedding Consultant',
+    'Weight Loss Consultant'
+  ]
+
+  const titleIndex = (Moment(createdDate).unix() % titles.length)
+  return titles[titleIndex]
+}
+
 // Give it a whirl.
 // console.log('anri@taskworld.com ->', getRandomLastName('anri@taskworld.com'))
 // console.log('anri1@taskworld.com ->', getRandomLastName('anri1@taskworld.com'))

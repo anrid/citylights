@@ -4,7 +4,8 @@ import * as types from '../actions/actionTypes'
 import {
   getRandomFirstName,
   getRandomLastName,
-  getRandomAvatar
+  getRandomAvatar,
+  getRandomConsultantTitle
 } from './generators/names'
 
 const initialState = {
@@ -28,6 +29,11 @@ function fillInMissingUserInfo (user) {
   if (!user.firstName && !user.lastName) {
     user.firstName = getRandomFirstName(user.created)
     user.lastName = getRandomLastName(user.email)
+  }
+  if (!user.profile) {
+    user.profile = {
+      title: getRandomConsultantTitle(user.created)
+    }
   }
 }
 

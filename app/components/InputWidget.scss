@@ -4,13 +4,17 @@
 .pl-input-widget {
   width: auto;
   min-height: 100px;
+  max-width: 300px;
   border-radius: 3px;
   border: 1px solid $c-gray500;
   background-color: white;
   box-shadow: 0 1px 1px 0 rgba($c-gray700, 0.5);
 
   &__header {
-    padding: 12px;
+    padding: 12px 12px 12px 12px;
+    .pl-form__input input, .pl-form__input--with-icon input {
+      min-width: 100%;
+    }
   }
 
   &__footer {
@@ -26,8 +30,88 @@
     // background-image: linear-gradient(rgba(255, 255, 255, 0.5), $c-gray100);
     color: $c-gray600;
     &__info {
-      font-size: 0.9rem;
+      .fa {
+        padding: 0 2px;
+        cursor: pointer;
+        & + .fa {
+          margin-left: 20px;
+        }
+      }
+      font-size: 1rem;
       color: $c-gray600;
     }
   }
+}
+
+.pl-input-widget-item {
+  height: 36px;
+  padding: 0 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  cursor: pointer;
+  &:hover {
+    background-color: $c-teal300;
+    color: white;
+    .pl-input-widget-item__selected {
+      border: 2px solid white;
+      .fa {
+        color: white;
+      }
+    }
+    .pl-input-widget-item__text__sub {
+      color: white;
+    }
+  }
+  &:last-child {
+    margin-bottom: 6px;
+  }
+
+  &__photo {
+    flex: none;
+    width: 30px;
+    height: 30px;
+    margin-right: 12px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: transparent;
+    border-radius: 30px;
+    box-shadow: 0 0 0px 1px rgba(50,50,50,0.25);
+  }
+
+  &__text {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+    flex: 2 2 auto;
+    font-size: 1.1rem;
+    &__main {
+      line-height: 1.1rem;
+    }
+    &__sub {
+      font-size: 0.9rem;
+      color: $c-gray400;
+      line-height: 1.1rem;
+      white-space: nowrap;
+      max-width: 190px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+
+  &__selected {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
+    border: 2px solid $c-gray300;
+    .fa {
+      color: $c-gray300;
+    }
+  }
+
 }
