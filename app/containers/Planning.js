@@ -1,6 +1,7 @@
 'use strict'
 
 import React, { Component } from 'react'
+import Moment from 'moment'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
@@ -9,8 +10,6 @@ import './Planning.scss'
 import * as settingsActions from '../actions/settingsActions'
 import { filteredConsultantsSelector } from '../selectors/users'
 
-import { getRoute } from '../selectors/routing'
-
 import BasicLayout from './BasicLayout'
 import Loader from './Loader'
 
@@ -18,17 +17,17 @@ class Planning extends Component {
   render () {
     return (
       <BasicLayout className='pl-planning'>
-        <PlanningBox />
+        <PlanningBox {...this.props} />
       </BasicLayout>
     )
   }
 }
 
-const PlanningBox = ({ children }) => (
+const PlanningBox = (props) => (
   <section className='pl-planning-box'>
     <PlanningLeftColumn />
     <PlanningLeftAxis />
-    <PlanningMainColumn />
+    <PlanningMainColumn {...props} />
   </section>
 )
 
@@ -49,10 +48,10 @@ const PlanningLeftAxis = () => (
   </section>
 )
 
-const PlanningMainColumn = () => (
+const PlanningMainColumn = (props) => (
   <section className='pl-planning-main-column'>
     <PlanningTopAxis />
-    <PlanningMainArea />
+    <PlanningMainArea {...props} />
   </section>
 )
 
@@ -73,23 +72,70 @@ const PlanningTopAxisMonth = ({ name }) => {
         {name}
       </div>
       <div className='pl-planning-top-axis__month__dates'>
-        {dates.map((x) => <div key={x}>{x}</div>)}
+        {dates.map((x) => (
+          <div className='pl-planning-cell' key={x}>{x}</div>
+        ))}
       </div>
     </div>
   )
 }
 
-const PlanningMainArea = () => (
-  <section className='pl-planning-main-area'>
-    Main area.
-  </section>
-)
+class PlanningShift extends Component {
+  render () {
+    const { startDate, endDate } = this.props.shift
+    const { position, pivotDate, dayWidth, onClick } = this.props
+
+    const start = Moment(startDate)
+    const end = Moment(endDate)
+    const pivot = Moment(pivotDate)
+
+    const shiftDays = end.diff(start, 'days') || 1
+    let daysFromPivot = start.diff(pivot, 'days')
+    if (daysFromPivot < 0) {
+      // TODO: Handle start dates before pivot date.
+      daysFromPivot = 0
+    }
+
+    const style = {
+      width: dayWidth * shiftDays,
+      top: 40 * position,
+      left: dayWidth * daysFromPivot
+    }
+
+    return (
+      <div className='pl-planning-shift' style={style} onClick={onClick}>
+      </div>
+    )
+  }
+}
+
+const PlanningMainArea = ({ shifts, actions }) => {
+  const pivotDate = Moment('2016-06-01')
+  const dayWidth = 22
+
+  const getClickHandler = (shiftId) => () => actions.showShiftProperties(shiftId)
+
+  return (
+    <section className='pl-planning-main-area'>
+      {shifts.map((x, i) => (
+        <PlanningShift key={x._id} shift={x}
+          dayWidth={dayWidth}
+          position={i}
+          pivotDate={pivotDate}
+          onClick={getClickHandler(x._id)}
+        />
+      ))}
+    </section>
+  )
+}
 
 function mapStateToProps (state) {
   // console.log('Planning, state=', state)
+  const shifts = state.shifts.order.map((x) => (
+    state.shifts.data[x]
+  ))
   return {
-    consultants: filteredConsultantsSelector(state),
-    route: getRoute(state.routing)
+    shifts
   }
 }
 

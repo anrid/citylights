@@ -4,6 +4,8 @@ import settings from './settings'
 import workspaces from './workspaces'
 import users from './users'
 import projects from './projects'
+import shifts from './shifts'
+
 import { routerReducer } from 'react-router-redux'
 
 const all = {
@@ -12,6 +14,7 @@ const all = {
   workspaces,
   users,
   projects,
+  shifts,
   routing: routerReducer
 }
 

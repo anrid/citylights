@@ -62,8 +62,10 @@ class SideMenu extends Component {
       <section className='pl-side-menu'>
         <div className='pl-side-menu__group'>
           {this.renderMenuItem('Overview', 'home', '/overview', currentRoute)}
-          {this.renderMenuItem('Planning', 'paper-plane-o', '/planning', currentRoute)}
+
           {this.renderMenuItem('Consultants', 'users', '/consultants', currentRoute)}
+
+          {this.renderMenuItem('Planning', 'paper-plane-o', '/planning', currentRoute)}
         </div>
 
         <div className='pl-side-menu__divider'/>

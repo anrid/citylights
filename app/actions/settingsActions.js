@@ -206,6 +206,19 @@ export function showConsultantProperties (userId) {
   }
 }
 
+export function showShiftProperties (shiftId) {
+  return {
+    type: types.SET_SETTING,
+    payload: {
+      isPropertiesPanelOpen: true,
+      propertiesPanelData: {
+        type: 'shift',
+        shiftId
+      }
+    }
+  }
+}
+
 export function setPropertiesPanelOpen (value) {
   return {
     type: types.SET_SETTING,

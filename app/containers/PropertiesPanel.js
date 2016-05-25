@@ -10,15 +10,15 @@ import * as settingsActions from '../actions/settingsActions'
 import { getRoute } from '../selectors/routing'
 
 import ModalPopup from '../components/ModalPopup'
+
 import ConsultantProperties from '../components/ConsultantProperties'
+import ShiftProperties from '../components/ShiftProperties'
 
 class PropertiesPanel extends Component {
   renderMessage (message) {
     return (
-      <div className='pl-box__content-empty'>
-        <div className='pl-box__content-empty__text'>
-          {message}
-        </div>
+      <div className='pl-modal-popup__message'>
+        {message}
       </div>
     )
   }
@@ -41,6 +41,9 @@ class PropertiesPanel extends Component {
     switch (panelType) {
       case 'consultant':
         return <ConsultantProperties consultant={panelData} actions={actions} />
+
+      case 'shift':
+        return <ShiftProperties shift={panelData} actions={actions} />
 
       default:
         return this.renderMessage(`Woh.. can’t handle the ${panelType} panel type yet.`)
@@ -72,6 +75,11 @@ function mapStateToProps (state) {
       case 'consultant':
         panelData = state.users.data[data.userId]
         break
+      case 'shift':
+        panelData = state.shifts.data[data.shiftId]
+        break
+      default:
+        console.log('Unhandled properties panel data type:', panelType)
     }
   }
 

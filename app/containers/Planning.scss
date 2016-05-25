@@ -52,7 +52,7 @@
 
 .pl-planning-main-area {
   position: absolute;
-  top: 0;
+  top: 54px;
   left: 0;
 }
 
@@ -85,9 +85,10 @@
         flex-direction: column;
         align-self: stretch;
         flex: 1;
-        width: 18px;
+        width: 22px;
         text-align: center;
         border: 1px solid $c-gray100;
+        border-left: 1px dotted $c-gray100;
         border-right: 0;
         font-size: 0.85rem;
         &:first-child {
@@ -99,4 +100,34 @@
       }
     }
   }
+}
+
+.pl-planning-shift {
+  position: absolute;
+  height: 24px;
+  min-width: 22px;
+  border-radius: 2px;
+  cursor: pointer;
+  // Default color is teal.
+  background-color: rgba($c-teal300, 0.9);
+  border: 1px solid $c-teal500;
+  &:hover {
+    background-color: rgba($c-teal400, 0.9);
+  }
+
+  &.pl-planning-shift--red {
+    background-color: rgba($c-red300, 0.9);
+    border: 1px solid $c-red500;
+  }
+
+  &.pl-planning-shift--green {
+    background-color: rgba($c-green300, 0.9);
+    border: 1px solid $c-green500;
+  }
+
+  &.pl-planning-shift--blue {
+    background-color: rgba($c-blue300, 0.9);
+    border: 1px solid $c-blue500;
+  }
+
 }
