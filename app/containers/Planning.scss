@@ -1,6 +1,10 @@
 
 @import '../styles/colors';
 
+// Shift height.
+$shift-height: 22px;
+$shift-gap: 10px;
+
 .pl-planning {
   .pl-basic-layout__main {
     width: 100%;
@@ -14,7 +18,8 @@
 }
 
 .pl-planning-box {
-  background-color: rgba(255,255,255,0.95);
+  background-color: rgba(255,255,255,0.85);
+  // background-color: transparent;
   border-radius: 3px;
   box-shadow: 0 1px 2px 0 rgba(50, 50, 50, 0.35);
   color: $c-gray600;
@@ -27,18 +32,65 @@
 
 .pl-planning-left-column {
   width: 200px;
-  border-radius: 3px 0 0 0;
-  display: flex;
-  flex-direction: column;
-  &__section {
-    flex: 1;
-    padding: 20px;
+  border-radius: 3px 0 0 3px;
+  align-self: stretch;
+
+  &__shift-titles {
+    border-top: 1px solid $c-gray200;
+    padding-top: 10px;
+  }
+
+  &__shift-number {
+    font-weight: normal;
+    font-size: 1rem;
+    padding-right: 0.4rem;
+  }
+
+  &__shift-title {
+    padding: 0 14px;
+    display: block;
+    height: $shift-height;
+    margin-bottom: $shift-gap;
+    color: $c-gray700;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: $shift-height;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    overflow: hidden;
+    // border-bottom: 1px dotted $c-gray200;
+    cursor: pointer;
+    &:hover {
+      color: $c-gray700;
+      text-decoration: underline;
+    }
+  }
+
+  &__buttons {
+    margin-top: 24px;
+    padding: 0 14px;
+    button {
+      height: 30px;
+      .fa {
+        margin-right: 4px;
+        position: relative;
+        top: 1px;
+      }
+    }
   }
 }
 
-.pl-planning-left-axis {
-  width: 60px;
-  align-self: stretch;
+.pl-planning-header {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 50px;
+  font-weight: 600;
+  font-size: 1.2rem;
+  padding-bottom: 2px;
+  padding-left: 14px;
+  border-radius: 3px 0 0 0;
 }
 
 .pl-planning-main-column {
@@ -52,19 +104,27 @@
 
 .pl-planning-main-area {
   position: absolute;
-  top: 54px;
+  top: 50px;
   left: 0;
+  border-top: 1px solid $c-gray200;
+  padding-top: 10px;
+  width: 100%;
 }
 
 .pl-planning-top-axis {
   flex: 1;
   display: flex;
-  flex-direction: column;
 
   &__month {
     flex: 1;
     display: flex;
     flex-direction: column;
+    & + & {
+      margin-left: 2px;
+    }
+    &:last-child {
+      margin-right: 40px;
+    }
 
     &__name {
       display: flex;
@@ -73,6 +133,9 @@
       height: 30px;
       font-weight: 600;
       font-size: 1.1rem;
+      border-left: 1px solid $c-gray200;
+      border-right: 1px solid $c-gray200;
+      border-bottom: 1px solid $c-gray200;
     }
     &__dates {
       flex: 1;
@@ -87,10 +150,17 @@
         flex: 1;
         width: 22px;
         text-align: center;
-        border: 1px solid $c-gray100;
-        border-left: 1px dotted $c-gray100;
+        border-left: 1px dotted $c-gray200;
         border-right: 0;
-        font-size: 0.85rem;
+        border-bottom: 1px solid $c-gray200;
+        font-size: 0.9rem;
+        color: $c-gray500;
+        font-weight: bold;
+        background-color: rgba(255,255,255,0.95);
+        &:hover {
+          background-color: $c-gray50;
+        }
+
         &:first-child {
           border-left: 1px solid $c-gray200;
         }
@@ -103,31 +173,71 @@
 }
 
 .pl-planning-shift {
-  position: absolute;
-  height: 24px;
+  position: relative;
+  height: $shift-height;
   min-width: 22px;
-  border-radius: 2px;
+  border-radius: 3px;
   cursor: pointer;
   // Default color is teal.
   background-color: rgba($c-teal300, 0.9);
-  border: 1px solid $c-teal500;
+  border: 2px solid $c-teal500;
+  margin-bottom: $shift-gap;
+
   &:hover {
     background-color: rgba($c-teal400, 0.9);
   }
 
+  &__title {
+    // NOTE: hidden for now !
+    display: none;
+    position: absolute;
+    height: $shift-height;
+    font-size: 0.9rem;
+    line-height: $shift-height;
+    top: -2px;
+    left: -96px;
+    white-space: nowrap;
+    width: 90px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    text-align: right;
+  }
+
+  &__assignees {
+    position: absolute;
+    height: $shift-height;
+    font-size: 1.1rem;
+    line-height: $shift-height;
+    top: -2px;
+    right: -96px;
+    white-space: nowrap;
+    width: 90px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
   &.pl-planning-shift--red {
     background-color: rgba($c-red300, 0.9);
-    border: 1px solid $c-red500;
+    border: 2px solid $c-red500;
+    &:hover {
+      background-color: rgba($c-red400, 0.9);
+    }
   }
 
   &.pl-planning-shift--green {
     background-color: rgba($c-green300, 0.9);
-    border: 1px solid $c-green500;
+    border: 2px solid $c-green500;
+    &:hover {
+      background-color: rgba($c-green400, 0.9);
+    }
   }
 
   &.pl-planning-shift--blue {
     background-color: rgba($c-blue300, 0.9);
-    border: 1px solid $c-blue500;
+    border: 2px solid $c-blue500;
+    &:hover {
+      background-color: rgba($c-blue400, 0.9);
+    }
   }
 
 }

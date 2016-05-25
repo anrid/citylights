@@ -25,28 +25,46 @@ class Planning extends Component {
 
 const PlanningBox = (props) => (
   <section className='pl-planning-box'>
-    <PlanningLeftColumn />
-    <PlanningLeftAxis />
+    <PlanningLeftColumn {...props} />
     <PlanningMainColumn {...props} />
   </section>
 )
 
-const PlanningLeftColumn = () => (
-  <section className='pl-planning-left-column'>
-    <div className='pl-planning-left-column__section'>
-      Left column.
-      <button>New Shift</button>
-    </div>
-  </section>
-)
+const PlanningLeftColumn = ({ shifts, actions }) => {
+  return (
+    <section className='pl-planning-left-column'>
+      <div className='pl-planning-header'>
+        Shifts
+      </div>
+      <div className='pl-planning-left-column__shift-titles'>
+        {shifts.map((x, i) => {
+          return (
+            <div className='pl-planning-left-column__shift-title'>
+              <span className='pl-planning-left-column__shift-number'>
+                {i + 1}.
+              </span>
+              {x.title}
+            </div>
+          )
+        })}
+      </div>
+      <div className='pl-planning-left-column__buttons'>
+        <button>
+          <i className='fa fa-plus' />
+          Add Shift
+        </button>
+      </div>
+    </section>
+  )
+}
 
-const PlanningLeftAxis = () => (
-  <section className='pl-planning-left-axis'>
-    <div className='pl-planning-left-axis__section'>
-      Left axis.
-    </div>
-  </section>
-)
+const PlanningLeftAxis = ({ shifts, actions }) => {
+  return (
+    <section className='pl-planning-left-axis'>
+      <div className='pl-planning-header'>%</div>
+    </section>
+  )
+}
 
 const PlanningMainColumn = (props) => (
   <section className='pl-planning-main-column'>
@@ -57,19 +75,24 @@ const PlanningMainColumn = (props) => (
 
 const PlanningTopAxis = () => (
   <section className='pl-planning-top-axis'>
-    <PlanningTopAxisMonth name='June 2016' />
+    <PlanningTopAxisMonth month='2016-06' />
+    <PlanningTopAxisMonth month='2016-07' />
   </section>
 )
 
-const PlanningTopAxisMonth = ({ name }) => {
+const PlanningTopAxisMonth = ({ month }) => {
+  const _month = Moment(month, 'YYYY-MM')
+  const daysInMonth = _month.daysInMonth()
+
   const dates = []
-  for (let i = 0; i < 31; ++i) {
+  for (let i = 0; i < daysInMonth; ++i) {
     dates.push(i + 1)
   }
+
   return (
     <div className='pl-planning-top-axis__month'>
       <div className='pl-planning-top-axis__month__name'>
-        {name}
+        {_month.format('MMMM YYYY')}
       </div>
       <div className='pl-planning-top-axis__month__dates'>
         {dates.map((x) => (
@@ -80,33 +103,49 @@ const PlanningTopAxisMonth = ({ name }) => {
   )
 }
 
-class PlanningShift extends Component {
-  render () {
-    const { startDate, endDate } = this.props.shift
-    const { position, pivotDate, dayWidth, onClick } = this.props
+const PlanningShift = (props) => {
+  const shift = props.shift
+  const { position, pivotDate, dayWidth, onClick } = props
 
-    const start = Moment(startDate)
-    const end = Moment(endDate)
-    const pivot = Moment(pivotDate)
+  const start = Moment(shift.startDate)
+  const end = Moment(shift.endDate)
+  const pivot = Moment(pivotDate)
 
-    const shiftDays = end.diff(start, 'days') || 1
-    let daysFromPivot = start.diff(pivot, 'days')
-    if (daysFromPivot < 0) {
-      // TODO: Handle start dates before pivot date.
-      daysFromPivot = 0
-    }
-
-    const style = {
-      width: dayWidth * shiftDays,
-      top: 40 * position,
-      left: dayWidth * daysFromPivot
-    }
-
-    return (
-      <div className='pl-planning-shift' style={style} onClick={onClick}>
-      </div>
-    )
+  const shiftDays = end.diff(start, 'days') || 1
+  let daysFromPivot = start.diff(pivot, 'days')
+  if (daysFromPivot < 0) {
+    // TODO: Handle start dates before pivot date.
+    daysFromPivot = 0
   }
+
+  const style = {
+    width: dayWidth * shiftDays,
+    left: dayWidth * daysFromPivot
+  }
+
+  let cls = ''
+  switch (shift.color) {
+    case 2:
+      cls += 'pl-planning-shift--red'
+      break
+    case 3:
+      cls += 'pl-planning-shift--green'
+      break
+    case 4:
+      cls += 'pl-planning-shift--blue'
+      break
+  }
+
+  return (
+    <div className={'pl-planning-shift ' + cls} style={style} onClick={onClick}>
+      <div className='pl-planning-shift__title'>
+        {shift.title}
+      </div>
+      <div className='pl-planning-shift__assignees'>
+        — June, Ace
+      </div>
+    </div>
+  )
 }
 
 const PlanningMainArea = ({ shifts, actions }) => {

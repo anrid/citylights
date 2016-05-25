@@ -45,53 +45,31 @@ export default class ShiftPropertiesForm extends Component {
     const { shift } = this.props
     return (
       <div className='pl-form__section'>
-        <div className={'pl-form__row' + (this.hasError('email') ? '--error' : '')}>
-          <div className='pl-form__section-label'>Personal information</div>
-          <div className='pl-form__input pl-form__input-disabled'>
-            <div className='pl-form__label'>Email</div>
-            <input type='email'
-              placeholder='e.g. ace@base.se'
-              defaultValue={shift.email}
-              disabled
+        <div className={'pl-form__row' + (this.hasError('title') ? '--error' : '')}>
+          <div className='pl-form__section-label'>Shift information</div>
+          <div className='pl-form__input'>
+            <div className='pl-form__label'>Title</div>
+            <input type='text'
+              defaultValue={shift.title}
+              onChange={this.onValueChange('shift', 'title')}
             />
-            {this.renderError('email')}
+          {this.renderError('title')}
           </div>
         </div>
 
-        <div className={'pl-form__row' + (this.hasError('firstName') ? '--error' : '')}>
+        <div className={'pl-form__row' + (this.hasError('rateHour') ? '--error' : '')}>
           <div className='pl-form__section-label'/>
           <div className='pl-form__input'>
-            <div className='pl-form__label'>First name</div>
+            <div className='pl-form__label'>Hourly Rate (in US cents)</div>
             <input type='text'
-              defaultValue={shift.firstName}
-              onChange={this.onValueChange('shift', 'firstName')}
+              placeholder='e.g. 5,000'
+              defaultValue={shift.profile && shift.profile.rateHour}
+              onChange={this.onValueChange('shift', 'rateHour')}
             />
-            {this.renderError('firstName')}
-          </div>
-        </div>
-
-        <div className={'pl-form__row' + (this.hasError('lastName') ? '--error' : '')}>
-          <div className='pl-form__section-label'/>
-          <div className='pl-form__input'>
-            <div className='pl-form__label'>Last name</div>
-            <input type='text'
-              defaultValue={shift.lastName}
-              onChange={this.onValueChange('shift', 'lastName')}
-            />
-          {this.renderError('lastName')}
-          </div>
-        </div>
-
-        <div className={'pl-form__row' + (this.hasError('phoneWork') ? '--error' : '')}>
-          <div className='pl-form__section-label'/>
-          <div className='pl-form__input'>
-            <div className='pl-form__label'>Phone (Work)</div>
-            <input type='text'
-              placeholder='e.g. +46 18 469548'
-              defaultValue={shift.profile && shift.profile.phoneWork}
-              onChange={this.onValueChange('shift', 'phoneWork')}
-            />
-          {this.renderError('phoneWork')}
+            <div className='pl-form__help-text'>
+              The hourly rate in US cents. For example, type 5,000 to express $50 USD.
+            </div>
+          {this.renderError('rateHour')}
           </div>
         </div>
       </div>
