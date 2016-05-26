@@ -12,7 +12,8 @@ $shift-gap: 10px;
   }
   .pl-basic-layout__main-contents {
     width: 100%;
-    align-self: stretch;
+    // align-self: stretch;
+    min-height: 500px;
     display: flex;
   }
 }
@@ -35,13 +36,28 @@ $shift-gap: 10px;
   border-radius: 3px 0 0 3px;
   align-self: stretch;
 
+  &__search-box {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 40px;
+    padding: 0 12px;
+    margin-bottom: 10px;
+    .pl-form__input {
+      width: 100%;
+      input {
+        min-width: initial;
+        width: 100%;
+      }
+    }
+  }
+
   &__shift-titles {
-    border-top: 1px solid $c-gray200;
-    padding-top: 10px;
+    // display: none; // Hide for now.
   }
 
   &__shift-number {
-    font-weight: normal;
+    font-weight: 600;
     font-size: 1rem;
     padding-right: 0.4rem;
   }
@@ -59,7 +75,7 @@ $shift-gap: 10px;
     text-overflow: ellipsis;
     max-width: 200px;
     overflow: hidden;
-    // border-bottom: 1px dotted $c-gray200;
+    border-bottom: 1px dotted $c-gray300;
     cursor: pointer;
     &:hover {
       color: $c-gray700;
@@ -68,7 +84,7 @@ $shift-gap: 10px;
   }
 
   &__buttons {
-    margin-top: 24px;
+    margin-top: 20px;
     padding: 0 14px;
     button {
       height: 30px;
@@ -84,13 +100,12 @@ $shift-gap: 10px;
 .pl-planning-header {
   display: flex;
   justify-content: center;
-  align-items: flex-end;
-  height: 50px;
+  align-items: center;
+  height: 30px;
   font-weight: 600;
   font-size: 1.2rem;
-  padding-bottom: 2px;
-  padding-left: 14px;
   border-radius: 3px 0 0 0;
+  border-bottom: 1px solid $c-gray300;
 }
 
 .pl-planning-main-column {
@@ -106,9 +121,12 @@ $shift-gap: 10px;
   position: absolute;
   top: 50px;
   left: 0;
-  border-top: 1px solid $c-gray200;
-  padding-top: 10px;
+  border-top: 1px solid $c-gray300;
+  // border: 1px solid red;
   width: 100%;
+  &__inner {
+    padding-top: 30px;
+  }
 }
 
 .pl-planning-top-axis {
@@ -133,42 +151,52 @@ $shift-gap: 10px;
       height: 30px;
       font-weight: 600;
       font-size: 1.1rem;
-      border-left: 1px solid $c-gray200;
-      border-right: 1px solid $c-gray200;
-      border-bottom: 1px solid $c-gray200;
+      border-left: 1px solid $c-gray300;
+      border-right: 1px solid $c-gray300;
+      border-bottom: 1px solid $c-gray300;
     }
     &__dates {
       flex: 1;
       display: flex;
       justify-content: flex-start;
       align-items: center;
-
-      div {
-        display: flex;
-        flex-direction: column;
-        align-self: stretch;
-        flex: 1;
-        width: 22px;
-        text-align: center;
-        border-left: 1px dotted $c-gray200;
-        border-right: 0;
-        border-bottom: 1px solid $c-gray200;
-        font-size: 0.9rem;
-        color: $c-gray500;
-        font-weight: bold;
-        background-color: rgba(255,255,255,0.95);
-        &:hover {
-          background-color: $c-gray50;
-        }
-
-        &:first-child {
-          border-left: 1px solid $c-gray200;
-        }
-        &:last-child {
-          border-right: 1px solid $c-gray200;
-        }
-      }
     }
+  }
+}
+
+.pl-planning-cell {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  flex: 1;
+  width: 22px;
+  text-align: center;
+  border-left: 1px dotted $c-gray200;
+  border-right: 0;
+  border-bottom: 1px solid $c-gray300;
+  font-size: 0.9rem;
+  color: $c-gray500;
+  font-weight: bold;
+  background-color: rgba(255,255,255,0.95);
+  &:hover {
+    background-color: $c-gray50;
+  }
+
+  &:first-child {
+    border-left: 1px solid $c-gray300;
+  }
+  &:last-child {
+    border-right: 1px solid $c-gray300;
+  }
+
+  &__day-of-week {
+    font-weight: 400;
+    font-size: 0.8rem;
+    position: relative;
+    color: $c-gray400;
+    // border: 1px solid red;
+    height: 22px;
+    line-height: 22px;
   }
 }
 
@@ -188,19 +216,19 @@ $shift-gap: 10px;
   }
 
   &__title {
-    // NOTE: hidden for now !
     display: none;
     position: absolute;
     height: $shift-height;
-    font-size: 0.9rem;
+    font-size: 1rem;
     line-height: $shift-height;
     top: -2px;
-    left: -96px;
+    left: -151px;
     white-space: nowrap;
-    width: 90px;
+    text-align: right;
+    width: 150px;
     text-overflow: ellipsis;
     overflow: hidden;
-    text-align: right;
+    padding: 0 6px;
   }
 
   &__assignees {
@@ -209,11 +237,12 @@ $shift-gap: 10px;
     font-size: 1.1rem;
     line-height: $shift-height;
     top: -2px;
-    right: -96px;
+    right: -100px;
     white-space: nowrap;
-    width: 90px;
+    width: 100px;
     text-overflow: ellipsis;
     overflow: hidden;
+    padding-left: 6px;
   }
 
   &.pl-planning-shift--red {

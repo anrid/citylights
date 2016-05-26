@@ -30,11 +30,26 @@ const PlanningBox = (props) => (
   </section>
 )
 
+const PlanningLeftColumnSShiftSearchBox = ({ actions }) => {
+  return (
+    <section className='pl-planning-left-axis'>
+      <div className='pl-planning-header'>%</div>
+    </section>
+  )
+}
+
 const PlanningLeftColumn = ({ shifts, actions }) => {
   return (
     <section className='pl-planning-left-column'>
       <div className='pl-planning-header'>
         Shifts
+      </div>
+      <div className='pl-planning-left-column__search-box'>
+        <div className='pl-form__input'>
+          <input type='text'
+            placeholder='Search for shifts'
+          />
+        </div>
       </div>
       <div className='pl-planning-left-column__shift-titles'>
         {shifts.map((x, i) => {
@@ -85,8 +100,12 @@ const PlanningTopAxisMonth = ({ month }) => {
   const daysInMonth = _month.daysInMonth()
 
   const dates = []
+  const weekdays = []
   for (let i = 0; i < daysInMonth; ++i) {
     dates.push(i + 1)
+    if (weekdays.length < 7) {
+      weekdays.push(_month.clone().add(i, 'day').format('dd'))
+    }
   }
 
   return (
@@ -96,7 +115,11 @@ const PlanningTopAxisMonth = ({ month }) => {
       </div>
       <div className='pl-planning-top-axis__month__dates'>
         {dates.map((x) => (
-          <div className='pl-planning-cell' key={x}>{x}</div>
+          <div className='pl-planning-cell' key={x}>{x}
+            <div className='pl-planning-cell__day-of-week'>
+              {weekdays[(x - 1) % 7]}
+            </div>
+          </div>
         ))}
       </div>
     </div>
@@ -105,7 +128,7 @@ const PlanningTopAxisMonth = ({ month }) => {
 
 const PlanningShift = (props) => {
   const shift = props.shift
-  const { position, pivotDate, dayWidth, onClick } = props
+  const { pivotDate, dayWidth, onClick } = props
 
   const start = Moment(shift.startDate)
   const end = Moment(shift.endDate)
@@ -156,14 +179,16 @@ const PlanningMainArea = ({ shifts, actions }) => {
 
   return (
     <section className='pl-planning-main-area'>
-      {shifts.map((x, i) => (
-        <PlanningShift key={x._id} shift={x}
-          dayWidth={dayWidth}
-          position={i}
-          pivotDate={pivotDate}
-          onClick={getClickHandler(x._id)}
-        />
-      ))}
+      <div className='pl-planning-main-area__inner'>
+        {shifts.map((x, i) => (
+          <PlanningShift key={x._id} shift={x}
+            dayWidth={dayWidth}
+            position={i}
+            pivotDate={pivotDate}
+            onClick={getClickHandler(x._id)}
+          />
+        ))}
+      </div>
     </section>
   )
 }

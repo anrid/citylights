@@ -28,7 +28,7 @@
     min-height: 50px;
     // width: auto;
     cursor: pointer;
-    box-shadow: 0 1px 1px 0 rgba(50, 50, 50, 0.5);
+    box-shadow: 0 1px 0 0 rgba(50, 50, 50, 0.2);
     & + & {
       margin-top: 3px;
     }

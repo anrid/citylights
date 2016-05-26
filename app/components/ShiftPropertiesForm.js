@@ -41,7 +41,20 @@ export default class ShiftPropertiesForm extends Component {
     )
   }
 
-  renderFormSection () {
+  renderAssigeesSection () {
+    return (
+      <div className='pl-form__section'>
+        <div className={'pl-form__row' + (this.hasError('title') ? '--error' : '')}>
+          <div className='pl-form__section-label'>Assignees</div>
+          <div className='pl-form__input'>
+            <div className='pl-form__label'>Consultants</div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  renderShiftInformationSection () {
     const { shift } = this.props
     return (
       <div className='pl-form__section'>
@@ -57,21 +70,53 @@ export default class ShiftPropertiesForm extends Component {
           </div>
         </div>
 
+        <div className={'pl-form__row' + (this.hasError('startDate') ? '--error' : '')}>
+          <div className='pl-form__section-label'/>
+          <div className='pl-form__input'>
+            <div className='pl-form__label'>Start Date</div>
+            <input type='text'
+              placeholder='e.g. 2016-05-01 10:00'
+              defaultValue={shift.profile && shift.profile.startDate}
+              onChange={this.onValueChange('shift', 'startDate')}
+            />
+            <div className='pl-form__help-text'>
+              Date and time formats are flexible,
+              e.g. both 5/1/2016 10:00am and 2016-05-01 10:00:00
+              represent the May 1st 2016 at 10:00 am.
+            </div>
+          {this.renderError('startDate')}
+          </div>
+        </div>
+
+        <div className={'pl-form__row' + (this.hasError('endDate') ? '--error' : '')}>
+          <div className='pl-form__section-label'/>
+          <div className='pl-form__input'>
+            <div className='pl-form__label'>End Date</div>
+            <input type='text'
+              placeholder='e.g. 2016-05-01 18:00'
+              defaultValue={shift.profile && shift.profile.endDate}
+              onChange={this.onValueChange('shift', 'endDate')}
+            />
+          {this.renderError('endDate')}
+          </div>
+        </div>
+
         <div className={'pl-form__row' + (this.hasError('rateHour') ? '--error' : '')}>
           <div className='pl-form__section-label'/>
           <div className='pl-form__input'>
-            <div className='pl-form__label'>Hourly Rate (in US cents)</div>
+            <div className='pl-form__label'>Hourly Rate (US dollars)</div>
             <input type='text'
-              placeholder='e.g. 5,000'
+              placeholder='e.g. 29.95'
               defaultValue={shift.profile && shift.profile.rateHour}
               onChange={this.onValueChange('shift', 'rateHour')}
             />
             <div className='pl-form__help-text'>
-              The hourly rate in US cents. For example, type 5,000 to express $50 USD.
+              The hourly rate in USD.
             </div>
           {this.renderError('rateHour')}
           </div>
         </div>
+
       </div>
     )
   }
@@ -79,7 +124,8 @@ export default class ShiftPropertiesForm extends Component {
   render () {
     return (
       <section className='pl-shift-properties-form'>
-        {this.renderFormSection()}
+        {this.renderShiftInformationSection()}
+        {this.renderAssigeesSection()}
       </section>
     )
   }
