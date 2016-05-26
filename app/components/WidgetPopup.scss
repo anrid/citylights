@@ -1,0 +1,23 @@
+
+@import '../styles/colors';
+
+.pl-widget-popup {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  &__outside-layer {
+    background-color: transparent;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 100;
+  }
+
+  &__inside {
+    position: relative;
+    z-index: 101;
+  }
+}

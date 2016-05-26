@@ -86,14 +86,6 @@ $shift-gap: 10px;
   &__buttons {
     margin-top: 20px;
     padding: 0 14px;
-    button {
-      height: 30px;
-      .fa {
-        margin-right: 4px;
-        position: relative;
-        top: 1px;
-      }
-    }
   }
 }
 
@@ -114,7 +106,7 @@ $shift-gap: 10px;
   display: flex;
   flex-direction: column;
   position: relative;
-  padding-bottom: 10px;
+  padding-bottom: 20px;
 }
 
 .pl-planning-main-area {

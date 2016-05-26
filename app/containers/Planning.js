@@ -54,7 +54,7 @@ const PlanningLeftColumn = ({ shifts, actions }) => {
       <div className='pl-planning-left-column__shift-titles'>
         {shifts.map((x, i) => {
           return (
-            <div className='pl-planning-left-column__shift-title'>
+            <div key={i} className='pl-planning-left-column__shift-title'>
               <span className='pl-planning-left-column__shift-number'>
                 {i + 1}.
               </span>
@@ -64,7 +64,7 @@ const PlanningLeftColumn = ({ shifts, actions }) => {
         })}
       </div>
       <div className='pl-planning-left-column__buttons'>
-        <button>
+        <button className='pl-form-button'>
           <i className='fa fa-plus' />
           Add Shift
         </button>

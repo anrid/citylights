@@ -4,11 +4,14 @@ import React, { Component } from 'react'
 
 import './ShiftPropertiesForm.scss'
 
+import ConsultantsWidget from '../containers/ConsultantsWidget'
+
 export default class ShiftPropertiesForm extends Component {
   constructor (props) {
     super(props)
     this.onValueChange = this.onValueChange.bind(this)
     this.state = {
+      showConsultantsWidget: false,
       errors: null,
       shift: null
     }
@@ -42,12 +45,24 @@ export default class ShiftPropertiesForm extends Component {
   }
 
   renderAssigeesSection () {
+    const { showConsultantsWidget } = this.state
+    const toggle = () => {
+      this.setState({
+        showConsultantsWidget: !this.state.showConsultantsWidget
+      })
+    }
+
     return (
       <div className='pl-form__section'>
         <div className={'pl-form__row' + (this.hasError('title') ? '--error' : '')}>
           <div className='pl-form__section-label'>Assignees</div>
-          <div className='pl-form__input'>
+          <div className='pl-form__input' style={{ position: 'relative' }}>
             <div className='pl-form__label'>Consultants</div>
+            <button className='pl-form-button'
+              onClick={toggle}>
+              <i className='fa fa-fw fa-plus' />Assign
+            </button>
+            {showConsultantsWidget && <ConsultantsWidget onClose={toggle} />}
           </div>
         </div>
       </div>

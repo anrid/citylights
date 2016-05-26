@@ -13,19 +13,19 @@ const initialState = {
   isAppLoading: true,
   isAppLoaded: false,
 
-  isPropertiesPanelOpen: false,
-  propertiesPanelData: null,
+  // isPropertiesPanelOpen: false,
+  // propertiesPanelData: null,
   // isPropertiesPanelOpen: true,
   // propertiesPanelData: {
   //   type: 'consultant',
   //   userId: '573fe9c254ee58ce1d557a35'
   // },
   //
-  // isPropertiesPanelOpen: true,
-  // propertiesPanelData: {
-  //   type: 'shift',
-  //   shiftId: 'SF1'
-  // },
+  isPropertiesPanelOpen: true,
+  propertiesPanelData: {
+    type: 'shift',
+    shiftId: 'SF1'
+  },
 
   saved: {
     email: null,
