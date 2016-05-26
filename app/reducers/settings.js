@@ -15,6 +15,7 @@ const initialState = {
 
   isPropertiesPanelOpen: false,
   propertiesPanelData: null,
+
   // isPropertiesPanelOpen: true,
   // propertiesPanelData: {
   //   type: 'consultant',

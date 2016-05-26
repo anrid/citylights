@@ -11,15 +11,14 @@ $shift-gap: 10px;
     flex: 1;
   }
   .pl-basic-layout__main-contents {
-    width: 100%;
-    // align-self: stretch;
+    width: auto;
     min-height: 500px;
     display: flex;
   }
 }
 
 .pl-planning-box {
-  background-color: rgba(255,255,255,0.85);
+  background-color: rgba(255,255,255,0.95);
   // background-color: transparent;
   border-radius: 3px;
   box-shadow: 0 1px 2px 0 rgba(50, 50, 50, 0.35);
@@ -30,9 +29,8 @@ $shift-gap: 10px;
   flex: 1;
 }
 
-
 .pl-planning-left-column {
-  width: 200px;
+  width: 250px;
   border-radius: 3px 0 0 3px;
   align-self: stretch;
 
@@ -57,9 +55,10 @@ $shift-gap: 10px;
   }
 
   &__shift-number {
-    font-weight: 600;
+    font-weight: 400;
     font-size: 1rem;
-    padding-right: 0.4rem;
+    width: 1rem;
+    display: inline-block;
   }
 
   &__shift-title {
@@ -75,7 +74,7 @@ $shift-gap: 10px;
     text-overflow: ellipsis;
     max-width: 200px;
     overflow: hidden;
-    border-bottom: 1px dotted $c-gray300;
+    // border-bottom: 1px dotted $c-gray300;
     cursor: pointer;
     &:hover {
       color: $c-gray700;
@@ -93,11 +92,12 @@ $shift-gap: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 30px;
+  height: 40px;
   font-weight: 600;
   font-size: 1.2rem;
   border-radius: 3px 0 0 0;
-  border-bottom: 1px solid $c-gray300;
+  border-bottom: 1px solid $c-gray200;
+  background-color: white;
 }
 
 .pl-planning-main-column {
@@ -106,15 +106,16 @@ $shift-gap: 10px;
   display: flex;
   flex-direction: column;
   position: relative;
-  padding-bottom: 20px;
+  max-width: 800px;
+  overflow: auto;
+  padding-bottom: 0px;
+  border-top-right-radius: 3px;
 }
 
 .pl-planning-main-area {
   position: absolute;
-  top: 50px;
+  top: 60px;
   left: 0;
-  border-top: 1px solid $c-gray300;
-  // border: 1px solid red;
   width: 100%;
   &__inner {
     padding-top: 30px;
@@ -124,28 +125,31 @@ $shift-gap: 10px;
 .pl-planning-top-axis {
   flex: 1;
   display: flex;
+  border-top-right-radius: 3px;
 
   &__month {
     flex: 1;
     display: flex;
     flex-direction: column;
+    background: white;
+
     & + & {
-      margin-left: 2px;
+      margin-left: -1px;
     }
     &:last-child {
-      margin-right: 40px;
+      padding-right: 20px;
     }
 
     &__name {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 30px;
+      height: 40px;
       font-weight: 600;
       font-size: 1.1rem;
       border-left: 1px solid $c-gray300;
       border-right: 1px solid $c-gray300;
-      border-bottom: 1px solid $c-gray300;
+      border-bottom: 1px solid $c-gray200;
     }
     &__dates {
       flex: 1;
@@ -163,15 +167,23 @@ $shift-gap: 10px;
   flex: 1;
   width: 22px;
   text-align: center;
-  border-left: 1px dotted $c-gray200;
+  border-left: 1px solid $c-gray100;
   border-right: 0;
-  border-bottom: 1px solid $c-gray300;
+  // border-bottom: 1px solid $c-gray300;
   font-size: 0.9rem;
-  color: $c-gray500;
+  color: $c-gray400;
   font-weight: bold;
   background-color: rgba(255,255,255,0.95);
+
+  &.pl-planning-cell__week-start {
+    border-left: 2px solid $c-gray200;
+  }
+
   &:hover {
     background-color: $c-gray50;
+    .pl-planning-cell__day-of-week {
+      display: block;
+    }
   }
 
   &:first-child {
@@ -182,7 +194,10 @@ $shift-gap: 10px;
   }
 
   &__day-of-week {
-    font-weight: 400;
+    display: none;
+    position: relative;
+    top: -4px;
+    font-weight: 600;
     font-size: 0.8rem;
     position: relative;
     color: $c-gray400;

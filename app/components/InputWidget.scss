@@ -2,9 +2,8 @@
 @import '../styles/colors';
 
 .pl-input-widget {
-  width: auto;
-  min-height: 100px;
-  max-width: 300px;
+  flex: none;
+  width: 300px;
   border-radius: 3px;
   border: 1px solid $c-gray500;
   background-color: white;

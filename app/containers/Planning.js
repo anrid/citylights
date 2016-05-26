@@ -114,13 +114,17 @@ const PlanningTopAxisMonth = ({ month }) => {
         {_month.format('MMMM YYYY')}
       </div>
       <div className='pl-planning-top-axis__month__dates'>
-        {dates.map((x) => (
-          <div className='pl-planning-cell' key={x}>{x}
-            <div className='pl-planning-cell__day-of-week'>
-              {weekdays[(x - 1) % 7]}
+        {dates.map((x) => {
+          const weekday = weekdays[(x - 1) % 7]
+          const cls = weekday === 'Mo' ? 'pl-planning-cell__week-start' : ''
+          return (
+            <div className={'pl-planning-cell ' + cls} key={x}>{x}
+              <div className='pl-planning-cell__day-of-week'>
+                {weekdays[(x - 1) % 7]}
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
