@@ -7,6 +7,8 @@ import { connect } from 'react-redux'
 import './PropertiesPanel.scss'
 
 import * as settingsActions from '../actions/settingsActions'
+import * as shiftActions from '../actions/shiftActions'
+
 import { getRoute } from '../selectors/routing'
 
 import ModalPopup from '../components/ModalPopup'
@@ -95,7 +97,8 @@ function mapStateToProps (state) {
 function mapDispatchToProps (dispatch) {
   return {
     actions: bindActionCreators({
-      ...settingsActions
+      ...settingsActions,
+      ...shiftActions
     }, dispatch)
   }
 }

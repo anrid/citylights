@@ -1,7 +1,5 @@
 'use strict'
 
-import Moment from 'moment'
-
 import * as types from '../actions/actionTypes'
 
 const initialState = {
@@ -43,7 +41,7 @@ const initialState = {
 }
 
 export default function shifts (state = initialState, action = {}) {
-  let n
+  let n, updated
   switch (action.type) {
     case types.RECEIVE_SHIFT:
       const { shift } = action.payload
@@ -52,6 +50,18 @@ export default function shifts (state = initialState, action = {}) {
       n.order = [ ...new Set(n.order) ] // Ensure it’s unique.
 
       n.data[shift._id] = shift
+      return n
+
+    case types.ASSIGN_CONSULTANT:
+      const { shiftId, userId } = action.payload
+      n = { ...state }
+      updated = { ...state.data[shiftId] }
+      if (updated.assignees.find((x) => x === userId)) {
+        updated.assignees = updated.assignees.filter((x) => x !== userId)
+      } else {
+        updated.assignees = updated.assignees.concat(userId)
+      }
+      n.data[shiftId] = updated
       return n
 
     case types.RECEIVE_SHIFT_LIST:

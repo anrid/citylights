@@ -10,11 +10,18 @@ export default class ShiftPropertiesForm extends Component {
   constructor (props) {
     super(props)
     this.onValueChange = this.onValueChange.bind(this)
+    this.onAssignConsultant = this.onAssignConsultant.bind(this)
     this.state = {
       showConsultantsWidget: false,
       errors: null,
       shift: null
     }
+  }
+
+  onAssignConsultant (userId) {
+    console.log('onAssignConsultant, userId=', userId)
+    const { shift, actions } = this.props
+    actions.assignConsultant(shift._id, userId)
   }
 
   onValueChange (section, fieldName) {
@@ -46,6 +53,8 @@ export default class ShiftPropertiesForm extends Component {
 
   renderAssigeesSection () {
     const { showConsultantsWidget } = this.state
+    const { shift } = this.props
+
     const toggle = () => {
       this.setState({
         showConsultantsWidget: !this.state.showConsultantsWidget
@@ -56,13 +65,24 @@ export default class ShiftPropertiesForm extends Component {
       <div className='pl-form__section'>
         <div className={'pl-form__row' + (this.hasError('title') ? '--error' : '')}>
           <div className='pl-form__section-label'>Assignees</div>
-          <div className='pl-form__input' style={{ position: 'relative' }}>
+          <div className='pl-form__input'>
             <div className='pl-form__label'>Consultants</div>
             <button className='pl-form-button'
               onClick={toggle}>
               <i className='fa fa-fw fa-plus' />Assign
             </button>
-            {showConsultantsWidget && <ConsultantsWidget onClose={toggle} />}
+            <div className='pl-shift-properties-form__consultants-widget'>
+              {showConsultantsWidget && (
+                <ConsultantsWidget
+                  selected={shift.assignees}
+                  onSelect={this.onAssignConsultant}
+                  onClose={toggle}
+                />
+              )}
+            </div>
+            <div className='pl-shift-properties-form__assignees'>
+              {shift.assignees.map((x) => <div key={x}>{x}</div>)}
+            </div>
           </div>
         </div>
       </div>
