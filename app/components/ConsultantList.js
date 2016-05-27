@@ -6,6 +6,7 @@ import debounce from 'lodash.debounce'
 import './ConsultantList.scss'
 
 import Dropdown from './Dropdown'
+import ConsultantCard from '../containers/ConsultantCard'
 
 export default class ConsultantList extends Component {
   constructor (props) {
@@ -13,12 +14,6 @@ export default class ConsultantList extends Component {
     this.onDropdownSelect = this.onDropdownSelect.bind(this)
     this.onSearch = this.onSearch.bind(this)
     this._doSearch = debounce(this._doSearch.bind(this), 350)
-    this.onRowSelect = this.onRowSelect.bind(this)
-  }
-
-  onRowSelect (command) {
-    const { actions } = this.props
-    actions.showConsultantProperties(command.userId)
   }
 
   onDropdownSelect (command) {
@@ -41,7 +36,7 @@ export default class ConsultantList extends Component {
     return (
       <div className='pl-consultant-list__rows'>
         {consultants.map((x, i) => (
-          <ConsultantRow key={x._id} data={x} onClick={this.onRowSelect} />
+          <ConsultantCard key={x._id} userId={x._id} />
         ))}
       </div>
     )
@@ -132,23 +127,4 @@ export default class ConsultantList extends Component {
 
 ConsultantList.propTypes = {
   actions: React.PropTypes.object.isRequired
-}
-
-const ConsultantRow = ({ data, onClick }) => {
-  return (
-    <div className='pl-consultant-list__row' onClick={() => onClick({ userId: data._id })}>
-      <div className='pl-consultant-list__row-label' />
-      <div className='pl-consultant-list__row-avatar'
-        style={{ backgroundImage: `url(${data.photo})` }}
-      />
-      <div className='pl-consultant-list__row-info'>
-        <div className='pl-consultant-list__row-info__name'>
-          {data.firstName}{' '}{data.lastName}
-        </div>
-        <div className='pl-consultant-list__row-info__personal'>
-          {data.email}
-        </div>
-      </div>
-    </div>
-  )
 }

@@ -30,7 +30,7 @@ $shift-gap: 10px;
 }
 
 .pl-planning-left-column {
-  width: 250px;
+  width: 200px;
   border-radius: 3px 0 0 3px;
   align-self: stretch;
 
@@ -38,9 +38,7 @@ $shift-gap: 10px;
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    height: 40px;
-    padding: 0 12px;
-    margin-bottom: 10px;
+    padding: 12px;
     .pl-form__input {
       width: 100%;
       input {
@@ -50,40 +48,7 @@ $shift-gap: 10px;
     }
   }
 
-  &__shift-titles {
-    // display: none; // Hide for now.
-  }
-
-  &__shift-number {
-    font-weight: 400;
-    font-size: 1rem;
-    width: 1rem;
-    display: inline-block;
-  }
-
-  &__shift-title {
-    padding: 0 14px;
-    display: block;
-    height: $shift-height;
-    margin-bottom: $shift-gap;
-    color: $c-gray700;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: $shift-height;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    max-width: 200px;
-    overflow: hidden;
-    // border-bottom: 1px dotted $c-gray300;
-    cursor: pointer;
-    &:hover {
-      color: $c-gray700;
-      text-decoration: underline;
-    }
-  }
-
   &__buttons {
-    margin-top: 20px;
     padding: 0 14px;
   }
 }
@@ -223,19 +188,17 @@ $shift-gap: 10px;
   }
 
   &__title {
-    display: none;
     position: absolute;
     height: $shift-height;
-    font-size: 1rem;
+    font-size: 0.9rem;
     line-height: $shift-height;
     top: -2px;
-    left: -151px;
+    right: 0;
     white-space: nowrap;
-    text-align: right;
-    width: 150px;
     text-overflow: ellipsis;
+    max-width: 150px;
+    padding: 0 4px;
     overflow: hidden;
-    padding: 0 6px;
   }
 
   &__assignees {
@@ -244,9 +207,9 @@ $shift-gap: 10px;
     font-size: 1.1rem;
     line-height: $shift-height;
     top: -2px;
-    right: -100px;
+    right: -150px;
     white-space: nowrap;
-    width: 100px;
+    width: 150px;
     text-overflow: ellipsis;
     overflow: hidden;
     padding-left: 6px;

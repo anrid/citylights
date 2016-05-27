@@ -8,7 +8,6 @@ import { connect } from 'react-redux'
 import './Planning.scss'
 
 import * as settingsActions from '../actions/settingsActions'
-import { filteredConsultantsSelector } from '../selectors/users'
 
 import BasicLayout from './BasicLayout'
 import Loader from './Loader'
@@ -30,14 +29,6 @@ const PlanningBox = (props) => (
   </section>
 )
 
-const PlanningLeftColumnSShiftSearchBox = ({ actions }) => {
-  return (
-    <section className='pl-planning-left-axis'>
-      <div className='pl-planning-header'>%</div>
-    </section>
-  )
-}
-
 const PlanningLeftColumn = ({ shifts, actions }) => {
   return (
     <section className='pl-planning-left-column'>
@@ -50,18 +41,6 @@ const PlanningLeftColumn = ({ shifts, actions }) => {
             placeholder='Search for shifts'
           />
         </div>
-      </div>
-      <div className='pl-planning-left-column__shift-titles'>
-        {shifts.map((x, i) => {
-          return (
-            <div key={i} className='pl-planning-left-column__shift-title'>
-              <span className='pl-planning-left-column__shift-number'>
-                {i + 1}.
-              </span>
-              {x.title}
-            </div>
-          )
-        })}
       </div>
       <div className='pl-planning-left-column__buttons'>
         <button className='pl-form-button'>
@@ -132,7 +111,13 @@ const PlanningTopAxisMonth = ({ month }) => {
 
 const PlanningShift = (props) => {
   const shift = props.shift
-  const { pivotDate, dayWidth, onClick } = props
+  const users = props.users
+
+  const {
+    pivotDate,
+    dayWidth,
+    onClick
+  } = props
 
   const start = Moment(shift.startDate)
   const end = Moment(shift.endDate)
@@ -163,19 +148,24 @@ const PlanningShift = (props) => {
       break
   }
 
+  let assignees = null
+  if (shift.assignees.length) {
+    assignees = ' — ' + shift.assignees.map((x) => users[x].firstName).join(', ')
+  }
+
   return (
     <div className={'pl-planning-shift ' + cls} style={style} onClick={onClick}>
       <div className='pl-planning-shift__title'>
         {shift.title}
       </div>
       <div className='pl-planning-shift__assignees'>
-        — June, Ace
+        {assignees}
       </div>
     </div>
   )
 }
 
-const PlanningMainArea = ({ shifts, actions }) => {
+const PlanningMainArea = ({ shifts, users, actions }) => {
   const pivotDate = Moment('2016-06-01')
   const dayWidth = 22
 
@@ -185,7 +175,9 @@ const PlanningMainArea = ({ shifts, actions }) => {
     <section className='pl-planning-main-area'>
       <div className='pl-planning-main-area__inner'>
         {shifts.map((x, i) => (
-          <PlanningShift key={x._id} shift={x}
+          <PlanningShift key={x._id}
+            shift={x}
+            users={users}
             dayWidth={dayWidth}
             position={i}
             pivotDate={pivotDate}
@@ -199,10 +191,9 @@ const PlanningMainArea = ({ shifts, actions }) => {
 
 function mapStateToProps (state) {
   // console.log('Planning, state=', state)
-  const shifts = state.shifts.order.map((x) => (
-    state.shifts.data[x]
-  ))
+  const shifts = state.shifts.order.map((x) => state.shifts.data[x])
   return {
+    users: state.users.data,
     shifts
   }
 }

@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "start": "parallelshell 'npm run dev' 'npm run api-dev'",
-    "dev": "webpack-dev-server --open",
+    "dev": "SKIP_TLS=1 webpack-dev-server --open",
     "build": "webpack --progress",
-    "api-dev": "NODE_ENV=development nodemon --watch api/ api/server.js",
+    "api-dev": "SKIP_TLS=1 NODE_ENV=development nodemon --watch api/ api/server.js",
     "api": "NODE_ENV=production node api/server.js",
     "release": "node api/lib/s3.js ../../build/manifest.json",
     "test": "lab -v -C ./test",

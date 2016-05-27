@@ -9,4 +9,14 @@
       left: 110px; // Offset from the button.
     }
   }
+
+  &__assignees {
+    width: 250px;
+    .pl-consultant-card__row {
+      box-shadow: 0 1px 1px 0 rgba(50, 50, 50, 0.3);
+      &:first-child {
+        margin-top: 10px;
+      }
+    }
+  }
 }

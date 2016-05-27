@@ -5,6 +5,7 @@ import React, { Component } from 'react'
 import './ShiftPropertiesForm.scss'
 
 import ConsultantsWidget from '../containers/ConsultantsWidget'
+import ConsultantCard from '../containers/ConsultantCard'
 
 export default class ShiftPropertiesForm extends Component {
   constructor (props) {
@@ -81,7 +82,7 @@ export default class ShiftPropertiesForm extends Component {
               )}
             </div>
             <div className='pl-shift-properties-form__assignees'>
-              {shift.assignees.map((x) => <div key={x}>{x}</div>)}
+              {shift.assignees.map((x) => <ConsultantCard key={x} userId={x} />)}
             </div>
           </div>
         </div>

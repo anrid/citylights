@@ -9,7 +9,7 @@ const HtmlPlugin = require('html-webpack-plugin')
 const AssetsPlugin = require('assets-webpack-plugin')
 
 const TARGET = process.env.npm_lifecycle_event || '(no target)'
-const API_HOST = process.env.SKIP_TLS ? 'dev-home.fina.io' : process.env.CITYLIGHTS_HOST
+const API_HOST = process.env.SKIP_TLS ? 'devbox.citylights.io' : process.env.CITYLIGHTS_HOST
 const API_PORT = process.env.CITYLIGHTS_PORT
 
 const production = TARGET.match(/build/)
