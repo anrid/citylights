@@ -7,7 +7,7 @@ const initialState = {
   data: {
     SF1: {
       _id: 'SF1',
-      assignees: ['573fe9c254ee58ce1d557a35', '573fca6d03fb7fec1ab73381'],
+      assignees: [],
       startDate: '2016-06-02 10:00:00',
       endDate: '2016-06-02 18:00:00',
       color: 1,
