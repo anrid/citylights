@@ -20,3 +20,13 @@ export function createShift (startDate) {
     })
   }
 }
+
+export function updateShift (shiftId, key, value) {
+  return (dispatch, getState) => {
+    dispatch({
+      type: types.UPDATE_SHIFT,
+      payload: { shiftId, key, value }
+    })
+    // TODO: Send to server !
+  }
+}

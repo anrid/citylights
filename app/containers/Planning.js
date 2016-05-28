@@ -107,9 +107,8 @@ const PlanningTopAxisMonth = ({ month, shifts, actions }) => {
               style={cellStyle}
               onClick={() => addNewShift(x)}
             >
-              <div className='pl-planning-cell__date'>
-                {x}
-              </div>
+              <div className='pl-planning-cell__date'>{x}</div>
+
               <div className='pl-planning-cell__day-of-week'>
                 {weekdays[(x - 1) % 7]}
               </div>

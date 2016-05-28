@@ -21,15 +21,20 @@ export default class PlanningShift extends Component {
     const end = Moment(shift.endDate)
     const pivot = Moment(pivotDate)
 
-    const shiftDays = end.diff(start, 'days') || 1
     let daysFromPivot = start.diff(pivot, 'days')
     if (daysFromPivot < 0) {
       // TODO: Handle start dates before pivot date.
       daysFromPivot = 0
     }
 
+    let shiftDays = end.diff(start, 'days')
+    if (shiftDays < 0) {
+      // TODO: Handle end dates before start date.
+      shiftDays = 0
+    }
+
     const style = {
-      width: dayWidth * shiftDays,
+      width: dayWidth + (dayWidth * shiftDays),
       left: dayWidth * daysFromPivot
     }
     // const barsHeight = { height: 52 + position * 32 }

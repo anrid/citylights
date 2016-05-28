@@ -43,61 +43,83 @@ const initialState = {
   }
 }
 
+function createShift (state, payload) {
+  const n = { ...state }
+  const { startDate, ownerId } = payload
+  const created = {
+    _id: ObjectId.generate(),
+    ownerId,
+    assignees: [],
+    startDate,
+    endDate: Moment(startDate).add(8, 'hours').format(),
+    color: 1,
+    title: '[New, untitled shift]'
+  }
+  n.order = n.order.concat(created._id)
+  n.data[created._id] = created
+  return n
+}
+
+function updateShift (state, payload) {
+  const n = { ...state }
+  const { shiftId, key, value } = payload
+  const updated = { ...state.data[shiftId] }
+  updated[key] = value
+  updated.updated = new Date()
+  n.data[updated._id] = updated
+  return n
+}
+
+function receiveShift (state, payload) {
+  const n = { ...state }
+  const { shift } = payload
+  n.order = n.order.concat(shift._id)
+  n.order = [ ...new Set(n.order) ] // Ensure it’s unique.
+  n.data[shift._id] = shift
+  return n
+}
+
+function assignConsultant (state, payload) {
+  const n = { ...state }
+  const { shiftId, userId } = payload
+  const updated = { ...state.data[shiftId] }
+  if (updated.assignees.find((x) => x === userId)) {
+    updated.assignees = updated.assignees.filter((x) => x !== userId)
+  } else {
+    updated.assignees = updated.assignees.concat(userId)
+  }
+  n.data[shiftId] = updated
+  return n
+}
+
+function receiveShiftList (state, payload) {
+  const n = { ...state }
+  const { shiftList } = payload
+
+  // Replace all local state.
+  n.order = shiftList.map((x) => x._id)
+  n.order = [ ...new Set(n.order) ]
+  n.order.sort()
+
+  n.data = shiftList.reduce((acc, x) => {
+    acc[x._id] = x
+    return acc
+  }, { })
+  return n
+}
+
 export default function shifts (state = initialState, action = {}) {
-  let n, updated, created
   switch (action.type) {
     case types.CREATE_SHIFT:
-      n = { ...state }
-      const { startDate, ownerId } = action.payload
-      created = {
-        _id: ObjectId.generate(),
-        ownerId,
-        assignees: [],
-        startDate,
-        endDate: Moment(startDate).add(8, 'hours').format(),
-        color: 1,
-        title: '[New, untitled shift]'
-      }
-      n.order = n.order.concat(created._id)
-      n.data[created._id] = created
-      return n
-
+      return createShift(state, action.payload)
+    case types.UPDATE_SHIFT:
+      return updateShift(state, action.payload)
     case types.RECEIVE_SHIFT:
-      const { shift } = action.payload
-      n = { ...state }
-      n.order = n.order.concat(shift._id)
-      n.order = [ ...new Set(n.order) ] // Ensure it’s unique.
-
-      n.data[shift._id] = shift
-      return n
-
+      return receiveShift(state, action.payload)
     case types.ASSIGN_CONSULTANT:
-      const { shiftId, userId } = action.payload
-      n = { ...state }
-      updated = { ...state.data[shiftId] }
-      if (updated.assignees.find((x) => x === userId)) {
-        updated.assignees = updated.assignees.filter((x) => x !== userId)
-      } else {
-        updated.assignees = updated.assignees.concat(userId)
-      }
-      n.data[shiftId] = updated
-      return n
-
+      return assignConsultant(state, action.payload)
     case types.RECEIVE_SHIFT_LIST:
-      const { shiftList } = action.payload
-      n = { ...state }
-
-      // Replace all local state.
-      n.order = shiftList.map((x) => x._id)
-      n.order = [ ...new Set(n.order) ]
-      n.order.sort()
-
-      n.data = shiftList.reduce((acc, x) => {
-        acc[x._id] = x
-        return acc
-      }, { })
-      return n
-
+      return receiveShiftList(state, action.payload)
     default:
       return state
   }

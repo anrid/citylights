@@ -12,6 +12,7 @@ export default class ShiftPropertiesForm extends Component {
     super(props)
     this.onValueChange = this.onValueChange.bind(this)
     this.onAssignConsultant = this.onAssignConsultant.bind(this)
+    this.onSave = this.onSave.bind(this)
     this.state = {
       showConsultantsWidget: false,
       errors: null,
@@ -33,6 +34,17 @@ export default class ShiftPropertiesForm extends Component {
       )
       this.setState({ shift })
     }
+  }
+
+  onSave () {
+    const newShift = this.state.shift
+    const { shift, actions } = this.props
+    Object.keys(newShift).forEach((x) => {
+      if (shift[x] !== newShift[x]) {
+        console.log('Saving', x, newShift[x])
+        actions.updateShift(shift._id, x, newShift[x])
+      }
+    })
   }
 
   hasError (name) {
@@ -101,6 +113,7 @@ export default class ShiftPropertiesForm extends Component {
             <input type='text'
               defaultValue={shift.title}
               onChange={this.onValueChange('shift', 'title')}
+              onBlur={this.onSave}
             />
           {this.renderError('title')}
           </div>
@@ -112,8 +125,9 @@ export default class ShiftPropertiesForm extends Component {
             <div className='pl-form__label'>Start Date</div>
             <input type='text'
               placeholder='e.g. 2016-05-01 10:00'
-              defaultValue={shift.profile && shift.profile.startDate}
+              defaultValue={shift.startDate}
               onChange={this.onValueChange('shift', 'startDate')}
+              onBlur={this.onSave}
             />
             <div className='pl-form__help-text'>
               Date and time formats are flexible,
@@ -130,8 +144,9 @@ export default class ShiftPropertiesForm extends Component {
             <div className='pl-form__label'>End Date</div>
             <input type='text'
               placeholder='e.g. 2016-05-01 18:00'
-              defaultValue={shift.profile && shift.profile.endDate}
+              defaultValue={shift.endDate}
               onChange={this.onValueChange('shift', 'endDate')}
+              onBlur={this.onSave}
             />
           {this.renderError('endDate')}
           </div>
@@ -143,8 +158,9 @@ export default class ShiftPropertiesForm extends Component {
             <div className='pl-form__label'>Hourly Rate (US dollars)</div>
             <input type='text'
               placeholder='e.g. 29.95'
-              defaultValue={shift.profile && shift.profile.rateHour}
+              defaultValue={shift.rateHour}
               onChange={this.onValueChange('shift', 'rateHour')}
+              onBlur={this.onSave}
             />
             <div className='pl-form__help-text'>
               The hourly rate in USD.
