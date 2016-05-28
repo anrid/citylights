@@ -1,5 +1,8 @@
 'use strict'
 
+import Moment from 'moment'
+import ObjectId from 'bson-objectid'
+
 import * as types from '../actions/actionTypes'
 
 const initialState = {
@@ -41,8 +44,24 @@ const initialState = {
 }
 
 export default function shifts (state = initialState, action = {}) {
-  let n, updated
+  let n, updated, created
   switch (action.type) {
+    case types.CREATE_SHIFT:
+      n = { ...state }
+      const { startDate, ownerId } = action.payload
+      created = {
+        _id: ObjectId.generate(),
+        ownerId,
+        assignees: [],
+        startDate,
+        endDate: Moment(startDate).add(8, 'hours').format(),
+        color: 1,
+        title: '[New, untitled shift]'
+      }
+      n.order = n.order.concat(created._id)
+      n.data[created._id] = created
+      return n
+
     case types.RECEIVE_SHIFT:
       const { shift } = action.payload
       n = { ...state }

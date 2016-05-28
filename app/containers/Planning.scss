@@ -1,10 +1,6 @@
 
 @import '../styles/colors';
 
-// Shift height.
-$shift-height: 22px;
-$shift-gap: 10px;
-
 .pl-planning {
   .pl-basic-layout__main {
     width: 100%;
@@ -63,6 +59,7 @@ $shift-gap: 10px;
   border-radius: 3px 0 0 0;
   border-bottom: 1px solid $c-gray200;
   background-color: white;
+  flex: none;
 }
 
 .pl-planning-main-column {
@@ -72,16 +69,17 @@ $shift-gap: 10px;
   flex-direction: column;
   position: relative;
   max-width: 800px;
+  max-height: 600px;
   overflow: auto;
   padding-bottom: 0px;
   border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
 }
 
 .pl-planning-main-area {
   position: absolute;
   top: 60px;
   left: 0;
-  width: 100%;
   &__inner {
     padding-top: 30px;
   }
@@ -91,6 +89,7 @@ $shift-gap: 10px;
   flex: 1;
   display: flex;
   border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
 
   &__month {
     flex: 1;
@@ -115,6 +114,7 @@ $shift-gap: 10px;
       border-left: 1px solid $c-gray300;
       border-right: 1px solid $c-gray300;
       border-bottom: 1px solid $c-gray200;
+      flex: none;
     }
     &__dates {
       flex: 1;
@@ -139,6 +139,7 @@ $shift-gap: 10px;
   color: $c-gray400;
   font-weight: bold;
   background-color: rgba(255,255,255,0.95);
+  cursor: copy;
 
   &.pl-planning-cell__week-start {
     border-left: 2px solid $c-gray200;
@@ -170,143 +171,4 @@ $shift-gap: 10px;
     height: 22px;
     line-height: 22px;
   }
-}
-
-.pl-planning-shift {
-  position: relative;
-  height: $shift-height;
-  min-width: 22px;
-  cursor: pointer;
-  margin-bottom: $shift-gap;
-
-  &:hover {
-    .pl-planning-shift__inner {
-      background-color: rgba($c-teal400, 0.9);
-    }
-    .pl-planning-shift__left-bar,
-    .pl-planning-shift__right-bar {
-      display: block;
-    }
-    .pl-planning-shift__info-box {
-      display: flex;
-    }
-  }
-
-  &__inner {
-    border-radius: 3px;
-    // Default color is teal.
-    background-color: rgba($c-teal300, 0.9);
-    border: 2px solid $c-teal500;
-    height: 100%;
-    width: 100%;
-    z-index: 2;
-    position: relative;
-  }
-
-  &__left-bar {
-    display: none;
-    width: 2px;
-    background-color: $c-gray200;
-    height: 100%;
-    position: absolute;
-    bottom: 20px;
-    left: 0px;
-    z-index: 1;
-  }
-
-  &__right-bar {
-    display: none;
-    width: 2px;
-    background-color: $c-gray200;
-    height: 100%;
-    position: absolute;
-    bottom: 20px;
-    right: -.5px;
-    z-index: 1;
-  }
-
-  &__info-box {
-    display: none;
-    justify-content: flex-start;
-    align-items: center;
-    position: absolute;
-    border: 1px solid $c-gray300;
-    border-radius: 3px;
-    background-color: rgba(255,255,255,0.9);
-    top: -26px;
-    left: 0;
-    font-size: 0.9rem;
-    line-height: $shift-height;
-    height: 22px;
-    width: 150px;
-    padding: 0 6px;
-    z-index: 3;
-  }
-
-  &__title {
-    position: absolute;
-    height: $shift-height;
-    font-size: 0.9rem;
-    line-height: $shift-height;
-    top: 0;
-    right: 0;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    max-width: 150px;
-    padding: 0 4px;
-    overflow: hidden;
-    z-index: 3;
-  }
-
-  &__assignees {
-    position: absolute;
-    height: $shift-height;
-    font-size: 1.1rem;
-    line-height: $shift-height;
-    top: 0;
-    right: -150px;
-    white-space: nowrap;
-    width: 150px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    padding-left: 6px;
-    z-index: 3;
-  }
-
-  &.pl-planning-shift--green {
-    .pl-planning-shift__inner {
-      background-color: rgba($c-green300, 0.9);
-      border: 2px solid $c-green500;
-    }
-    &:hover {
-      .pl-planning-shift__inner {
-        background-color: rgba($c-green400, 0.9);
-      }
-    }
-  }
-
-  &.pl-planning-shift--red {
-    .pl-planning-shift__inner {
-      background-color: rgba($c-red300, 0.9);
-      border: 2px solid $c-red500;
-    }
-    &:hover {
-      .pl-planning-shift__inner {
-        background-color: rgba($c-red400, 0.9);
-      }
-    }
-  }
-
-  &.pl-planning-shift--blue {
-    .pl-planning-shift__inner {
-      background-color: rgba($c-blue300, 0.9);
-      border: 2px solid $c-blue500;
-    }
-    &:hover {
-      .pl-planning-shift__inner {
-        background-color: rgba($c-blue400, 0.9);
-      }
-    }
-  }
-
 }

@@ -8,9 +8,11 @@ import { connect } from 'react-redux'
 import './Planning.scss'
 
 import * as settingsActions from '../actions/settingsActions'
+import * as shiftActions from '../actions/shiftActions'
 
 import BasicLayout from './BasicLayout'
 import Loader from './Loader'
+import PlanningShift from '../components/PlanningShift'
 
 class Planning extends Component {
   render () {
@@ -54,19 +56,21 @@ const PlanningLeftColumn = ({ shifts, actions }) => {
 
 const PlanningMainColumn = (props) => (
   <section className='pl-planning-main-column'>
-    <PlanningTopAxis />
+    <PlanningTopAxis {...props} />
     <PlanningMainArea {...props} />
   </section>
 )
 
-const PlanningTopAxis = () => (
-  <section className='pl-planning-top-axis'>
-    <PlanningTopAxisMonth month='2016-06' />
-    <PlanningTopAxisMonth month='2016-07' />
-  </section>
-)
+const PlanningTopAxis = (props) => {
+  return (
+    <section className='pl-planning-top-axis'>
+      <PlanningTopAxisMonth month='2016-06' {...props} />
+      <PlanningTopAxisMonth month='2016-07' {...props} />
+    </section>
+  )
+}
 
-const PlanningTopAxisMonth = ({ month }) => {
+const PlanningTopAxisMonth = ({ month, shifts, actions }) => {
   const _month = Moment(month, 'YYYY-MM')
   const daysInMonth = _month.daysInMonth()
 
@@ -77,6 +81,15 @@ const PlanningTopAxisMonth = ({ month }) => {
     if (weekdays.length < 7) {
       weekdays.push(_month.clone().add(i, 'day').format('dd'))
     }
+  }
+  const addNewShift = (date) => {
+    const startDate = _month.clone().add(date - 1, 'days').format()
+    console.log('Adding a shift starting:', startDate)
+    actions.createShift(startDate)
+  }
+
+  const cellStyle = {
+    minHeight: 200 + (shifts.length * 44)
   }
 
   return (
@@ -89,7 +102,11 @@ const PlanningTopAxisMonth = ({ month }) => {
           const weekday = weekdays[(x - 1) % 7]
           const cls = weekday === 'Mo' ? 'pl-planning-cell__week-start' : ''
           return (
-            <div className={'pl-planning-cell ' + cls} key={x}>
+            <div className={'pl-planning-cell ' + cls}
+              key={x}
+              style={cellStyle}
+              onClick={() => addNewShift(x)}
+            >
               <div className='pl-planning-cell__date'>
                 {x}
               </div>
@@ -99,67 +116,6 @@ const PlanningTopAxisMonth = ({ month }) => {
             </div>
           )
         })}
-      </div>
-    </div>
-  )
-}
-
-const PlanningShift = (props) => {
-  const shift = props.shift
-  const users = props.users
-
-  const {
-    pivotDate,
-    dayWidth,
-    onClick,
-    position
-  } = props
-
-  const start = Moment(shift.startDate)
-  const end = Moment(shift.endDate)
-  const pivot = Moment(pivotDate)
-
-  const shiftDays = end.diff(start, 'days') || 1
-  let daysFromPivot = start.diff(pivot, 'days')
-  if (daysFromPivot < 0) {
-    // TODO: Handle start dates before pivot date.
-    daysFromPivot = 0
-  }
-
-  const style = {
-    width: dayWidth * shiftDays,
-    left: dayWidth * daysFromPivot
-  }
-  // const barsHeight = { height: 52 + position * 32 }
-
-  let cls = ''
-  switch (shift.color) {
-    case 2:
-      cls += 'pl-planning-shift--red'
-      break
-    case 3:
-      cls += 'pl-planning-shift--green'
-      break
-    case 4:
-      cls += 'pl-planning-shift--blue'
-      break
-  }
-
-  let assignees = null
-  if (shift.assignees.length) {
-    assignees = ' — ' + shift.assignees.map((x) => users[x].firstName).join(', ')
-  }
-
-  // <span>[{start.format('HH:mm')}]{' '}</span>
-
-  return (
-    <div className={'pl-planning-shift ' + cls} style={style} onClick={onClick}>
-      <div className='pl-planning-shift__inner' />
-      <div className='pl-planning-shift__title'>
-        <span>{shift.title}</span>
-      </div>
-      <div className='pl-planning-shift__assignees'>
-        {assignees}
       </div>
     </div>
   )
@@ -201,6 +157,7 @@ function mapStateToProps (state) {
 function mapDispatchToProps (dispatch) {
   return {
     actions: bindActionCreators({
+      ...shiftActions,
       ...settingsActions
     }, dispatch)
   }
