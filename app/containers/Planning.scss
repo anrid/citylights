@@ -129,7 +129,7 @@ $shift-gap: 10px;
   display: flex;
   flex-direction: column;
   align-self: stretch;
-  flex: 1;
+  flex: none;
   width: 22px;
   text-align: center;
   border-left: 1px solid $c-gray100;
@@ -176,15 +176,71 @@ $shift-gap: 10px;
   position: relative;
   height: $shift-height;
   min-width: 22px;
-  border-radius: 3px;
   cursor: pointer;
-  // Default color is teal.
-  background-color: rgba($c-teal300, 0.9);
-  border: 2px solid $c-teal500;
   margin-bottom: $shift-gap;
 
   &:hover {
-    background-color: rgba($c-teal400, 0.9);
+    .pl-planning-shift__inner {
+      background-color: rgba($c-teal400, 0.9);
+    }
+    .pl-planning-shift__left-bar,
+    .pl-planning-shift__right-bar {
+      display: block;
+    }
+    .pl-planning-shift__info-box {
+      display: flex;
+    }
+  }
+
+  &__inner {
+    border-radius: 3px;
+    // Default color is teal.
+    background-color: rgba($c-teal300, 0.9);
+    border: 2px solid $c-teal500;
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+    position: relative;
+  }
+
+  &__left-bar {
+    display: none;
+    width: 2px;
+    background-color: $c-gray200;
+    height: 100%;
+    position: absolute;
+    bottom: 20px;
+    left: 0px;
+    z-index: 1;
+  }
+
+  &__right-bar {
+    display: none;
+    width: 2px;
+    background-color: $c-gray200;
+    height: 100%;
+    position: absolute;
+    bottom: 20px;
+    right: -.5px;
+    z-index: 1;
+  }
+
+  &__info-box {
+    display: none;
+    justify-content: flex-start;
+    align-items: center;
+    position: absolute;
+    border: 1px solid $c-gray300;
+    border-radius: 3px;
+    background-color: rgba(255,255,255,0.9);
+    top: -26px;
+    left: 0;
+    font-size: 0.9rem;
+    line-height: $shift-height;
+    height: 22px;
+    width: 150px;
+    padding: 0 6px;
+    z-index: 3;
   }
 
   &__title {
@@ -192,13 +248,14 @@ $shift-gap: 10px;
     height: $shift-height;
     font-size: 0.9rem;
     line-height: $shift-height;
-    top: -2px;
+    top: 0;
     right: 0;
     white-space: nowrap;
     text-overflow: ellipsis;
     max-width: 150px;
     padding: 0 4px;
     overflow: hidden;
+    z-index: 3;
   }
 
   &__assignees {
@@ -206,36 +263,49 @@ $shift-gap: 10px;
     height: $shift-height;
     font-size: 1.1rem;
     line-height: $shift-height;
-    top: -2px;
+    top: 0;
     right: -150px;
     white-space: nowrap;
     width: 150px;
     text-overflow: ellipsis;
     overflow: hidden;
     padding-left: 6px;
-  }
-
-  &.pl-planning-shift--red {
-    background-color: rgba($c-red300, 0.9);
-    border: 2px solid $c-red500;
-    &:hover {
-      background-color: rgba($c-red400, 0.9);
-    }
+    z-index: 3;
   }
 
   &.pl-planning-shift--green {
-    background-color: rgba($c-green300, 0.9);
-    border: 2px solid $c-green500;
+    .pl-planning-shift__inner {
+      background-color: rgba($c-green300, 0.9);
+      border: 2px solid $c-green500;
+    }
     &:hover {
-      background-color: rgba($c-green400, 0.9);
+      .pl-planning-shift__inner {
+        background-color: rgba($c-green400, 0.9);
+      }
+    }
+  }
+
+  &.pl-planning-shift--red {
+    .pl-planning-shift__inner {
+      background-color: rgba($c-red300, 0.9);
+      border: 2px solid $c-red500;
+    }
+    &:hover {
+      .pl-planning-shift__inner {
+        background-color: rgba($c-red400, 0.9);
+      }
     }
   }
 
   &.pl-planning-shift--blue {
-    background-color: rgba($c-blue300, 0.9);
-    border: 2px solid $c-blue500;
+    .pl-planning-shift__inner {
+      background-color: rgba($c-blue300, 0.9);
+      border: 2px solid $c-blue500;
+    }
     &:hover {
-      background-color: rgba($c-blue400, 0.9);
+      .pl-planning-shift__inner {
+        background-color: rgba($c-blue400, 0.9);
+      }
     }
   }
 

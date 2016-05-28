@@ -52,14 +52,6 @@ const PlanningLeftColumn = ({ shifts, actions }) => {
   )
 }
 
-const PlanningLeftAxis = ({ shifts, actions }) => {
-  return (
-    <section className='pl-planning-left-axis'>
-      <div className='pl-planning-header'>%</div>
-    </section>
-  )
-}
-
 const PlanningMainColumn = (props) => (
   <section className='pl-planning-main-column'>
     <PlanningTopAxis />
@@ -97,7 +89,10 @@ const PlanningTopAxisMonth = ({ month }) => {
           const weekday = weekdays[(x - 1) % 7]
           const cls = weekday === 'Mo' ? 'pl-planning-cell__week-start' : ''
           return (
-            <div className={'pl-planning-cell ' + cls} key={x}>{x}
+            <div className={'pl-planning-cell ' + cls} key={x}>
+              <div className='pl-planning-cell__date'>
+                {x}
+              </div>
               <div className='pl-planning-cell__day-of-week'>
                 {weekdays[(x - 1) % 7]}
               </div>
@@ -116,7 +111,8 @@ const PlanningShift = (props) => {
   const {
     pivotDate,
     dayWidth,
-    onClick
+    onClick,
+    position
   } = props
 
   const start = Moment(shift.startDate)
@@ -134,6 +130,7 @@ const PlanningShift = (props) => {
     width: dayWidth * shiftDays,
     left: dayWidth * daysFromPivot
   }
+  // const barsHeight = { height: 52 + position * 32 }
 
   let cls = ''
   switch (shift.color) {
@@ -153,10 +150,13 @@ const PlanningShift = (props) => {
     assignees = ' — ' + shift.assignees.map((x) => users[x].firstName).join(', ')
   }
 
+  // <span>[{start.format('HH:mm')}]{' '}</span>
+
   return (
     <div className={'pl-planning-shift ' + cls} style={style} onClick={onClick}>
+      <div className='pl-planning-shift__inner' />
       <div className='pl-planning-shift__title'>
-        {shift.title}
+        <span>{shift.title}</span>
       </div>
       <div className='pl-planning-shift__assignees'>
         {assignees}
