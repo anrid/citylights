@@ -62,8 +62,9 @@ const PlanningMainColumn = (props) => (
 )
 
 const PlanningTopAxis = (props) => {
+  const cls = props.overlay ? 'pl-planning-top-axis--overlay' : ''
   return (
-    <section className='pl-planning-top-axis'>
+    <section className={'pl-planning-top-axis ' + cls}>
       <PlanningTopAxisMonth month='2016-06' {...props} />
       <PlanningTopAxisMonth month='2016-07' {...props} />
     </section>
@@ -120,7 +121,8 @@ const PlanningTopAxisMonth = ({ month, shifts, actions }) => {
   )
 }
 
-const PlanningMainArea = ({ shifts, users, actions }) => {
+const PlanningMainArea = (props) => {
+  const { shifts, users, actions } = props
   const pivotDate = Moment('2016-06-01')
   const dayWidth = 22
 

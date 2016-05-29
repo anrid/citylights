@@ -29,6 +29,7 @@
   width: 200px;
   border-radius: 3px 0 0 3px;
   align-self: stretch;
+  border-right: 1px solid $c-gray300;
 
   &__search-box {
     display: flex;
@@ -80,6 +81,8 @@
   position: absolute;
   top: 60px;
   left: 0;
+  width: 0;
+  height: 0;
   &__inner {
     padding-top: 30px;
   }
@@ -91,6 +94,13 @@
   border-top-right-radius: 3px;
   border-bottom-right-radius: 3px;
 
+  &.pl-planning-top-axis--overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 2px solid red;
+  }
+
   &__month {
     flex: 1;
     display: flex;
@@ -99,6 +109,9 @@
 
     & + & {
       margin-left: -1px;
+      .pl-planning-top-axis__month__name {
+        border-left: 1px solid $c-gray300;
+      }
     }
     &:last-child {
       padding-right: 20px;
@@ -111,7 +124,7 @@
       height: 40px;
       font-weight: 600;
       font-size: 1.1rem;
-      border-left: 1px solid $c-gray300;
+      // border-left: 1px solid $c-gray300;
       border-right: 1px solid $c-gray300;
       border-bottom: 1px solid $c-gray200;
       flex: none;
@@ -120,7 +133,7 @@
       flex: 1;
       display: flex;
       justify-content: flex-start;
-      align-items: center;
+      align-items: flex-start;
     }
   }
 }
@@ -153,7 +166,7 @@
   }
 
   &:first-child {
-    border-left: 1px solid $c-gray300;
+    border-left: 0;
   }
   &:last-child {
     border-right: 1px solid $c-gray300;
