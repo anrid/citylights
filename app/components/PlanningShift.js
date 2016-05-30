@@ -1,11 +1,63 @@
 'use strict'
 
 import React, { Component } from 'react'
+import ReactDOM from 'react-dom'
 import Moment from 'moment'
+import Draggable from 'react-draggable'
+import { ResizableBox } from 'react-resizable'
 
 import './PlanningShift.scss'
 
 export default class PlanningShift extends Component {
+  constructor (props) {
+    super(props)
+    this.onDragStart = this.onDragStart.bind(this)
+    this.onDragStop = this.onDragStop.bind(this)
+    this.onResizeStart = this.onResizeStart.bind(this)
+    this.onResizeStop = this.onResizeStop.bind(this)
+  }
+
+  onDragStart (e, data) {
+    // console.log('onDragStart, data=', data)
+  }
+
+  onDragStop (e, data) {
+    console.log('onDragStop, data=', data)
+    const { shift, dayWidth, updateShiftAction } = this.props
+
+    let days = Math.floor(data.lastX / dayWidth)
+    if (days !== 0) {
+      const newStartDate = Moment(shift.startDate).add(days, 'days')
+      const newEndDate = Moment(shift.endDate).add(days, 'days')
+      console.log('days:', days)
+      console.log('old date range:', Moment(shift.startDate).format(), '-', Moment(shift.endDate).format())
+      console.log('new date range:', newStartDate.format(), '-', newEndDate.format())
+      updateShiftAction(shift._id, 'startDate', newStartDate.format())
+      updateShiftAction(shift._id, 'endDate', newEndDate.format())
+    }
+  }
+
+  onResizeStart (e, data) {
+    // console.log('onResizeStart, data=', data)
+  }
+
+  onResizeStop (e, data) {
+    // console.log('onResizeStop, data=', data)
+    const { shift, dayWidth, updateShiftAction } = this.props
+    const node = ReactDOM.findDOMNode(this.refs.shiftSize)
+    let days = Math.floor(node.getBoundingClientRect().width / dayWidth)
+    if (days < 1) {
+      days = 1
+    }
+    const endDateHours = Moment(shift.endDate).hours()
+    const newEndDate = Moment(shift.startDate)
+    .add(days - 1, 'days')
+    .hours(endDateHours)
+    console.log('days:', days)
+    console.log('old end date:', Moment(shift.endDate).format())
+    console.log('new end date:', newEndDate.format())
+    updateShiftAction(shift._id, 'endDate', newEndDate.format())
+  }
 
   render () {
     const {
@@ -63,13 +115,29 @@ export default class PlanningShift extends Component {
     // <span>[{start.format('HH:mm')}]{' '}</span>
 
     return (
-      <div className={'pl-planning-shift ' + cls} style={style} onClick={onClick}>
-        <div className='pl-planning-shift__inner' />
-        <div className='pl-planning-shift__title'>
-          <span>{shift.title}</span>
+      <Draggable
+        axis='x'
+        grid={[dayWidth, dayWidth]}
+        onStart={this.onDragStart}
+        onStop={this.onDragStop}
+        cancel='.react-resizable-handle'
+      >
+        <div className={'pl-planning-shift ' + cls} style={style}>
+          <ResizableBox
+            onResizeStart={this.onResizeStart}
+            onResizeStop={this.onResizeStop}
+            width={style.width} height={dayWidth}
+            minConstraints={[dayWidth, dayWidth]} maxConstraints={[1000, dayWidth]}
+            draggableOpts={{ axis: 'x', grid: [dayWidth, dayWidth] }}
+          >
+            <div className='pl-planning-shift__inner' ref='shiftSize' />
+          </ResizableBox>
+          <div className='pl-planning-shift__title' onClick={onClick}>
+            <span>{shift.title}</span>
+          </div>
+          {assignees}
         </div>
-        {assignees}
-      </div>
+      </Draggable>
     )
   }
 }
@@ -80,5 +148,6 @@ PlanningShift.propTypes = {
   dayWidth: React.PropTypes.number.isRequired,
   position: React.PropTypes.number.isRequired,
   pivotDate: React.PropTypes.any.isRequired,
-  onClick: React.PropTypes.func.isRequired
+  onClick: React.PropTypes.func.isRequired,
+  updateShiftAction: React.PropTypes.func.isRequired
 }

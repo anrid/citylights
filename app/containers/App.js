@@ -48,6 +48,7 @@ import Consultants from '../containers/Consultants'
 import Settings from '../containers/Settings'
 import ComponentBuilder from '../containers/ComponentBuilder'
 import Planning from '../containers/Planning'
+import Grid from '../containers/Grid'
 
 const NoMatch = () => <div>NoMatch.</div>
 const Logout = () => <div>Logout.</div>
@@ -92,6 +93,7 @@ export default class App extends Component {
           </Route>
           <Route path='/planning' component={Planning} onEnter={requireAuth} />
           <Route path='/settings' component={Settings} onEnter={requireAuth} />
+          <Route path='/grid' component={Grid} onEnter={requireAuth} />
           <Route path='/login' component={Login} onEnter={skipIfAuth} />
           <Route path='/signup' component={Signup} onEnter={skipIfAuth} />
           <Route path='/logout' component={Logout} />

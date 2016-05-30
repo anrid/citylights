@@ -139,6 +139,7 @@ const PlanningMainArea = (props) => {
             position={i}
             pivotDate={pivotDate}
             onClick={getClickHandler(x._id)}
+            updateShiftAction={actions.updateShift}
           />
         ))}
       </div>

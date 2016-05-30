@@ -1,0 +1,112 @@
+
+@import '../styles/colors';
+
+.pl-grid-box {
+  background-color: rgba(255,255,255,0.95);
+  // background-color: transparent;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px 0 rgba(50, 50, 50, 0.35);
+  color: $c-gray600;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.pl-grid-filter-panel {
+  width: 200px;
+  border-radius: 3px 0 0 3px;
+  border-right: 1px solid $c-gray300;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  // border: 1px solid red;
+
+  &__search-box {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 12px;
+    .pl-form__input {
+      width: 100%;
+      input {
+        min-width: initial;
+        width: 100%;
+      }
+    }
+  }
+
+  &__filters {
+    // border: 1px solid blue;
+    flex: 1;
+    padding: 0 14px;
+  }
+
+  &__buttons {
+    padding: 14px;
+  }
+}
+
+.pl-grid-data-window {
+  position: relative;
+  min-width: 600px;
+  min-height: 400px;
+  max-width: 1000px;
+  max-height: 600px;
+  // border-top-right-radius: 3px;
+  // border-bottom-right-radius: 3px;
+}
+
+.pl-grid-data {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  width: calc(100% - 40px);
+  height: calc(100% - 40px);
+  overflow: auto;
+  &__inner {
+    width: 1000px;
+    height: 1000px;
+  }
+}
+
+.pl-grid-top-axis {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 40px;
+  width: 100%;
+  display: flex;
+  border-bottom: 1px solid $c-gray200;
+  padding-left: 40px;
+}
+
+.pl-grid-left-axis {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: 40px;
+  width: 40px;
+  height: 100%;
+  border: 1px solid red;
+
+  & > div:nth-child(1) {
+    border: 1px solid red;
+  }
+}
+
+.pl-grid-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  font-weight: 600;
+  font-size: 1.2rem;
+  border-radius: 3px 0 0 0;
+  border-bottom: 1px solid $c-gray200;
+  background-color: white;
+  flex: none;
+}
