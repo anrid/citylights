@@ -3,7 +3,7 @@
 
 // Shift height.
 $shift-height: 22px;
-$shift-gap: 4px;
+$shift-gap: 2px;
 
 .pl-planning-shift {
   position: relative;
@@ -26,18 +26,22 @@ $shift-gap: 4px;
     .pl-planning-shift__info-box {
       display: flex;
     }
+    .pl-planning-shift__date-range {
+      display: inline;
+    }
   }
 
   &__inner {
-    border-radius: 3px;
+    border-radius: 2px;
     // Default color is teal.
     background-color: rgba($c-teal300, 0.9);
-    border: 2px solid $c-teal500;
+    border: 1px solid $c-teal500;
     height: $shift-height;
     width: 100%;
     z-index: 2;
     position: relative;
     cursor: move;
+    box-shadow: 0 1px 1px 0 rgba(50,50,50,0.5);
   }
 
   &__position {
@@ -84,6 +88,7 @@ $shift-gap: 4px;
 
   &__title {
     font-size: 1rem;
+    height: 20px;
     line-height: 20px;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -91,11 +96,16 @@ $shift-gap: 4px;
     padding: 0 2px;
     overflow: hidden;
     cursor: pointer;
+    // border: 1px solid blue;
   }
 
   &__date-range {
+    display: none;
+    position: relative;
+    top: -1px;
     font-size: 0.9rem;
     font-weight: 400;
+    height: 20px;
     line-height: 20px;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -104,10 +114,12 @@ $shift-gap: 4px;
     overflow: hidden;
     cursor: pointer;
     color: $c-gray400;
+    // border: 1px solid red;
   }
 
   &__date-range-active {
     @extend .pl-planning-shift__date-range;
+    display: inline;
     font-weight: 600;
     color: $c-gray600;
   }
@@ -130,7 +142,7 @@ $shift-gap: 4px;
   &.pl-planning-shift--green {
     .pl-planning-shift__inner {
       background-color: rgba($c-green300, 0.9);
-      border: 2px solid $c-green500;
+      border: 1px solid $c-green500;
     }
     &:hover {
       .pl-planning-shift__inner {
@@ -142,7 +154,7 @@ $shift-gap: 4px;
   &.pl-planning-shift--red {
     .pl-planning-shift__inner {
       background-color: rgba($c-red300, 0.9);
-      border: 2px solid $c-red500;
+      border: 1px solid $c-red500;
     }
     &:hover {
       .pl-planning-shift__inner {
@@ -154,7 +166,7 @@ $shift-gap: 4px;
   &.pl-planning-shift--blue {
     .pl-planning-shift__inner {
       background-color: rgba($c-blue300, 0.9);
-      border: 2px solid $c-blue500;
+      border: 1px solid $c-blue500;
     }
     &:hover {
       .pl-planning-shift__inner {

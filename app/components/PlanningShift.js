@@ -103,6 +103,17 @@ export default class PlanningShift extends Component {
     }
   }
 
+  getDateRangeString (from, to) {
+    const fromDate = from.format('MMM D')
+    const fromTime = from.format('HH:mm')
+    const toDate = to.format('MMM D')
+    const toTime = to.format('HH:mm')
+    if (fromDate === toDate) {
+      return `${fromDate} ${fromTime} — ${toTime}`
+    }
+    return `${fromDate} ${fromTime} — ${toDate} ${toTime}`
+  }
+
   render () {
     const {
       shift,
@@ -162,17 +173,13 @@ export default class PlanningShift extends Component {
     if (dateRangeOverlay) {
       dateRange = (
         <span className='pl-planning-shift__date-range-active'>
-          {dateRangeOverlay.newStart.format('MMM D, HH:mm')}
-          {' — '}
-          {dateRangeOverlay.newEnd.format('MMM D, HH:mm')}
+          {this.getDateRangeString(dateRangeOverlay.newStart, dateRangeOverlay.newEnd)}
         </span>
       )
     } else {
       dateRange = (
         <span className='pl-planning-shift__date-range'>
-          {start.format('MMM D, HH:mm')}
-          {' — '}
-          {end.format('MMM D, HH:mm')}
+          {this.getDateRangeString(start, end)}
         </span>
       )
     }

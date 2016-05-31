@@ -34,9 +34,6 @@ const PlanningBox = (props) => (
 const PlanningLeftColumn = ({ shifts, actions }) => {
   return (
     <section className='pl-planning-left-column'>
-      <div className='pl-planning-header'>
-        Shifts
-      </div>
       <div className='pl-planning-left-column__search-box'>
         <div className='pl-form__input'>
           <input type='text'

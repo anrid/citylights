@@ -14,7 +14,7 @@
 }
 
 .pl-planning-box {
-  background-color: rgba(255,255,255,0.95);
+  background-color: rgba(255,255,255,0.75);
   // background-color: transparent;
   border-radius: 3px;
   box-shadow: 0 1px 2px 0 rgba(50, 50, 50, 0.35);
@@ -58,8 +58,6 @@
   font-weight: 600;
   font-size: 1.2rem;
   border-radius: 3px 0 0 0;
-  border-bottom: 1px solid $c-gray200;
-  background-color: white;
   flex: none;
 }
 
@@ -105,7 +103,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: white;
+    background: transparent;
 
     & + & {
       margin-left: -1px;
@@ -154,7 +152,7 @@
   font-size: 0.9rem;
   color: $c-gray400;
   font-weight: bold;
-  background-color: rgba(255,255,255,0.95);
+  background-color: rgba(255,255,255,0.75);
   cursor: copy;
 
   &.pl-planning-cell__week-start {
@@ -162,7 +160,7 @@
   }
 
   &:hover {
-    background-color: $c-gray50;
+    background-color: $c-gray100;
     .pl-planning-cell__day-of-week {
       display: block;
     }
