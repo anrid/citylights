@@ -12,51 +12,95 @@ export default class PlanningShift extends Component {
   constructor (props) {
     super(props)
     this.onDragStart = this.onDragStart.bind(this)
+    this.onDragging = this.onDragging.bind(this)
     this.onDragStop = this.onDragStop.bind(this)
     this.onResizeStart = this.onResizeStart.bind(this)
+    this.onResizing = this.onResizing.bind(this)
     this.onResizeStop = this.onResizeStop.bind(this)
+    this.state = {
+      dateRangeOverlay: null
+    }
   }
 
   onDragStart (e, data) {
     // console.log('onDragStart, data=', data)
   }
 
-  onDragStop (e, data) {
-    console.log('onDragStop, data=', data)
-    const { shift, dayWidth, updateShiftAction } = this.props
+  onDragging (e, data) {
+    const range = this.calcShiftDateRange(data.x) // Use the current x value
+    this.setState({ dateRangeOverlay: range })
+  }
 
-    let days = Math.floor(data.lastX / dayWidth)
-    if (days !== 0) {
-      const newStartDate = Moment(shift.startDate).add(days, 'days')
-      const newEndDate = Moment(shift.endDate).add(days, 'days')
-      console.log('days:', days)
-      console.log('old date range:', Moment(shift.startDate).format(), '-', Moment(shift.endDate).format())
-      console.log('new date range:', newStartDate.format(), '-', newEndDate.format())
-      updateShiftAction(shift._id, 'startDate', newStartDate.format())
-      updateShiftAction(shift._id, 'endDate', newEndDate.format())
-    }
+  onDragStop (e, data) {
+    // console.log('onDragStop, data=', data)
+    this.setState({ dateRangeOverlay: null })
+    const { shift, updateShiftAction } = this.props
+    const range = this.calcShiftDateRange(data.lastX)
+    console.log('old date range:', range.start.format(), '-', range.end.format())
+    console.log('new date range:', range.newStart.format(), '-', range.newEnd.format())
+    updateShiftAction(shift._id, 'startDate', range.newStart.format())
+    updateShiftAction(shift._id, 'endDate', range.newEnd.format())
   }
 
   onResizeStart (e, data) {
     // console.log('onResizeStart, data=', data)
   }
 
+  onResizing (e, data) {
+    const { shift } = this.props
+    const node = ReactDOM.findDOMNode(this.refs.shiftSize)
+    const newEnd = this.calcShiftEndDateAfterResize(node.getBoundingClientRect().width)
+    const range = {
+      newStart: Moment(shift.startDate),
+      newEnd
+    }
+    this.setState({ dateRangeOverlay: range })
+  }
+
   onResizeStop (e, data) {
     // console.log('onResizeStop, data=', data)
-    const { shift, dayWidth, updateShiftAction } = this.props
+    this.setState({ dateRangeOverlay: null })
+    const { updateShiftAction, shift } = this.props
     const node = ReactDOM.findDOMNode(this.refs.shiftSize)
-    let days = Math.floor(node.getBoundingClientRect().width / dayWidth)
+    const newEnd = this.calcShiftEndDateAfterResize(node.getBoundingClientRect().width)
+    console.log('old end date:', Moment(shift.endDate).format())
+    console.log('new end date:', newEnd.format())
+    updateShiftAction(shift._id, 'endDate', newEnd.format())
+  }
+
+  calcShiftEndDateAfterResize (shiftWidth) {
+    const { shift, dayWidth } = this.props
+    let days = Math.floor(shiftWidth / dayWidth)
     if (days < 1) {
       days = 1
     }
     const endDateHours = Moment(shift.endDate).hours()
-    const newEndDate = Moment(shift.startDate)
+    return Moment(shift.startDate)
     .add(days - 1, 'days')
     .hours(endDateHours)
-    console.log('days:', days)
-    console.log('old end date:', Moment(shift.endDate).format())
-    console.log('new end date:', newEndDate.format())
-    updateShiftAction(shift._id, 'endDate', newEndDate.format())
+  }
+
+  calcShiftDateRange (offsetOnGridX) {
+    const { shift, dayWidth } = this.props
+    let date = Math.floor(offsetOnGridX / dayWidth)
+    if (date < 0) {
+      date = 0
+    }
+    const start = Moment(shift.startDate)
+    const end = Moment(shift.endDate)
+    const shiftLengthMinutes = end.diff(start, 'minutes')
+    const newStart = start.clone()
+    .startOf('month')
+    .add(date, 'days')
+    .add(start.hours(), 'hours')
+    .add(start.minutes(), 'minutes')
+    const newEnd = newStart.clone().add(shiftLengthMinutes, 'minutes')
+    return {
+      start,
+      end,
+      newStart,
+      newEnd
+    }
   }
 
   render () {
@@ -85,9 +129,9 @@ export default class PlanningShift extends Component {
       shiftDays = 0
     }
 
+    const offsetOnGridX = dayWidth * daysFromPivot
     const style = {
-      width: dayWidth + (dayWidth * shiftDays),
-      left: dayWidth * daysFromPivot
+      width: dayWidth + (dayWidth * shiftDays)
     }
     // const barsHeight = { height: 52 + position * 32 }
 
@@ -112,28 +156,53 @@ export default class PlanningShift extends Component {
         </div>
       )
     }
-    // <span>[{start.format('HH:mm')}]{' '}</span>
+
+    let dateRange = null
+    const { dateRangeOverlay } = this.state
+    if (dateRangeOverlay) {
+      dateRange = (
+        <span className='pl-planning-shift__date-range-active'>
+          {dateRangeOverlay.newStart.format('MMM D, HH:mm')}
+          {' — '}
+          {dateRangeOverlay.newEnd.format('MMM D, HH:mm')}
+        </span>
+      )
+    } else {
+      dateRange = (
+        <span className='pl-planning-shift__date-range'>
+          {start.format('MMM D, HH:mm')}
+          {' — '}
+          {end.format('MMM D, HH:mm')}
+        </span>
+      )
+    }
 
     return (
       <Draggable
         axis='x'
         grid={[dayWidth, dayWidth]}
         onStart={this.onDragStart}
+        onDrag={this.onDragging}
         onStop={this.onDragStop}
         cancel='.react-resizable-handle'
+        position={{ x: offsetOnGridX, y: 0 }}
       >
         <div className={'pl-planning-shift ' + cls} style={style}>
           <ResizableBox
             onResizeStart={this.onResizeStart}
             onResizeStop={this.onResizeStop}
+            onResize={this.onResizing}
             width={style.width} height={dayWidth}
             minConstraints={[dayWidth, dayWidth]} maxConstraints={[1000, dayWidth]}
             draggableOpts={{ axis: 'x', grid: [dayWidth, dayWidth] }}
           >
             <div className='pl-planning-shift__inner' ref='shiftSize' />
           </ResizableBox>
-          <div className='pl-planning-shift__title' onClick={onClick}>
-            <span>{shift.title}</span>
+          <div className='pl-planning-shift__title-box'>
+            <span className='pl-planning-shift__title' onClick={onClick}>
+              {shift.title}
+            </span>
+            {dateRange}
           </div>
           {assignees}
         </div>

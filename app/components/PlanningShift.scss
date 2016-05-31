@@ -8,7 +8,6 @@ $shift-gap: 4px;
 .pl-planning-shift {
   position: relative;
   min-width: 22px;
-  cursor: pointer;
   margin-bottom: $shift-gap;
   height: $shift-height * 2;
   &:last-child {
@@ -38,6 +37,7 @@ $shift-gap: 4px;
     width: 100%;
     z-index: 2;
     position: relative;
+    cursor: move;
   }
 
   &__position {
@@ -74,37 +74,42 @@ $shift-gap: 4px;
     z-index: 1;
   }
 
-  &__info-box {
-    display: none;
-    justify-content: flex-start;
-    align-items: center;
+  &__title-box {
     position: absolute;
-    border: 1px solid $c-gray300;
-    border-radius: 3px;
-    background-color: rgba(255,255,255,0.9);
-    top: -26px;
+    height: 20px;
+    top: -20px;
     left: 0;
-    font-size: 0.9rem;
-    line-height: $shift-height;
-    height: 22px;
-    width: 150px;
-    padding: 0 6px;
     z-index: 3;
   }
 
   &__title {
-    position: absolute;
-    height: 1rem;
-    font-size: 0.9rem;
-    line-height: 1;
-    top: -1rem;
-    left: 0;
+    font-size: 1rem;
+    line-height: 20px;
     white-space: nowrap;
     text-overflow: ellipsis;
     max-width: 150px;
     padding: 0 2px;
     overflow: hidden;
-    z-index: 3;
+    cursor: pointer;
+  }
+
+  &__date-range {
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 20px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 150px;
+    padding: 0 5px;
+    overflow: hidden;
+    cursor: pointer;
+    color: $c-gray400;
+  }
+
+  &__date-range-active {
+    @extend .pl-planning-shift__date-range;
+    font-weight: 600;
+    color: $c-gray600;
   }
 
   &__assignees {
