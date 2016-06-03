@@ -1,0 +1,62 @@
+
+@import '../styles/colors';
+
+.pl-time-planner-top-nav {
+  display: flex;
+  background: $c-gray700;
+  color: $c-gray50;
+  width: 100%;
+  height: 44px;
+  justify-content: space-between;
+  align-items: center;
+
+  &__company-name {
+    font-size: 1.5rem;
+    line-height: 1;
+    font-weight: 400;
+    padding: 0 18px;
+  }
+
+  &__divider {
+    height: 30px;
+    width: 1px;
+    background: $c-gray600;
+    position: relative;
+    left: 1px;
+  }
+
+  &__nav-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: $c-gray300;
+    padding: 0 12px;
+    height: 100%;
+    transition: background 0.2s;
+    cursor: pointer;
+    background: transparent;
+    &:hover {
+      background: $c-gray800
+    }
+    &--no-padding {
+      @extend .pl-time-planner-top-nav__nav-button;
+      padding: 0;
+    }
+  }
+
+  &__left {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100%;
+  }
+
+  &__right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 100%;
+  }
+}

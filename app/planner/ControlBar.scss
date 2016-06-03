@@ -1,0 +1,31 @@
+
+@import '../styles/colors';
+
+.pl-time-planner-control-bar {
+  display: flex;
+  background: $c-gray100;
+  color: $c-gray400;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid $c-gray300;
+
+  &__left {
+    height: 44px;
+    flex: none;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    border-right: 1px solid $c-gray300;
+    width: 324px
+  }
+
+  &__right {
+    height: 44px;
+    flex: 10 10;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    min-width: 300px
+  }
+}

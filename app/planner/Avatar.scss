@@ -1,0 +1,35 @@
+
+@import '../styles/colors';
+
+.pl-time-planner-avatar {
+  display: flex;
+  background: transparent;
+  color: $c-gray50;
+  width: auto;
+  height: 31px;
+  justify-content: flex-start;
+  align-items: center;
+  transition: background 0.2s;
+  cursor: pointer;
+  padding: 0 12px;
+
+  &__photo {
+    background-size: cover;
+    background-position: center;
+    background-repeat: norepeat;
+    width: 31px;
+    height: 31px;
+    border-radius: 2px;
+  }
+
+  &__name {
+    padding-left: 7px;
+    font-size: 1.2rem;
+    color: $c-gray300;
+  }
+
+  .fa-angle-down {
+    padding-left: 8px;
+    color: $c-gray300;
+  }
+}

@@ -1,0 +1,30 @@
+
+@import '../styles/colors';
+
+.pl-time-planner-dropdown-button {
+  display: flex;
+  background: transparent;
+  color: $c-gray50;
+  width: auto;
+  height: 100%;
+  padding: 0 18px;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.2s;
+  cursor: pointer;
+  position: relative;
+  font-size: 1.3rem;
+  font-weight: 400;
+  z-index: 1;
+  &:hover {
+    background: $c-gray800;
+  }
+  .fa-angle-down, .fa-angle-up {
+    padding-left: 8px;
+    font-size: 1.4rem;
+    color: $c-gray300;
+  }
+  &__menu {
+    display: none;
+  }
+}
