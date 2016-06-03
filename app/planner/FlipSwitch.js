@@ -1,6 +1,7 @@
 'use strict'
 
 import React from 'react'
+import classnames from 'classnames'
 
 import './FlipSwitch.scss'
 
@@ -8,12 +9,19 @@ const FlipSwitch = ({ icons, leftOn, left, right }) => {
   const _left = icons ? <i className={'fa fa-fw fa-' + left} /> : left
   const _right = icons ? <i className={'fa fa-fw fa-' + right} /> : right
 
-  const buttonCls = 'pl-time-planner-flip-switch__button ' +
-    (leftOn ? 'pl-time-planner-flip-switch__on ' : '') +
-    (icons ? 'pl-time-planner-flip-switch__icons ' : '')
+  const leftCls = classnames({
+    'pl-time-planner-flip-switch__left': true,
+    'pl-time-planner-flip-switch__button': !leftOn,
+    'pl-time-planner-flip-switch__button--on': leftOn,
+    'pl-time-planner-flip-switch__icons': icons
+  })
 
-  const leftCls = 'pl-time-planner-flip-switch__left ' + buttonCls
-  const rightCls = 'pl-time-planner-flip-switch__right ' + buttonCls
+  const rightCls = classnames({
+    'pl-time-planner-flip-switch__right': true,
+    'pl-time-planner-flip-switch__button': leftOn,
+    'pl-time-planner-flip-switch__button--on': !leftOn,
+    'pl-time-planner-flip-switch__icons': icons
+  })
 
   return (
     <div className='pl-time-planner-flip-switch'>

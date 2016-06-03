@@ -22,12 +22,6 @@
     border-radius: 0 3px 3px 0
   }
 
-  &__on {
-    background-color: $c-gray200;
-    box-shadow: 0 0 1px 1px rgba(50,50,50,0.05) inset;
-    cursor: default
-  }
-
   &__button {
     display: flex;
     justify-content: center;
@@ -42,6 +36,13 @@
     background-color: $c-gray50;
     :hover {
       background-color: $c-gray200
+    }
+
+    &--on {
+      @extend .pl-time-planner-flip-switch__button;
+      background-color: $c-gray200;
+      box-shadow: 0 0 1px 1px rgba(50,50,50,0.05) inset;
+      cursor: default
     }
   }
 
