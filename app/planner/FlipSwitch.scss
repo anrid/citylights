@@ -13,7 +13,7 @@
     border: 1px solid $c-gray300;
     border-radius: 3px 0 0 3px;
     &:hover:not(.pl-time-planner-flip-switch__on) {
-      background-color: $c-gray100
+      background: linear-gradient($c-gray100, $c-gray200);
     }
   }
 
@@ -24,13 +24,13 @@
     border-left: 0;
     border-radius: 0 3px 3px 0;
     &:hover:not(.pl-time-planner-flip-switch__on) {
-      background-color: $c-gray100
+      background: linear-gradient($c-gray100, $c-gray200);
     }
   }
 
   &__on {
-    background-color: $c-gray200 !important;
-    box-shadow: 0 0 1px 1px rgba(50,50,50,0.1) inset;
+    background: $c-gray200 !important;
+    box-shadow: 0 0 1px 1px rgba($c-gray300,0.5) inset;
     cursor: default
   }
 
@@ -38,14 +38,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 600;
     min-width: 150px;
     height: 30px;
     color: $c-gray600;
     // transition: background 0.1s;
     cursor: pointer;
-    background-color: $c-gray50;
+    background: linear-gradient(#ffffff, #eeeeee);
   }
 
   &__icons {
@@ -53,8 +53,8 @@
   }
 
   .fa {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     color: $c-gray500;
-    font-weight: 300
+    font-weight: 400
   }
 }

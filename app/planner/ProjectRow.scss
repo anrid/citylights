@@ -1,6 +1,23 @@
 
 @import '../styles/colors';
 
+.pl-time-planner-project-row-wrapper {
+  &--open {
+    padding: 3px 0;
+    background: $c-gray50;
+    border-bottom: 1px solid $c-gray200;
+    .pl-time-planner-project-row {
+      border-top: 1px solid $c-gray200;
+    }
+  }
+  &:last-child:not(.pl-time-planner-project-row-wrapper--open) {
+    .pl-time-planner-project-row {
+      border-bottom: 1px solid $c-gray300;
+      box-shadow: 0 1px 2px 0 rgba(50, 50, 50, 0.35);
+    }
+  }
+}
+
 .pl-time-planner-project-row {
   display: flex;
   background: rgba(255,255,255,0.95);
