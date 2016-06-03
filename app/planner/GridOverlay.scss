@@ -1,0 +1,23 @@
+
+@import '../styles/colors';
+
+.pl-time-planner-grid-overlay {
+  display: flex;
+  color: $c-gray400;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid $c-gray200;
+
+  &__cell {
+    flex: none;
+    align-items: center;
+    height: 50px;
+    width: 50px;
+    border-right: 1px solid $c-gray100;
+    cursor: pointer;
+    &:hover {
+      background-color: rgba($c-gray200, 0.5);
+    }
+  }
+}

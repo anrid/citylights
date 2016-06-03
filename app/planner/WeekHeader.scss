@@ -1,0 +1,81 @@
+
+@import '../styles/colors';
+
+.pl-time-planner-week-header {
+  background: transparent;
+  color: $c-gray50;
+  width: 250px;
+  cursor: pointer;
+  position: relative;
+
+  &__title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 30px;
+    color: $c-gray400;
+    font-size: 1.1rem;
+    border-right: 1px solid $c-gray200
+  }
+
+  &__active {
+    color: $c-gray600;
+    font-weight: 600
+  }
+
+  &__active-bar {
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    background-color: $c-teal500;
+    top: 0;
+    left: 0;
+    z-index: 2
+  }
+
+  &__week-of-year {
+    position: absolute;
+    width: 24px;
+    height: 20px;
+    border-radius: 0 0 3px 0;
+    background-color: $c-gray50;
+    color: $c-gray400;
+    top: 0;
+    left: 0;
+    font-size: 0.95rem;
+    padding-top: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1
+  }
+
+  &__days {
+    display: flex
+  }
+
+  &__day {
+    flex: none;
+    width: 50px;
+    height: 20px;
+    border-right: 1px solid $c-gray100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $c-gray400;
+    font-size: 1rem;
+    position: relative
+  }
+
+  &__last-day {
+    border-right: 1px solid $c-gray200
+  }
+
+  &__today {
+    border-top: 2px solid $c-teal500;
+    font-weight: 600;
+    color: $c-teal500;
+    background-color: $c-teal50
+  }
+}

@@ -1,0 +1,52 @@
+
+@import '../styles/colors';
+
+.pl-time-planner-time-bar {
+  display: flex;
+  background: white;
+  color: $c-gray400;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid $c-gray300;
+
+  .fa-angle-down, .fa-angle-up {
+    flex: 1;
+    text-align: right;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: $c-gray300;
+    cursor: pointer
+  }
+
+  &__left {
+    flex: none;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 50px;
+    border-right: 1px solid $c-gray300;
+    width: 324px;
+    padding: 0 12px 0 17px;
+  }
+
+  &__right {
+    flex: 10 10;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 50px;
+    min-width: 300px;
+    overflow: hidden
+  }
+
+  &__filter-input {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    outline: none;
+    font-size: 1.2rem;
+    font-weight: 400;
+    width: 250px
+  }
+}

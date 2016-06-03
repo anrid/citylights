@@ -1,0 +1,84 @@
+
+@import '../styles/colors';
+
+.pl-time-planner-project-row {
+  display: flex;
+  background: rgba(255,255,255,0.95);
+  color: $c-gray400;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid $c-gray200;
+
+  .fa-angle-down, .fa-angle-up {
+    flex: 1;
+    text-align: right;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: $c-gray300;
+    cursor: pointer
+  }
+
+  &__left {
+    flex: none;
+    display: flex;
+    background: rgba(255,255,255,1);
+    justify-content: flex-start;
+    align-items: center;
+    height: 50px;
+    border-right: 1px solid $c-gray200;
+    width: 324px;
+    padding: 0 12px 0 17px;
+    position: relative;
+    &:hover {
+      background-color: $c-gray100
+    }
+  }
+
+  &__label {
+    position: absolute;
+    width: 5px;
+    height: 100%;
+    top: 0;
+    left: 0
+  }
+
+  &__gray { background-color: $c-gray700 }
+  &__amber { background-color: $c-amber400 }
+  &__green { background-color: $c-green400 }
+  &__red { background-color: $c-red400 }
+  &__teal { background-color: $c-teal400 }
+  &__blue { background-color: $c-blue500 }
+  &__purple { background-color: $c-purple500 }
+  &__brown { background-color: $c-brown500 }
+
+  &__right {
+    flex: 10 10;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 50px;
+    min-width: 300px;
+    overflow: hidden
+  }
+
+  &__info {
+    height: 40px;
+    width: 250px
+    // border: 1px solid red
+  }
+
+  &__title {
+    font-size: 1.1rem;
+    line-height: 1.4;
+    font-weight: 600;
+    color: $c-gray600
+  }
+
+  &__stats {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    font-weight: 400;
+    color: $c-gray500
+  }
+}

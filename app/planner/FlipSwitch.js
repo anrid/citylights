@@ -11,15 +11,15 @@ const FlipSwitch = ({ icons, leftOn, left, right }) => {
 
   const leftCls = classnames({
     'pl-time-planner-flip-switch__left': true,
-    'pl-time-planner-flip-switch__button': !leftOn,
-    'pl-time-planner-flip-switch__button--on': leftOn,
+    'pl-time-planner-flip-switch__button': true,
+    'pl-time-planner-flip-switch__on': leftOn,
     'pl-time-planner-flip-switch__icons': icons
   })
 
   const rightCls = classnames({
     'pl-time-planner-flip-switch__right': true,
-    'pl-time-planner-flip-switch__button': leftOn,
-    'pl-time-planner-flip-switch__button--on': !leftOn,
+    'pl-time-planner-flip-switch__button': true,
+    'pl-time-planner-flip-switch__on': !leftOn,
     'pl-time-planner-flip-switch__icons': icons
   })
 

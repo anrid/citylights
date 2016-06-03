@@ -11,7 +11,10 @@
 
   &__left {
     border: 1px solid $c-gray300;
-    border-radius: 3px 0 0 3px
+    border-radius: 3px 0 0 3px;
+    &:hover:not(.pl-time-planner-flip-switch__on) {
+      background-color: $c-gray100
+    }
   }
 
   &__right {
@@ -19,7 +22,16 @@
     border-right: 1px solid $c-gray300;
     border-bottom: 1px solid $c-gray300;
     border-left: 0;
-    border-radius: 0 3px 3px 0
+    border-radius: 0 3px 3px 0;
+    &:hover:not(.pl-time-planner-flip-switch__on) {
+      background-color: $c-gray100
+    }
+  }
+
+  &__on {
+    background-color: $c-gray200 !important;
+    box-shadow: 0 0 1px 1px rgba(50,50,50,0.1) inset;
+    cursor: default
   }
 
   &__button {
@@ -30,20 +42,10 @@
     font-weight: 600;
     min-width: 150px;
     height: 30px;
-    color: $c-gray500;
+    color: $c-gray600;
     // transition: background 0.1s;
     cursor: pointer;
     background-color: $c-gray50;
-    :hover {
-      background-color: $c-gray200
-    }
-
-    &--on {
-      @extend .pl-time-planner-flip-switch__button;
-      background-color: $c-gray200;
-      box-shadow: 0 0 1px 1px rgba(50,50,50,0.05) inset;
-      cursor: default
-    }
   }
 
   &__icons {
@@ -52,7 +54,7 @@
 
   .fa {
     font-size: 1.4rem;
-    color: $c-gray400;
+    color: $c-gray500;
     font-weight: 300
   }
 }
