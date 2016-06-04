@@ -6,6 +6,7 @@ const T = require('tcomb')
 
 const User = require('./userModel')
 const Workspace = require('./workspaceModel')
+const Project = require('./projectModel')
 const WorkspaceMembers = require('./workspaceMembersModel')
 
 function requireUser (userId) {
@@ -54,7 +55,33 @@ const requireWorkspace = P.coroutine(function * (workspaceId, userId) {
   return workspace
 })
 
+const requireProject = P.coroutine(function * (projectId, userId) {
+  T.String(projectId)
+  T.String(userId)
+
+  const project = yield Project.findOne({
+    _id: projectId,
+    $or: [
+      { ownerId: userId },
+      { admins: userId },
+      { members: userId },
+      { isPrivate: false }
+    ],
+    isEnabled: true,
+    isDeleted: false
+  })
+  if (!project) {
+    throw Boom.unauthorized('Cannot find a valid project')
+  }
+
+  // Ensure user still has workspace access.
+  yield requireWorkspace(project.workspaceId, userId)
+
+  return project
+})
+
 module.exports = {
   requireUser,
-  requireWorkspace
+  requireWorkspace,
+  requireProject
 }

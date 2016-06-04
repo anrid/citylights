@@ -24,6 +24,7 @@
     "hiredis": "^0.4.1",
     "hoek": "^3.0.4",
     "inert": "^3.2.0",
+    "joi": "^8.4.0",
     "jsonwebtoken": "^5.7.0",
     "lodash.debounce": "^4.0.6",
     "metaphone": "^1.0.1",

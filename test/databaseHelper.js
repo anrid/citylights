@@ -15,6 +15,9 @@ const WorkspaceService = require('../api/services/workspaceService')
 const UserPassword = require('../api/services/userPasswordModel')
 const WorkspaceMembers = require('../api/services/workspaceMembersModel')
 
+const Project = require('../api/services/projectModel')
+const MemberService = require('../api/services/memberService')
+
 module.exports = {
   _chain: P.resolve(),
   _context: { },
@@ -47,7 +50,8 @@ module.exports = {
       User.remove(),
       Workspace.remove(),
       WorkspaceMembers.remove(),
-      UserPassword.remove()
+      UserPassword.remove(),
+      Project.remove()
     ])
     return this.queue(() => removeAllTestData)
   },
@@ -69,6 +73,16 @@ module.exports = {
       Hoek.assert(owner, `Missing user in context: ${ownerName}`)
       return WorkspaceService.create(`${name}.test.test`, owner._id.toString())
     }, name)
+  },
+
+  addToWorkspace (userName, workspaceName) {
+    return this.queue(() => {
+      const user = this._context[userName]
+      const workspace = this._context[workspaceName]
+      Hoek.assert(user, `Missing user in context: ${userName}`)
+      Hoek.assert(workspace, `Missing workspace in context: ${workspaceName}`)
+      return MemberService.addUserToWorkspace(user._id.toString(), workspace._id.toString())
+    })
   }
 
 }

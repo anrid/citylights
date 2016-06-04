@@ -3,6 +3,7 @@
 const Auth = require('./authEndpoints')
 const User = require('./userEndpoints')
 const Workspace = require('./workspaceEndpoints')
+const Project = require('./projectEndpoints')
 
 function echo (payload) {
   return {
@@ -22,6 +23,10 @@ const socketEndpoints = {
   'app:starter': { func: Auth.appStarter, auth: true },
   'workspace:create': { func: Workspace.create, auth: true },
   'workspace:update': { func: Workspace.update, auth: true },
+  'project:create': { func: Project.create, auth: true },
+  'project:update': { func: Project.update, auth: true },
+  'project:addMember': { func: Project.addMember, auth: true },
+  'project:removeMember': { func: Project.removeMember, auth: true },
   'user:invite': { func: User.invite, auth: true }
 }
 

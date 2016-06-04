@@ -49,15 +49,12 @@ function create (name, actorId) {
   })
 }
 
+// TODO: Currently broken ! Needs to use the member service.
 function getList (userId) {
   return P.try(() => {
     T.String(userId)
     return Workspace.find({
-      $or: [
-        { ownerId: userId },
-        { admins: userId },
-        { members: userId }
-      ],
+      ownerId: userId,
       isEnabled: true,
       isDeleted: false
     })

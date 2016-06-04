@@ -11,7 +11,7 @@ const schema = new Schema({
     lowercase: true,
     trim: true
   },
-  ownerId: { type: String, required: true },
+  ownerId: { type: String, required: true, index: true },
   isEnabled: { type: Boolean, default: true },
   isDeleted: { type: Boolean, default: false },
   created: { type: Date, default: Date.now },
