@@ -3,7 +3,7 @@
 import React, { Component } from 'react'
 
 import './TopBar.scss'
-import Dropdown from './Dropdown'
+import Dropdown from './widgets/Dropdown'
 import { getWorkspaceMemberCount } from '../selectors/workspaces'
 
 export default class TopBar extends Component {

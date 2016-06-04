@@ -7,14 +7,16 @@ import { connect } from 'react-redux'
 import './PropertiesPanel.scss'
 
 import * as settingsActions from '../actions/settingsActions'
+import * as projectActions from '../actions/projectActions'
 import * as shiftActions from '../actions/shiftActions'
 
 import { getRoute } from '../selectors/routing'
 
-import ModalPopup from '../components/ModalPopup'
+import ModalPopup from '../components/widgets/ModalPopup'
 
-import ConsultantProperties from '../components/ConsultantProperties'
-import ShiftProperties from '../components/ShiftProperties'
+import ConsultantProperties from '../components/properties/ConsultantProperties'
+import ShiftProperties from '../components/properties/ShiftProperties'
+import ProjectProperties from '../components/properties/ProjectProperties'
 
 class PropertiesPanel extends Component {
   renderMessage (message) {
@@ -43,7 +45,8 @@ class PropertiesPanel extends Component {
     switch (panelType) {
       case 'consultant':
         return <ConsultantProperties consultant={panelData} actions={actions} />
-
+      case 'project':
+        return <ProjectProperties project={panelData} actions={actions} />
       case 'shift':
         return <ShiftProperties shift={panelData} actions={actions} />
 
@@ -77,6 +80,9 @@ function mapStateToProps (state) {
       case 'consultant':
         panelData = state.users.data[data.userId]
         break
+      case 'project':
+        panelData = state.projects.data[data.projectId]
+        break
       case 'shift':
         panelData = state.shifts.data[data.shiftId]
         break
@@ -98,7 +104,8 @@ function mapDispatchToProps (dispatch) {
   return {
     actions: bindActionCreators({
       ...settingsActions,
-      ...shiftActions
+      ...shiftActions,
+      ...projectActions
     }, dispatch)
   }
 }

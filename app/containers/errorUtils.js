@@ -1,7 +1,7 @@
 
 import React from 'react'
 
-import PopupBox from '../components/PopupBox'
+import PopupBox from '../components/widgets/PopupBox'
 
 export function getPopupError (error) {
   const code = error && error.code

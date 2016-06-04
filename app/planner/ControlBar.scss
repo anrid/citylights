@@ -24,8 +24,9 @@
     height: 44px;
     flex: 10 10;
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     align-items: center;
-    min-width: 300px
+    min-width: 300px;
+    padding: 0 12px;
   }
 }

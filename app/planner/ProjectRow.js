@@ -5,6 +5,7 @@ import Moment from 'moment'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
+import * as settingsActions from '../actions/settingsActions'
 import * as projectActions from '../actions/projectActions'
 
 import './ProjectRow.scss'
@@ -12,6 +13,7 @@ import './ProjectRow.scss'
 import GridOverlay from './GridOverlay'
 import ProjectMemberRow from './ProjectMemberRow'
 import DropdownButton from './DropdownButton'
+import Button from './Button'
 import ConsultantsWidget from '../containers/ConsultantsWidget'
 
 class ProjectRow extends Component {
@@ -24,6 +26,12 @@ class ProjectRow extends Component {
     this.onToggleOpen = this.onToggleOpen.bind(this)
     this.onToggleMember = this.onToggleMember.bind(this)
     this.onToggleMembersWidget = this.onToggleMembersWidget.bind(this)
+    this.onShowProperties = this.onShowProperties.bind(this)
+  }
+
+  onShowProperties () {
+    const { project, actions } = this.props
+    actions.showProjectProperties(project._id)
   }
 
   onToggleOpen () {
@@ -33,7 +41,7 @@ class ProjectRow extends Component {
   onToggleMember (userId) {
     console.log('onToggleMember, userId=', userId)
     const { project, actions } = this.props
-    actions.addOrRemoveMember(project._id, userId)
+    actions.toggleProjectMember(project._id, userId)
   }
 
   onToggleMembersWidget () {
@@ -60,9 +68,9 @@ class ProjectRow extends Component {
           <DropdownButton action selected='Actions ..' items={[]} />
           <div className='pl-time-planner-project-row__assign'
             onClick={this.onToggleMembersWidget}>
-            <div className='pl-time-planner-project-row__button'>
+            <Button>
               <i className='fa fa-fw fa-plus' /> Assign Person
-            </div>
+            </Button>
             {showMembersWidget && (
               <ConsultantsWidget
                 selected={members.map((x) => x._id)}
@@ -113,6 +121,9 @@ class ProjectRow extends Component {
               {this.renderProjectLabel()}
               <div className='pl-time-planner-project-row__title'>
                 {project.title}
+                <div className='pl-time-planner-project-row__edit-project' onClick={this.onShowProperties}>
+                  edit
+                </div>
               </div>
               <div className='pl-time-planner-project-row__stats'>
                 {membersInfo}
@@ -152,6 +163,7 @@ function mapStateToProps (state, { projectId }) {
 function mapDispatchToProps (dispatch) {
   return {
     actions: bindActionCreators({
+      ...settingsActions,
       ...projectActions
     }, dispatch)
   }

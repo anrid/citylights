@@ -16,7 +16,7 @@ import { consultantItemsSelector } from '../selectors/users'
 import BasicLayout from './BasicLayout'
 
 // Various components we wish to rende
-import InputWidget from '../components/InputWidget'
+import InputWidget from '../components/widgets/InputWidget'
 import Loader from './Loader'
 
 class ComponentBuilder extends Component {

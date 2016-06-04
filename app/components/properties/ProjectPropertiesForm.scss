@@ -1,7 +1,7 @@
 
-@import '../styles/colors';
+@import '../../styles/colors';
 
-.pl-shift-properties-form {
+.pl-project-properties-form {
 
   &__consultants-widget {
     position: relative;
@@ -10,7 +10,7 @@
     }
   }
 
-  &__assignees {
+  &__members {
     width: 250px;
     .pl-consultant-card__row {
       box-shadow: 0 1px 1px 0 rgba(50, 50, 50, 0.3);

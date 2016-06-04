@@ -2,12 +2,12 @@
 
 import React, { Component } from 'react'
 
-import './ShiftProperties.scss'
+import './ProjectProperties.scss'
 
-import Dropdown from './Dropdown'
-import ShiftPropertiesForm from './ShiftPropertiesForm'
+import Dropdown from '../widgets/Dropdown'
+import ProjectPropertiesForm from './ProjectPropertiesForm'
 
-export default class ShiftProperties extends Component {
+export default class ProjectProperties extends Component {
   constructor (props) {
     super(props)
     this.onDropdownSelect = this.onDropdownSelect.bind(this)
@@ -34,15 +34,15 @@ export default class ShiftProperties extends Component {
   }
 
   render () {
-    const { shift } = this.props
+    const { project } = this.props
     return (
-      <section className='pl-box pl-shift-properties'>
+      <section className='pl-box pl-project-properties'>
         <div className='pl-box__header'>
-          <div>Shift: {shift.title || 'Untitled'}</div>
+          <div>Project: {project.title || 'Untitled'}</div>
           {this.renderDropdown()}
         </div>
         <div className='pl-box__content pl-box__content--with-footer pl-box__content--no-padding'>
-          <ShiftPropertiesForm {...this.props} />
+          <ProjectPropertiesForm {...this.props} />
         </div>
         <div className='pl-box__footer'>
           <div>Status: Planned.</div>
@@ -52,7 +52,7 @@ export default class ShiftProperties extends Component {
   }
 }
 
-ShiftProperties.propTypes = {
-  shift: React.PropTypes.object.isRequired,
+ProjectProperties.propTypes = {
+  project: React.PropTypes.object.isRequired,
   actions: React.PropTypes.object.isRequired
 }

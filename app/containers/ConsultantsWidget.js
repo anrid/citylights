@@ -7,8 +7,8 @@ import { connect } from 'react-redux'
 import * as settingsActions from '../actions/settingsActions'
 import { consultantItemsSelector } from '../selectors/users'
 
-import WidgetPopup from '../components/WidgetPopup'
-import InputWidget from '../components/InputWidget'
+import WidgetPopup from '../components/widgets/WidgetPopup'
+import InputWidget from '../components/widgets/InputWidget'
 
 class ConsultantsWidget extends Component {
   constructor (props) {

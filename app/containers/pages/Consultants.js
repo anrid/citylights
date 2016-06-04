@@ -6,15 +6,15 @@ import { connect } from 'react-redux'
 
 import './Consultants.scss'
 
-import * as settingsActions from '../actions/settingsActions'
-import { filteredConsultantsSelector } from '../selectors/users'
+import * as settingsActions from '../../actions/settingsActions'
+import { filteredConsultantsSelector } from '../../selectors/users'
 
-import { getRoute } from '../selectors/routing'
+import { getRoute } from '../../selectors/routing'
 
-import BasicLayout from './BasicLayout'
-import ConsultantList from '../components/ConsultantList'
-import ConsultantForm from './ConsultantForm'
-import Loader from './Loader'
+import BasicLayout from '../BasicLayout'
+import ConsultantList from '../../components/ConsultantList'
+import ConsultantForm from '../ConsultantForm'
+import Loader from '../Loader'
 
 class Consultants extends Component {
   render () {

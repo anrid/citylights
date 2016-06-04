@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
 import * as settingsActions from '../actions/settingsActions'
+import * as projectActions from '../actions/projectActions'
 
 import './TimePlannerApp.scss'
 
@@ -12,6 +13,7 @@ import TopNav from './TopNav'
 import ControlBar from './ControlBar'
 import TimeBar from './TimeBar'
 import ProjectRow from './ProjectRow'
+import PropertiesPanel from '../containers/PropertiesPanel'
 
 class TimePlannerApp extends Component {
   getThemeStyle () {
@@ -36,11 +38,12 @@ class TimePlannerApp extends Component {
     return (
       <section id='pl-time-planner-app' style={this.getThemeStyle()}>
         <TopNav />
-        <ControlBar />
+        <ControlBar {...this.props} />
         <TimeBar pivotDate={pivotDate} />
         <section className='pl-time-planner-rows'>
           {projects.map((x) => <ProjectRow key={x} projectId={x} pivotDate={pivotDate} />)}
         </section>
+        <PropertiesPanel />
       </section>
     )
   }
@@ -63,7 +66,8 @@ function mapStateToProps (state) {
 function mapDispatchToProps (dispatch) {
   return {
     actions: bindActionCreators({
-      ...settingsActions
+      ...settingsActions,
+      ...projectActions
     }, dispatch)
   }
 }

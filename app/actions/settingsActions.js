@@ -219,6 +219,19 @@ export function showShiftProperties (shiftId) {
   }
 }
 
+export function showProjectProperties (projectId) {
+  return {
+    type: types.SET_SETTING,
+    payload: {
+      isPropertiesPanelOpen: true,
+      propertiesPanelData: {
+        type: 'project',
+        projectId
+      }
+    }
+  }
+}
+
 export function setPropertiesPanelOpen (value) {
   return {
     type: types.SET_SETTING,

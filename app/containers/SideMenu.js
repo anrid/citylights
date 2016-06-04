@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 import './SideMenu.scss'
 
 import * as settingsActions from '../actions/settingsActions'
-import Dropdown from '../components/Dropdown'
+import Dropdown from '../components/widgets/Dropdown'
 
 class SideMenu extends Component {
   renderThemePicker () {
@@ -34,7 +34,8 @@ class SideMenu extends Component {
     const { routeTo } = this.props.actions
     let cls = 'pl-side-menu__row'
     let arrow = null
-    if (currentRoute.indexOf(routeName) === 0) {
+    if ((currentRoute.indexOf(routeName) === 0) ||
+        (currentRoute === '/' && routeName === '/overview')) {
       cls += '--active'
       arrow = <i className='fa fa-fw fa-caret-right' />
     }

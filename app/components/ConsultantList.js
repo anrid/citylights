@@ -5,7 +5,7 @@ import debounce from 'lodash.debounce'
 
 import './ConsultantList.scss'
 
-import Dropdown from './Dropdown'
+import Dropdown from './widgets/Dropdown'
 import ConsultantCard from '../containers/ConsultantCard'
 
 export default class ConsultantList extends Component {

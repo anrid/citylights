@@ -4,7 +4,7 @@ import React, { Component } from 'react'
 
 import './ConsultantProperties.scss'
 
-import Dropdown from './Dropdown'
+import Dropdown from '../widgets/Dropdown'
 import ConsultantPropertiesForm from './ConsultantPropertiesForm'
 
 export default class ConsultantProperties extends Component {

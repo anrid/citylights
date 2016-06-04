@@ -9,11 +9,11 @@ import { connect } from 'react-redux'
 
 import './Grid.scss'
 
-import * as settingsActions from '../actions/settingsActions'
-import * as shiftActions from '../actions/shiftActions'
+import * as settingsActions from '../../actions/settingsActions'
+import * as shiftActions from '../../actions/shiftActions'
 
-import BasicLayout from './BasicLayout'
-import Loader from './Loader'
+import BasicLayout from '../BasicLayout'
+import Loader from '../Loader'
 
 class Grid extends Component {
   render () {

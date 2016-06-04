@@ -7,12 +7,12 @@ import { connect } from 'react-redux'
 
 import './Planning.scss'
 
-import * as settingsActions from '../actions/settingsActions'
-import * as shiftActions from '../actions/shiftActions'
+import * as settingsActions from '../../actions/settingsActions'
+import * as shiftActions from '../../actions/shiftActions'
 
-import BasicLayout from './BasicLayout'
-import Loader from './Loader'
-import PlanningShift from '../components/PlanningShift'
+import BasicLayout from '../BasicLayout'
+import Loader from '../Loader'
+import PlanningShift from '../../components/PlanningShift'
 
 class Planning extends Component {
   render () {

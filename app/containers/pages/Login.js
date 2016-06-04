@@ -4,19 +4,19 @@ import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-import * as settingsActions from '../actions/settingsActions'
-import Spinner from '../components/Spinner'
-import { getPopupError } from './errorUtils'
+import './Login.scss'
 
-import './Signup.scss'
+import * as settingsActions from '../../actions/settingsActions'
+import Spinner from '../../components/Spinner'
+import { getPopupError } from '../errorUtils'
 
-class Signup extends Component {
+class Login extends Component {
   constructor (props) {
     super(props)
     this.state = {
       clean: true,
-      companyName: 'Rocksteady Consulting',
-      email: 'user10@example.com'
+      email: this.props.email || 'test@example.com',
+      password: 'test123'
     }
   }
 
@@ -28,43 +28,31 @@ class Signup extends Component {
 
   renderSubmitButton () {
     const { isConnected, isRequestInProgress } = this.props
-    const { signup } = this.props.actions
+    const { login } = this.props.actions
     if (!isConnected || isRequestInProgress) {
       return <Spinner/>
     }
     return (
-      <button onClick={() => signup(this.state.companyName, this.state.email)}>
-        Do it.
+      <button onClick={() => login(this.state.email, this.state.password)}>
+        Login
       </button>
     )
   }
 
   render () {
-    const { isConnected, error, backgrounds } = this.props
+    const { isConnected, error } = this.props
     const { routeTo } = this.props.actions
     return (
       <section
-        className='pl-login pl-signup'
-        style={{ backgroundImage: `url("${backgrounds.BG1.url}")` }}
+        className='pl-login'
+        style={{ backgroundImage: 'url("https://farm3.staticflickr.com/2836/12431136253_1ff3466b8f_b.jpg")' }}
       >
         <div className='pl-login__box'>
 
           {getPopupError(error)}
 
           <div className='pl-heading--large pl-login__title'>
-            Sign Up
-          </div>
-
-          <div className='pl-input-field-box'>
-            <input
-              type='text'
-              maxLength={140}
-              disabled={!isConnected}
-              placeholder='Company Name'
-              className='pl-input-field'
-              onChange={(e) => this.setState({ companyName: e.target.value, clean: false })}
-              value={this.state.companyName}
-            />
+            Login
           </div>
 
           <div className='pl-input-field-box'>
@@ -74,9 +62,21 @@ class Signup extends Component {
               maxLength={140}
               disabled={!isConnected}
               placeholder='Email'
-              className='pl-input-field'
+              className='pl-input-field--top'
               onChange={(e) => this.setState({ email: e.target.value, clean: false })}
               value={this.state.email}
+            />
+          </div>
+
+          <div className='pl-input-field-box'>
+            <input
+              type='password'
+              maxLength={140}
+              disabled={!isConnected}
+              placeholder='Password'
+              className='pl-input-field--bottom'
+              onChange={(e) => this.setState({ password: e.target.value, clean: false })}
+              value={this.state.password}
             />
           </div>
 
@@ -86,10 +86,10 @@ class Signup extends Component {
 
           <div
             className='pl-login__links pl-link-text'
-            onClick={() => routeTo({ url: '/login' })}
+            onClick={() => routeTo({ url: '/signup' })}
           >
-            Already have an account ?<br/>
-            <em>Login here</em>
+            Don’t have an account yet ?<br/>
+            Sign up <em>here</em>
           </div>
 
         </div>
@@ -99,10 +99,9 @@ class Signup extends Component {
 }
 
 function mapStateToProps (state) {
-  // console.log('Signup: state=', state)
+  // console.log('Login: state=', state)
   const { settings } = state
   return {
-    backgrounds: settings.backgrounds,
     isConnected: settings.isConnectedToServer,
     isRequestInProgress: settings.isRequestInProgress,
     email: settings.saved.email,
@@ -121,4 +120,4 @@ function mapDispatchToProps (dispatch) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Signup)
+)(Login)

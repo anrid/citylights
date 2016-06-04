@@ -4,7 +4,7 @@ import React, { Component } from 'react'
 
 import './ActivityFeed.scss'
 
-import Dropdown from './Dropdown'
+import Dropdown from './widgets/Dropdown'
 
 export default class ActivityFeed extends Component {
   constructor (props) {

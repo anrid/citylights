@@ -1,5 +1,5 @@
 
-@import '../styles/colors';
+@import '../../styles/colors';
 
 .pl-input-widget {
   flex: none;
@@ -71,12 +71,12 @@
     flex: none;
     width: 30px;
     height: 30px;
-    margin-right: 12px;
+    margin-right: 10px;
     background-repeat: no-repeat;
     background-size: cover;
     background-color: transparent;
-    border-radius: 30px;
-    box-shadow: 0 0 0px 1px rgba(50,50,50,0.25);
+    border-radius: 3px;
+    box-shadow: 0 0 1px 0 rgba(0,0,0,0.25);
   }
 
   &__text {

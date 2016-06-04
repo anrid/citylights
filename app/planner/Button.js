@@ -1,50 +1,29 @@
 'use strict'
 
 import React, { Component } from 'react'
-import Radium from 'radium'
-// import Color from 'color'
-import colors from '../styles/colors'
+import classnames from 'classnames'
 
-class Button extends Component {
-  static propTypes = {
-    kind: React.PropTypes.oneOf(['primary', 'warning']).isRequired
-  };
+import './Button.scss'
 
+export default class Button extends Component {
   render () {
-    const { kind, children } = this.props
+    const { kind, children, onClick } = this.props
     return (
-      <div style={[styles.base, styles[kind]]}>
-        {children}
+      <div style={{ display: 'inline-block' }}>
+        <div
+          onClick={onClick || null}
+          className={classnames({
+            'pl-time-planner-button': true,
+            ['pl-time-planner-button--' + (kind || 'default')]: true
+          })}
+        >
+          {children}
+        </div>
       </div>
     )
   }
 }
 
-const styles = {
-  base: {
-    display: 'inline-block',
-    color: 'white',
-    background: $c-teal400,
-    width: 'auto',
-    padding: '0 4px',
-    cursor: 'pointer',
-    ':hover': {
-      background: $c-teal500
-    }
-  },
-  primary: {
-    background: $c-blue400,
-    ':hover': {
-      background: $c-blue500
-    }
-  },
-  warning: {
-    background: $c-amber400,
-    ':hover': {
-      background: $c-amber500
-    }
-  }
+Button.propTypes = {
+  kind: React.PropTypes.oneOf(['primary', 'warning'])
 }
-
-// TODO: Use decorators when they’re better supported.
-export default Radium(Button)

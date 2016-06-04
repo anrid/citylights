@@ -2,47 +2,48 @@
 
 import React, { Component } from 'react'
 
-import './ShiftPropertiesForm.scss'
+import './ProjectPropertiesForm.scss'
 
-import ConsultantsWidget from '../containers/ConsultantsWidget'
-import ConsultantCard from '../containers/ConsultantCard'
+import ConsultantsWidget from '../../containers/ConsultantsWidget'
+import ConsultantCard from '../../containers/ConsultantCard'
+import Button from '../../planner/Button'
 
-export default class ShiftPropertiesForm extends Component {
+export default class ProjectPropertiesForm extends Component {
   constructor (props) {
     super(props)
     this.onValueChange = this.onValueChange.bind(this)
-    this.onAssignConsultant = this.onAssignConsultant.bind(this)
+    this.onToggleProjectMember = this.onToggleProjectMember.bind(this)
     this.onSave = this.onSave.bind(this)
     this.state = {
       showConsultantsWidget: false,
       errors: null,
-      shift: null
+      project: null
     }
   }
 
-  onAssignConsultant (userId) {
-    console.log('onAssignConsultant, userId=', userId)
-    const { shift, actions } = this.props
-    actions.assignConsultant(shift._id, userId)
+  onToggleProjectMember (userId) {
+    console.log('onToggleProjectMember, userId=', userId)
+    const { project, actions } = this.props
+    actions.toggleProjectMember(project._id, userId)
   }
 
   onValueChange (section, fieldName) {
     return (event) => {
-      const shift = Object.assign(
+      const project = Object.assign(
         this.state[section] || { },
         { [fieldName]: event.target.value }
       )
-      this.setState({ shift })
+      this.setState({ project })
     }
   }
 
   onSave () {
-    const newShift = this.state.shift
-    const { shift, actions } = this.props
-    Object.keys(newShift).forEach((x) => {
-      if (shift[x] !== newShift[x]) {
-        console.log('Saving', x, newShift[x])
-        actions.updateShift(shift._id, x, newShift[x])
+    const newProject = this.state.project
+    const { project, actions } = this.props
+    Object.keys(newProject).forEach((x) => {
+      if (project[x] !== newProject[x]) {
+        console.log('Saving', x, newProject[x])
+        actions.updateProject(project._id, x, newProject[x])
       }
     })
   }
@@ -66,7 +67,7 @@ export default class ShiftPropertiesForm extends Component {
 
   renderAssigeesSection () {
     const { showConsultantsWidget } = this.state
-    const { shift } = this.props
+    const { project } = this.props
 
     const toggle = () => {
       this.setState({
@@ -77,24 +78,26 @@ export default class ShiftPropertiesForm extends Component {
     return (
       <div className='pl-form__section'>
         <div className={'pl-form__row' + (this.hasError('title') ? '--error' : '')}>
-          <div className='pl-form__section-label'>Assignees</div>
+          <div className='pl-form__section-label'>Project Members</div>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Consultants</div>
-            <button className='pl-form-button'
-              onClick={toggle}>
-              <i className='fa fa-fw fa-plus' />Assign
-            </button>
-            <div className='pl-shift-properties-form__consultants-widget'>
+
+            <Button onClick={toggle}>
+              <i className='fa fa-fw fa-plus' /> Assign
+            </Button>
+
+            <div className='pl-project-properties-form__consultants-widget'>
               {showConsultantsWidget && (
                 <ConsultantsWidget
-                  selected={shift.assignees}
-                  onSelect={this.onAssignConsultant}
+                  selected={project.members}
+                  onSelect={this.onToggleProjectMember}
                   onClose={toggle}
                 />
               )}
             </div>
-            <div className='pl-shift-properties-form__assignees'>
-              {shift.assignees.map((x) => <ConsultantCard key={x} userId={x} />)}
+
+            <div className='pl-project-properties-form__members'>
+              {project.members.map((x) => <ConsultantCard key={x} userId={x} />)}
             </div>
           </div>
         </div>
@@ -102,17 +105,17 @@ export default class ShiftPropertiesForm extends Component {
     )
   }
 
-  renderShiftInformationSection () {
-    const { shift } = this.props
+  renderProjectInformationSection () {
+    const { project } = this.props
     return (
       <div className='pl-form__section'>
         <div className={'pl-form__row' + (this.hasError('title') ? '--error' : '')}>
-          <div className='pl-form__section-label'>Shift information</div>
+          <div className='pl-form__section-label'>Project information</div>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Title</div>
             <input type='text'
-              defaultValue={shift.title}
-              onChange={this.onValueChange('shift', 'title')}
+              defaultValue={project.title}
+              onChange={this.onValueChange('project', 'title')}
               onBlur={this.onSave}
             />
           {this.renderError('title')}
@@ -125,8 +128,8 @@ export default class ShiftPropertiesForm extends Component {
             <div className='pl-form__label'>Start Date</div>
             <input type='text'
               placeholder='e.g. 2016-05-01 10:00'
-              defaultValue={shift.startDate}
-              onChange={this.onValueChange('shift', 'startDate')}
+              defaultValue={project.startDate}
+              onChange={this.onValueChange('project', 'startDate')}
               onBlur={this.onSave}
             />
             <div className='pl-form__help-text'>
@@ -144,46 +147,28 @@ export default class ShiftPropertiesForm extends Component {
             <div className='pl-form__label'>End Date</div>
             <input type='text'
               placeholder='e.g. 2016-05-01 18:00'
-              defaultValue={shift.endDate}
-              onChange={this.onValueChange('shift', 'endDate')}
+              defaultValue={project.endDate}
+              onChange={this.onValueChange('project', 'endDate')}
               onBlur={this.onSave}
             />
           {this.renderError('endDate')}
           </div>
         </div>
-
-        <div className={'pl-form__row' + (this.hasError('rateHour') ? '--error' : '')}>
-          <div className='pl-form__section-label'/>
-          <div className='pl-form__input'>
-            <div className='pl-form__label'>Hourly Rate (US dollars)</div>
-            <input type='text'
-              placeholder='e.g. 29.95'
-              defaultValue={shift.rateHour}
-              onChange={this.onValueChange('shift', 'rateHour')}
-              onBlur={this.onSave}
-            />
-            <div className='pl-form__help-text'>
-              The hourly rate in USD.
-            </div>
-          {this.renderError('rateHour')}
-          </div>
-        </div>
-
       </div>
     )
   }
 
   render () {
     return (
-      <section className='pl-shift-properties-form'>
-        {this.renderShiftInformationSection()}
+      <section className='pl-project-properties-form'>
+        {this.renderProjectInformationSection()}
         {this.renderAssigeesSection()}
       </section>
     )
   }
 }
 
-ShiftPropertiesForm.propTypes = {
-  shift: React.PropTypes.object.isRequired,
+ProjectPropertiesForm.propTypes = {
+  project: React.PropTypes.object.isRequired,
   actions: React.PropTypes.object.isRequired
 }

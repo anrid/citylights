@@ -41,13 +41,13 @@ apiClient.connect({
 })
 
 // All our pages.
-import Login from '../containers/Login'
-import Signup from '../containers/Signup'
-import Overview from '../containers/Overview'
-import Consultants from '../containers/Consultants'
-import Settings from '../containers/Settings'
-import ComponentBuilder from '../containers/ComponentBuilder'
-import Planning from '../containers/Planning'
+import Login from './pages/Login'
+import Signup from './pages/Signup'
+import Overview from './pages/Overview'
+import Consultants from './pages/Consultants'
+import Settings from './pages/Settings'
+import ComponentBuilder from './ComponentBuilder'
+import Planning from './pages/Planning'
 import TimePlannerApp from '../planner/TimePlannerApp'
 
 const NoMatch = () => <div>NoMatch.</div>

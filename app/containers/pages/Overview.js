@@ -6,11 +6,11 @@ import { connect } from 'react-redux'
 
 import './Overview.scss'
 
-import * as settingsActions from '../actions/settingsActions'
+import * as settingsActions from '../../actions/settingsActions'
 
-import BasicLayout from './BasicLayout'
-import ActivityFeed from '../components/ActivityFeed'
-import Loader from './Loader'
+import BasicLayout from '../BasicLayout'
+import ActivityFeed from '../../components/ActivityFeed'
+import Loader from '../Loader'
 
 class Overview extends Component {
   renderButtons () {

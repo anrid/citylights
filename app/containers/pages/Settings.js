@@ -6,12 +6,12 @@ import { connect } from 'react-redux'
 
 import './Settings.scss'
 
-import * as settingsActions from '../actions/settingsActions'
-import * as workspaceActions from '../actions/workspaceActions'
+import * as settingsActions from '../../actions/settingsActions'
+import * as workspaceActions from '../../actions/workspaceActions'
 
-import BasicLayout from './BasicLayout'
-import Loader from './Loader'
-import SpinnerButton from './SpinnerButton'
+import BasicLayout from '../BasicLayout'
+import Loader from '../Loader'
+import SpinnerButton from '../SpinnerButton'
 
 class Settings extends Component {
   constructor (props) {
