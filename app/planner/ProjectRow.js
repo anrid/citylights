@@ -2,33 +2,99 @@
 
 import React, { Component } from 'react'
 import Moment from 'moment'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+
+import * as projectActions from '../actions/projectActions'
 
 import './ProjectRow.scss'
 
 import GridOverlay from './GridOverlay'
+import ProjectMemberRow from './ProjectMemberRow'
+import DropdownButton from './DropdownButton'
+import ConsultantsWidget from '../containers/ConsultantsWidget'
 
-export default class ProjectRow extends Component {
+class ProjectRow extends Component {
   constructor (props) {
     super(props)
     this.state = {
+      showMembersWidget: false,
       open: false
     }
-    this.toggleOpen = this.toggleOpen.bind(this)
+    this.onToggleOpen = this.onToggleOpen.bind(this)
+    this.onToggleMember = this.onToggleMember.bind(this)
+    this.onToggleMembersWidget = this.onToggleMembersWidget.bind(this)
   }
 
-  toggleOpen () {
+  onToggleOpen () {
     this.setState({ open: !this.state.open })
   }
 
-  render () {
+  onToggleMember (userId) {
+    console.log('onToggleMember, userId=', userId)
+    const { project, actions } = this.props
+    actions.addOrRemoveMember(project._id, userId)
+  }
+
+  onToggleMembersWidget () {
+    this.setState({
+      showMembersWidget: !this.state.showMembersWidget
+    })
+  }
+
+  renderInnerRow () {
+    const { open, showMembersWidget } = this.state
+    if (!open) {
+      return null
+    }
+    const { members, pivotDate } = this.props
+    return (
+      <div className='pl-time-planner-project-row__inner'>
+        {this.renderProjectLabel()}
+        <div className='pl-time-planner-project-row__inner__members'>
+          {members.map((x) => (
+            <ProjectMemberRow key={x._id} member={x} shifts={[]} pivotDate={pivotDate} />
+          ))}
+        </div>
+        <div className='pl-time-planner-project-row__inner__options'>
+          <DropdownButton action selected='Actions ..' items={[]} />
+          <div className='pl-time-planner-project-row__assign'
+            onClick={this.onToggleMembersWidget}>
+            <div className='pl-time-planner-project-row__button'>
+              <i className='fa fa-fw fa-plus' /> Assign Person
+            </div>
+            {showMembersWidget && (
+              <ConsultantsWidget
+                selected={members.map((x) => x._id)}
+                onSelect={this.onToggleMember}
+                onClose={this.onToggleMembersWidget}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  renderProjectLabel () {
     const { project } = this.props
-    const startDate = Moment(this.props.pivotDate).startOf('isoWeek')
     const colors = ['gray', 'amber', 'green', 'red', 'teal', 'blue', 'purple', 'brown']
     const color = colors[project.color]
+    return (
+      <div className={
+        'pl-time-planner-project-row__label ' +
+        'pl-time-planner-project-row__' + color
+      } />
+    )
+  }
+
+  render () {
+    const { project, members } = this.props
+    const startDate = Moment(this.props.pivotDate).startOf('isoWeek')
 
     let membersInfo = null
-    if (!project.noMembers && project.members.length) {
-      membersInfo = `${project.members.length} members.`
+    if (!project.noMembers && members.length) {
+      membersInfo = `${members.length} members.`
     }
 
     const { open } = this.state
@@ -44,10 +110,7 @@ export default class ProjectRow extends Component {
         <section className='pl-time-planner-project-row'>
           <div className='pl-time-planner-project-row__left'>
             <div className='pl-time-planner-project-row__info'>
-              <div className={
-                'pl-time-planner-project-row__label ' +
-                'pl-time-planner-project-row__' + color
-              } />
+              {this.renderProjectLabel()}
               <div className='pl-time-planner-project-row__title'>
                 {project.title}
               </div>
@@ -55,12 +118,13 @@ export default class ProjectRow extends Component {
                 {membersInfo}
               </div>
             </div>
-            <i className={angleCls} onClick={this.toggleOpen} />
+            <i className={angleCls} onClick={this.onToggleOpen} />
           </div>
           <div className='pl-time-planner-project-row__right'>
             <GridOverlay size={90} />
           </div>
         </section>
+        {this.renderInnerRow()}
       </section>
     )
   }
@@ -68,5 +132,32 @@ export default class ProjectRow extends Component {
 
 ProjectRow.propTypes = {
   project: React.PropTypes.object.isRequired,
+  members: React.PropTypes.array.isRequired,
   pivotDate: React.PropTypes.any.isRequired
 }
+
+function mapStateToProps (state, { projectId }) {
+  const project = state.projects.data[projectId]
+  let members = project.members.map((x) => state.users.data[x])
+  // TODO: Used in Development mode only. Remove later !
+  // if (project._id === 'PROJ3') {
+  //   members = state.users.order.slice(1, 3).map((x) => state.users.data[x])
+  // }
+  return {
+    project,
+    members
+  }
+}
+
+function mapDispatchToProps (dispatch) {
+  return {
+    actions: bindActionCreators({
+      ...projectActions
+    }, dispatch)
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ProjectRow)

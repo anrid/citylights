@@ -31,23 +31,15 @@ class TimePlannerApp extends Component {
   }
 
   render () {
-    const projects = [
-      { _id: 'PROJ1', title: 'Time Off', members: [], color: 0, noMembers: true },
-      { _id: 'PROJ2', title: 'My Awesome Project', members: ['USER1', 'USER2'], color: 1 },
-      { _id: 'PROJ3', title: 'Blazing Webapp !', members: [], color: 2 },
-      { _id: 'PROJ4', title: 'Support Team', members: [], color: 3 },
-      { _id: 'PROJ5', title: 'New Marketing Website — Phase 1', members: [], color: 5 },
-      { _id: 'PROJ6', title: 'New Marketing Website — Phase 2', members: [], color: 5 }
-    ]
+    const { projects } = this.props
     const pivotDate = '2016-06-01'
-
     return (
       <section id='pl-time-planner-app' style={this.getThemeStyle()}>
         <TopNav />
         <ControlBar />
         <TimeBar pivotDate={pivotDate} />
         <section className='pl-time-planner-rows'>
-          {projects.map((x) => <ProjectRow key={x._id} project={x} pivotDate={pivotDate} />)}
+          {projects.map((x) => <ProjectRow key={x} projectId={x} pivotDate={pivotDate} />)}
         </section>
       </section>
     )
@@ -58,9 +50,11 @@ function mapStateToProps (state) {
   // Currently active workspaceId.
   const { workspaceId } = state.settings.saved
   const { userId } = state.settings.identity
+  const projects = state.projects.order
   return {
     user: state.users.data[userId],
     workspace: state.workspaces.data[workspaceId],
+    projects,
     activeTheme: state.settings.saved.activeTheme,
     backgrounds: state.settings.backgrounds
   }

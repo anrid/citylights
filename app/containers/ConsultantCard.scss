@@ -37,9 +37,9 @@
     background-size: cover;
     background-repeat: no-repeat;
     background-color: $c-gray100;
-    border-radius: 100px;
+    border-radius: 2px;
     margin: 0 10px;
-    box-shadow: 0 0 1px 0 rgba(50, 50, 50, 0.75);
+    box-shadow: 0 0 1px 0 rgba(0,0,0,0.3);
   }
 
   &__row-info {

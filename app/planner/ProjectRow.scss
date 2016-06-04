@@ -36,6 +36,54 @@
     cursor: pointer
   }
 
+  &__inner {
+    position: relative;
+  }
+
+  &__inner__options {
+    background-color: white;
+    border-right: 1px solid $c-gray200;
+    border-bottom: 1px solid $c-gray200;
+    width: 324px;
+    padding: 0 12px 0 17px;
+    min-height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+    color: $c-gray600;
+  }
+
+  // TODO: Move button to separate component.
+  &__button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    height: 30px;
+    color: $c-gray600;
+    border: 1px solid $c-gray300;
+    transition: background 0.1s;
+    cursor: pointer;
+    padding: 0 12px;
+    border-radius: 3px;
+    background: linear-gradient(#ffffff, #eeeeee);
+    &:hover {
+      background: linear-gradient($c-gray100, $c-gray200);
+    }
+    .fa {
+      font-size: 1rem;
+      -webkit-font-smoothing: none;
+    }
+  }
+
+  &__assign {
+    .pl-widget-popup {
+      left: 328px;
+    }
+  }
+
   &__left {
     flex: none;
     display: flex;
@@ -76,7 +124,8 @@
     align-items: center;
     height: 50px;
     min-width: 300px;
-    overflow: hidden
+    overflow: hidden;
+    position: relative;
   }
 
   &__info {

@@ -19,6 +19,26 @@
   &:hover {
     background: $c-gray800;
   }
+
+  &.pl-time-planner-dropdown-button--action-menu {
+    padding: 0;
+    font-size: 1rem;
+    color: $c-gray400;
+    .fa-angle-down, .fa-angle-up {
+      display: none;
+      color: $c-gray400;
+      font-size: 1.2rem;
+    }
+
+    &:hover {
+      background: transparent;
+      color: $c-gray600;
+      .fa-angle-down, .fa-angle-up {
+        color: $c-gray600;
+      }
+    }
+  }
+
   .fa-angle-down, .fa-angle-up {
     padding-left: 8px;
     font-size: 1.4rem;

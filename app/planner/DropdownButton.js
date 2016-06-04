@@ -6,9 +6,12 @@ import './DropdownButton.scss'
 
 export default class DropdownButton extends Component {
   render () {
-    const { selected, items } = this.props
+    const { selected, items, action } = this.props
     return (
-      <div className='pl-time-planner-dropdown-button'>
+      <div className={
+        'pl-time-planner-dropdown-button' +
+        (action ? ' pl-time-planner-dropdown-button--action-menu' : '')
+      }>
         <div>
           {selected}
           <i className='fa fa-angle-down' />
