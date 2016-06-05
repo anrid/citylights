@@ -153,15 +153,6 @@ export default class TimeItem extends Component {
     const color = colors[shift.color]
     const cls = 'pl-time-planner-time-item--' + color
 
-    let assignees = null
-    if (shift.assignees.length) {
-      assignees = (
-        <div className='pl-time-planner-time-item__assignees'>
-          {' — ' + shift.assignees.map((x) => usersMap[x].firstName).join(', ')}
-        </div>
-      )
-    }
-
     let dateRange = null
     const { dateRangeOverlay } = this.state
     if (dateRangeOverlay) {
@@ -205,7 +196,6 @@ export default class TimeItem extends Component {
             </span>
             {dateRange}
           </div>
-          {assignees}
         </div>
       </Draggable>
     )
@@ -214,7 +204,6 @@ export default class TimeItem extends Component {
 
 TimeItem.propTypes = {
   shift: React.PropTypes.object.isRequired,
-  usersMap: React.PropTypes.object.isRequired,
   width: React.PropTypes.number.isRequired,
   height: React.PropTypes.number,
   pivotDate: React.PropTypes.any.isRequired,

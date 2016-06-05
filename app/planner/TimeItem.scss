@@ -5,7 +5,8 @@
 $shift-height: 36px;
 
 .pl-time-planner-time-item {
-  position: relative;
+  position: absolute;
+  top: 7px;
   min-width: 50px;
   height: $shift-height;
   &:last-child {
@@ -29,7 +30,7 @@ $shift-height: 36px;
   &__inner {
     border-radius: 2px;
     // Default color is teal.
-    background-color: rgba($c-teal300, 0.9);
+    background-color: $c-teal400;
     border: 1px solid $c-teal500;
     height: $shift-height;
     width: 100%;
@@ -122,28 +123,28 @@ $shift-height: 36px;
 
   &.pl-time-planner-time-item--amber {
     .pl-time-planner-time-item__inner {
-      background-color: rgba($c-amber400, 0.9);
+      background-color: $c-amber400;
       border: 1px solid $c-amber500;
     }
   }
 
   &.pl-time-planner-time-item--red {
     .pl-time-planner-time-item__inner {
-      background-color: rgba($c-red400, 0.9);
+      background-color: $c-red400;
       border: 1px solid $c-red500;
     }
   }
 
   &.pl-time-planner-time-item--green {
     .pl-time-planner-time-item__inner {
-      background-color: rgba($c-green400, 0.9);
+      background-color: $c-green400;
       border: 1px solid $c-green500;
     }
   }
 
   &.pl-time-planner-time-item--blue {
     .pl-time-planner-time-item__inner {
-      background-color: rgba($c-blue400, 0.9);
+      background-color: $c-blue400;
       border: 1px solid $c-blue500;
     }
   }

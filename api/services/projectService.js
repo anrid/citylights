@@ -58,19 +58,19 @@ const removeMember = P.coroutine(function * (projectId, memberId, actorId) {
   return project
 })
 
-function create (title, workspaceId, actorId) {
+function create (opts, actorId) {
   return P.try(() => {
-    T.String(title)
-    T.String(workspaceId)
+    T.String(opts._id)
+    T.String(opts.title)
+    T.String(opts.workspaceId)
     T.String(actorId)
-    return AccessService.requireWorkspace(workspaceId, actorId)
+
+    return AccessService.requireWorkspace(opts.workspaceId, actorId)
     .then(() => {
-      return Project.create({
-        title,
-        workspaceId,
+      return Project.create(Object.assign({}, opts, {
         ownerId: actorId,
         admins: [actorId]
-      })
+      }))
     })
   })
 }
@@ -90,7 +90,7 @@ function getList (workspaceId, userId) {
       isEnabled: true,
       isDeleted: false
     })
-    .sort('title')
+    .sort('-created')
     .exec()
   })
 }

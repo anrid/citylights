@@ -2,6 +2,7 @@
 import * as userActions from './userActions'
 import * as settingsActions from './settingsActions'
 import * as workspaceActions from './workspaceActions'
+import * as projectActions from './projectActions'
 
 import { request } from '../lib/apiClient'
 
@@ -44,6 +45,10 @@ export function receiveBackendEvent (event) {
       case 'workspace:update':
         return dispatch(workspaceActions.receiveWorkspace(event.payload.workspace))
 
+      case 'project:create':
+      case 'project:update':
+        return dispatch(projectActions.receiveProject(event.payload.project))
+
       case 'auth:successful':
         return dispatch(onAuthSuccessful(event.payload))
 
@@ -71,6 +76,8 @@ function onAppStarter (payload) {
 
     dispatch(workspaceActions.receiveWorkspaceList(payload.workspaceList))
     dispatch(workspaceActions.receiveWorkspace(payload.workspace))
+
+    dispatch(projectActions.receiveProjectList(payload.projectList))
 
     // Declare app `loaded` at this point.
     dispatch(settingsActions.setAppLoaded(true))

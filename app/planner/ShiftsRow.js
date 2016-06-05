@@ -3,23 +3,24 @@
 import React, { Component } from 'react'
 import Moment from 'moment'
 
-import './ProjectShiftsRow.scss'
+import './ShiftsRow.scss'
 
+import GridOverlay from './GridOverlay'
 import TimeItem from './TimeItem'
 
-export default class ProjectShiftsRow extends Component {
+export default class ShiftsRow extends Component {
   render () {
     const { shifts, actions, pivotDate } = this.props
     const startDate = Moment(pivotDate).startOf('isoWeek')
     return (
-      <section className='pl-time-planner-project-shifts-row'>
+      <section className='pl-time-planner-shifts-row'>
+        <GridOverlay size={90} />
         {shifts.map((x) => (
           <TimeItem
             key={x._id}
             shift={x}
             width={50}
             pivotDate={startDate}
-            usersMap={this.props.usersMap}
             onClick={() => actions.showShiftProperties(x._id)}
             updateShiftAction={actions.updateShift}
             unit='days'
@@ -31,10 +32,8 @@ export default class ProjectShiftsRow extends Component {
   }
 }
 
-ProjectShiftsRow.propTypes = {
-  project: React.PropTypes.object.isRequired,
+ShiftsRow.propTypes = {
   shifts: React.PropTypes.array.isRequired,
   pivotDate: React.PropTypes.any.isRequired,
-  actions: React.PropTypes.object.isRequired,
-  usersMap: React.PropTypes.object.isRequired
+  actions: React.PropTypes.object.isRequired
 }

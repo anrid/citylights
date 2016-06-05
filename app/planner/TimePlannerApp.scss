@@ -1,10 +1,11 @@
 
 #pl-time-planner-app {
-  width: 100%;
-  height: 100%;
   background-position: center;
   background-size: cover;
   position: relative;
+
+  // NOTE: Very important and tricky. But it does the trick !
+  min-height: 100vh;
 
   .pl-time-planner-top-nav {
     position: fixed;
@@ -25,8 +26,7 @@
     z-index: 10;
   }
   .pl-time-planner-rows {
+    padding-top: 140px;
     position: relative;
-    top: 140px;
-    left: 0;
   }
 }

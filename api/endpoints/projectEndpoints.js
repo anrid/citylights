@@ -9,7 +9,7 @@ const Schemas = require('./schemas')
 function create (payload, context) {
   return P.try(() => {
     const valid = Schemas.validateOrThrow(payload, createProjectSchema)
-    return ProjectService.create(valid.title, valid.workspaceId, context.userId)
+    return ProjectService.create(valid, context.userId)
     .then((project) => {
       const projectId = project._id.toString()
       return {
@@ -80,6 +80,7 @@ const addOrRemoveMemberSchema = Joi.object().keys({
 })
 
 const createProjectSchema = Joi.object().keys({
+  _id: Joi.string().min(20).required().description('Project id, generated on the client.'),
   workspaceId: Joi.string().min(20).required().description('User’s current workspace id.'),
   title: Joi.string().min(3).required().description('Project title.')
 })

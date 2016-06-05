@@ -1,16 +1,14 @@
 'use strict'
 
 import React, { Component } from 'react'
-import Moment from 'moment'
 
 import './ProjectMemberRow.scss'
 
-import GridOverlay from './GridOverlay'
+import ShiftsRow from './ShiftsRow'
 
 export default class ProjectMemberRow extends Component {
   render () {
     const { member, actions } = this.props
-    const startDate = Moment(this.props.pivotDate).startOf('isoWeek')
     return (
       <section className='pl-time-planner-project-member-row'>
         <div className='pl-time-planner-project-member-row__left'>
@@ -27,7 +25,7 @@ export default class ProjectMemberRow extends Component {
             style={{backgroundImage: `url(${member.photo})`}} />
         </div>
         <div className='pl-time-planner-project-member-row__right'>
-          <GridOverlay size={90} />
+          <ShiftsRow {...this.props} />
         </div>
       </section>
     )

@@ -6,6 +6,7 @@ const Hoek = require('hoek')
 
 require('../api/lib/database.js')()
 
+const Mongoose = require('mongoose')
 const User = require('../api/services/userModel')
 const UserService = require('../api/services/userService')
 
@@ -39,6 +40,10 @@ module.exports = {
 
   getToken (userId) {
     return Jwt.createToken({ userId })
+  },
+
+  getId () {
+    return new Mongoose.Types.ObjectId().toString()
   },
 
   wait (func) {

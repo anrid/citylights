@@ -12,9 +12,8 @@ import { projectsToShiftsMapSelector } from '../selectors/shifts'
 
 import './ProjectRow.scss'
 
-import GridOverlay from './GridOverlay'
 import ProjectMemberRow from './ProjectMemberRow'
-import ProjectShiftsRow from './ProjectShiftsRow'
+import ShiftsRow from './ShiftsRow'
 import DropdownButton from './DropdownButton'
 import Button from './Button'
 import ConsultantsWidget from '../containers/ConsultantsWidget'
@@ -149,8 +148,7 @@ class ProjectRow extends Component {
             <i className={angleCls} onClick={this.onToggleOpen} />
           </div>
           <div className='pl-time-planner-project-row__right'>
-            <GridOverlay size={90} />
-            <ProjectShiftsRow {...this.props} />
+            <ShiftsRow {...this.props} preview />
           </div>
         </section>
         {this.renderInnerRow()}

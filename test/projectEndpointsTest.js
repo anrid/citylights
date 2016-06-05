@@ -31,6 +31,7 @@ lab.experiment('Project Endpoints', () => {
 
   lab.test('user1 creates a new project', () => {
     return Project.create({
+      _id: Db.getId(),
       title: 'test.test',
       workspaceId: workspace1Id
     }, user1)
