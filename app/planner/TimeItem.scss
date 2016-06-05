@@ -1,0 +1,170 @@
+
+@import '../styles/colors';
+
+// Shift height.
+$shift-height: 36px;
+
+.pl-time-planner-time-item {
+  position: relative;
+  min-width: 50px;
+  height: $shift-height;
+  &:last-child {
+    margin-bottom: 0;
+    height: $shift-height;
+  }
+
+  &:hover {
+    .pl-time-planner-time-item__left-bar,
+    .pl-time-planner-time-item__right-bar {
+      display: block;
+    }
+    .pl-time-planner-time-item__info-box {
+      display: flex;
+    }
+    .pl-time-planner-time-item__date-range {
+      display: inline;
+    }
+  }
+
+  &__inner {
+    border-radius: 2px;
+    // Default color is teal.
+    background-color: rgba($c-teal300, 0.9);
+    border: 1px solid $c-teal500;
+    height: $shift-height;
+    width: 100%;
+    z-index: 2;
+    position: relative;
+    cursor: move;
+    box-shadow: 0 1px 1px 0 rgba(50,50,50,0.5);
+  }
+
+  &__left-bar {
+    display: none;
+    width: 2px;
+    background-color: $c-gray200;
+    height: 100%;
+    position: absolute;
+    bottom: 20px;
+    left: 0px;
+    z-index: 1;
+  }
+
+  &__right-bar {
+    display: none;
+    width: 2px;
+    background-color: $c-gray200;
+    height: 100%;
+    position: absolute;
+    bottom: 20px;
+    right: -.5px;
+    z-index: 1;
+  }
+
+  &__title-box {
+    position: absolute;
+    height: 36px;
+    top: 0;
+    left: 0;
+    z-index: 3;
+  }
+
+  &__title {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: $c-gray600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 150px;
+    padding: 0 4px;
+    overflow: hidden;
+    cursor: pointer;
+    // border: 1px solid blue;
+  }
+
+  &__date-range {
+    display: none;
+    font-size: 0.9rem;
+    font-weight: 400;
+    height: 20px;
+    line-height: 20px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 150px;
+    padding: 0;
+    overflow: hidden;
+    cursor: pointer;
+    color: $c-gray600;
+    // border: 1px solid red;
+  }
+
+  &__date-range-active {
+    @extend .pl-time-planner-time-item__date-range;
+    display: inline;
+    font-weight: 600;
+    color: $c-gray600;
+  }
+
+  &__assignees {
+    position: absolute;
+    height: $shift-height;
+    font-size: 1.1rem;
+    line-height: $shift-height;
+    top: 0;
+    right: -150px;
+    white-space: nowrap;
+    width: 150px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding-left: 6px;
+    z-index: 3;
+  }
+
+  &.pl-time-planner-time-item--amber {
+    .pl-time-planner-time-item__inner {
+      background-color: rgba($c-amber400, 0.9);
+      border: 1px solid $c-amber500;
+    }
+  }
+
+  &.pl-time-planner-time-item--red {
+    .pl-time-planner-time-item__inner {
+      background-color: rgba($c-red400, 0.9);
+      border: 1px solid $c-red500;
+    }
+  }
+
+  &.pl-time-planner-time-item--green {
+    .pl-time-planner-time-item__inner {
+      background-color: rgba($c-green400, 0.9);
+      border: 1px solid $c-green500;
+    }
+  }
+
+  &.pl-time-planner-time-item--blue {
+    .pl-time-planner-time-item__inner {
+      background-color: rgba($c-blue400, 0.9);
+      border: 1px solid $c-blue500;
+    }
+  }
+
+  .react-resizable {
+    position: relative;
+  }
+
+  .react-resizable-handle {
+    position: absolute;
+    width: 16px;
+    height: 36px;
+    bottom: 14px;
+    right: 0;
+    background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pg08IS0tIEdlbmVyYXRvcjogQWRvYmUgRmlyZXdvcmtzIENTNiwgRXhwb3J0IFNWRyBFeHRlbnNpb24gYnkgQWFyb24gQmVhbGwgKGh0dHA6Ly9maXJld29ya3MuYWJlYWxsLmNvbSkgLiBWZXJzaW9uOiAwLjYuMSAgLS0+DTwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DTxzdmcgaWQ9IlVudGl0bGVkLVBhZ2UlMjAxIiB2aWV3Qm94PSIwIDAgNiA2IiBzdHlsZT0iYmFja2dyb3VuZC1jb2xvcjojZmZmZmZmMDAiIHZlcnNpb249IjEuMSINCXhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHhtbDpzcGFjZT0icHJlc2VydmUiDQl4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjZweCIgaGVpZ2h0PSI2cHgiDT4NCTxnIG9wYWNpdHk9IjAuMzAyIj4NCQk8cGF0aCBkPSJNIDYgNiBMIDAgNiBMIDAgNC4yIEwgNCA0LjIgTCA0LjIgNC4yIEwgNC4yIDAgTCA2IDAgTCA2IDYgTCA2IDYgWiIgZmlsbD0iIzAwMDAwMCIvPg0JPC9nPg08L3N2Zz4=');
+    background-position: bottom right;
+    padding: 0 3px 3px 0;
+    background-repeat: no-repeat;
+    background-origin: content-box;
+    box-sizing: border-box;
+    cursor: se-resize;
+    z-index: 10;
+  }
+}

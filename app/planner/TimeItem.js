@@ -6,9 +6,9 @@ import Moment from 'moment'
 import Draggable from 'react-draggable'
 import { ResizableBox } from 'react-resizable'
 
-import './PlanningShift.scss'
+import './TimeItem.scss'
 
-export default class PlanningShift extends Component {
+export default class TimeItem extends Component {
   constructor (props) {
     super(props)
     this.onDragStart = this.onDragStart.bind(this)
@@ -38,8 +38,8 @@ export default class PlanningShift extends Component {
     const range = this.calcShiftDateRange(data.lastX)
     console.log('old date range:', range.start.format(), '-', range.end.format())
     console.log('new date range:', range.newStart.format(), '-', range.newEnd.format())
-    updateShiftAction(shift._id, 'startDate', range.newStart.format())
-    updateShiftAction(shift._id, 'endDate', range.newEnd.format())
+    // updateShiftAction(shift._id, 'startDate', range.newStart.format())
+    // updateShiftAction(shift._id, 'endDate', range.newEnd.format())
   }
 
   onResizeStart (e, data) {
@@ -65,35 +65,39 @@ export default class PlanningShift extends Component {
     const newEnd = this.calcShiftEndDateAfterResize(node.getBoundingClientRect().width)
     console.log('old end date:', Moment(shift.endDate).format())
     console.log('new end date:', newEnd.format())
-    updateShiftAction(shift._id, 'endDate', newEnd.format())
+    // updateShiftAction(shift._id, 'endDate', newEnd.format())
   }
 
   calcShiftEndDateAfterResize (shiftWidth) {
-    const { shift, dayWidth } = this.props
-    let days = Math.floor(shiftWidth / dayWidth)
-    if (days < 1) {
-      days = 1
+    const { shift, width, unit } = this.props
+    let units = Math.floor(shiftWidth / width)
+    if (units < 1) {
+      units = 1
     }
     const endDateHours = Moment(shift.endDate).hours()
     return Moment(shift.startDate)
-    .add(days - 1, 'days')
+    .add(units - 1, unit)
     .hours(endDateHours)
   }
 
   calcShiftDateRange (offsetOnGridX) {
-    const { shift, dayWidth } = this.props
-    let date = Math.floor(offsetOnGridX / dayWidth)
-    if (date < 0) {
-      date = 0
+    const { shift, width, unit } = this.props
+    let units = Math.floor(offsetOnGridX / width)
+    if (units < 0) {
+      units = 0
     }
     const start = Moment(shift.startDate)
     const end = Moment(shift.endDate)
     const shiftLengthMinutes = end.diff(start, 'minutes')
+
     const newStart = start.clone()
     .startOf('month')
-    .add(date, 'days')
-    .add(start.hours(), 'hours')
-    .add(start.minutes(), 'minutes')
+    .add(units, unit)
+    if (unit !== 'hours') {
+      newStart.add(start.hours(), 'hours')
+    }
+    newStart.add(start.minutes(), 'minutes')
+
     const newEnd = newStart.clone().add(shiftLengthMinutes, 'minutes')
     return {
       start,
@@ -117,52 +121,43 @@ export default class PlanningShift extends Component {
   render () {
     const {
       shift,
-      users,
+      usersMap,
       pivotDate,
-      dayWidth,
-      onClick
+      width,
+      onClick,
+      unit
     } = this.props
 
     const start = Moment(shift.startDate)
     const end = Moment(shift.endDate)
     const pivot = Moment(pivotDate)
 
-    let daysFromPivot = start.diff(pivot, 'days')
-    if (daysFromPivot < 0) {
+    let unitsFromPivot = start.diff(pivot, unit)
+    if (unitsFromPivot < 0) {
       // TODO: Handle start dates before pivot date.
-      daysFromPivot = 0
+      unitsFromPivot = 0
     }
 
-    let shiftDays = end.diff(start, 'days')
-    if (shiftDays < 0) {
+    let shiftUnits = end.diff(start, unit)
+    if (shiftUnits < 0) {
       // TODO: Handle end dates before start date.
-      shiftDays = 0
+      shiftUnits = 0
     }
 
-    const offsetOnGridX = dayWidth * daysFromPivot
+    const offsetOnGridX = width * unitsFromPivot
     const style = {
-      width: dayWidth + (dayWidth * shiftDays)
+      width: width + (width * shiftUnits)
     }
-    // const barsHeight = { height: 52 + position * 32 }
 
-    let cls = ''
-    switch (shift.color) {
-      case 2:
-        cls += 'pl-planning-shift--red'
-        break
-      case 3:
-        cls += 'pl-planning-shift--green'
-        break
-      case 4:
-        cls += 'pl-planning-shift--blue'
-        break
-    }
+    const colors = ['gray', 'amber', 'green', 'red', 'teal', 'blue', 'purple', 'brown']
+    const color = colors[shift.color]
+    const cls = 'pl-time-planner-time-item--' + color
 
     let assignees = null
     if (shift.assignees.length) {
       assignees = (
-        <div className='pl-planning-shift__assignees'>
-          {' — ' + shift.assignees.map((x) => users[x].firstName).join(', ')}
+        <div className='pl-time-planner-time-item__assignees'>
+          {' — ' + shift.assignees.map((x) => usersMap[x].firstName).join(', ')}
         </div>
       )
     }
@@ -171,13 +166,13 @@ export default class PlanningShift extends Component {
     const { dateRangeOverlay } = this.state
     if (dateRangeOverlay) {
       dateRange = (
-        <span className='pl-planning-shift__date-range-active'>
+        <span className='pl-time-planner-time-item__date-range-active'>
           {this.getDateRangeString(dateRangeOverlay.newStart, dateRangeOverlay.newEnd)}
         </span>
       )
     } else {
       dateRange = (
-        <span className='pl-planning-shift__date-range'>
+        <span className='pl-time-planner-time-item__date-range'>
           {this.getDateRangeString(start, end)}
         </span>
       )
@@ -186,26 +181,26 @@ export default class PlanningShift extends Component {
     return (
       <Draggable
         axis='x'
-        grid={[dayWidth, dayWidth]}
+        grid={[width, width]}
         onStart={this.onDragStart}
         onDrag={this.onDragging}
         onStop={this.onDragStop}
         cancel='.react-resizable-handle'
         position={{ x: offsetOnGridX, y: 0 }}
       >
-        <div className={'pl-planning-shift ' + cls} style={style}>
+        <div className={'pl-time-planner-time-item ' + cls} style={style}>
           <ResizableBox
             onResizeStart={this.onResizeStart}
             onResizeStop={this.onResizeStop}
             onResize={this.onResizing}
-            width={style.width} height={dayWidth}
-            minConstraints={[dayWidth, dayWidth]} maxConstraints={[1000, dayWidth]}
-            draggableOpts={{ axis: 'x', grid: [dayWidth, dayWidth] }}
+            width={style.width} height={width}
+            minConstraints={[width, width]} maxConstraints={[2000, width]}
+            draggableOpts={{ axis: 'x', grid: [width, width] }}
           >
-            <div className='pl-planning-shift__inner' ref='shiftSize' />
+            <div className='pl-time-planner-time-item__inner' ref='shiftSize' />
           </ResizableBox>
-          <div className='pl-planning-shift__title-box'>
-            <span className='pl-planning-shift__title' onClick={onClick}>
+          <div className='pl-time-planner-time-item__title-box'>
+            <span className='pl-time-planner-time-item__title' onClick={onClick}>
               {shift.title}
             </span>
             {dateRange}
@@ -217,12 +212,14 @@ export default class PlanningShift extends Component {
   }
 }
 
-PlanningShift.propTypes = {
+TimeItem.propTypes = {
   shift: React.PropTypes.object.isRequired,
-  users: React.PropTypes.object.isRequired,
-  dayWidth: React.PropTypes.number.isRequired,
-  position: React.PropTypes.number.isRequired,
+  usersMap: React.PropTypes.object.isRequired,
+  width: React.PropTypes.number.isRequired,
+  height: React.PropTypes.number,
   pivotDate: React.PropTypes.any.isRequired,
   onClick: React.PropTypes.func.isRequired,
-  updateShiftAction: React.PropTypes.func.isRequired
+  updateShiftAction: React.PropTypes.func.isRequired,
+  sevenDayWeek: React.PropTypes.bool,
+  unit: React.PropTypes.string.isRequired
 }

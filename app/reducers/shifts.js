@@ -13,32 +13,36 @@ const initialState = {
       assignees: [],
       startDate: '2016-06-02 10:00:00',
       endDate: '2016-06-02 18:00:00',
-      color: 1,
-      title: 'H&M'
+      color: 3,
+      title: 'H&M',
+      projectId: 'PROJ4'
     },
     SF2: {
       _id: 'SF2',
       assignees: [],
       startDate: '2016-06-02 15:00:00',
       endDate: '2016-06-04 18:00:00',
-      color: 1,
-      title: 'H&M'
+      color: 3,
+      title: 'H&M',
+      projectId: 'PROJ4'
     },
     SF3: {
       _id: 'SF3',
       assignees: [],
       startDate: '2016-06-04 10:00:00',
       endDate: '2016-06-10 18:00:00',
-      color: 2,
-      title: 'Ikea'
+      color: 1,
+      title: 'Ikea',
+      projectId: 'PROJ2'
     },
     SF4: {
       _id: 'SF4',
       assignees: [],
       startDate: '2016-06-03 10:00:00',
       endDate: '2016-06-03 18:00:00',
-      color: 3,
-      title: 'Konsum'
+      color: 2,
+      title: 'Konsum',
+      projectId: 'PROJ3'
     }
   }
 }

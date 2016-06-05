@@ -1,17 +1,20 @@
 'use strict'
 
 import React, { Component } from 'react'
-import Moment from 'moment'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
 import * as settingsActions from '../actions/settingsActions'
 import * as projectActions from '../actions/projectActions'
+import * as shiftActions from '../actions/shiftActions'
+
+import { projectsToShiftsMapSelector } from '../selectors/shifts'
 
 import './ProjectRow.scss'
 
 import GridOverlay from './GridOverlay'
 import ProjectMemberRow from './ProjectMemberRow'
+import ProjectShiftsRow from './ProjectShiftsRow'
 import DropdownButton from './DropdownButton'
 import Button from './Button'
 import ConsultantsWidget from '../containers/ConsultantsWidget'
@@ -102,16 +105,22 @@ class ProjectRow extends Component {
     )
   }
 
-  render () {
-    const { project, members } = this.props
-    const startDate = Moment(this.props.pivotDate).startOf('isoWeek')
-
-    let membersInfo = null
+  getStats () {
+    const { project, members, shifts } = this.props
+    let _stats = []
     if (!project.noMembers && members.length) {
-      membersInfo = `${members.length} members.`
+      _stats.push(members.length + ' ' + (members.length !== 1 ? 'members' : 'member'))
     }
+    if (shifts.length) {
+      _stats.push(shifts.length + ' ' + (shifts.length !== 1 ? 'shifts' : 'shift'))
+    }
+    return _stats.length ? _stats.join('. ') + '.' : null
+  }
 
+  render () {
+    const { project } = this.props
     const { open } = this.state
+
     let rowCls = 'pl-time-planner-project-row-wrapper '
     let angleCls = 'fa fa-angle-down'
     if (open) {
@@ -134,13 +143,14 @@ class ProjectRow extends Component {
                 </div>
               </div>
               <div className='pl-time-planner-project-row__stats'>
-                {membersInfo}
+                {this.getStats()}
               </div>
             </div>
             <i className={angleCls} onClick={this.onToggleOpen} />
           </div>
           <div className='pl-time-planner-project-row__right'>
             <GridOverlay size={90} />
+            <ProjectShiftsRow {...this.props} />
           </div>
         </section>
         {this.renderInnerRow()}
@@ -152,19 +162,19 @@ class ProjectRow extends Component {
 ProjectRow.propTypes = {
   project: React.PropTypes.object.isRequired,
   members: React.PropTypes.array.isRequired,
+  shifts: React.PropTypes.array.isRequired,
   pivotDate: React.PropTypes.any.isRequired
 }
 
 function mapStateToProps (state, { projectId }) {
   const project = state.projects.data[projectId]
   let members = project.members.map((x) => state.users.data[x])
-  // TODO: Used in Development mode only. Remove later !
-  // if (project._id === 'PROJ3') {
-  //   members = state.users.order.slice(1, 3).map((x) => state.users.data[x])
-  // }
+  const shifts = projectsToShiftsMapSelector(state)[project._id] || []
   return {
     project,
-    members
+    members,
+    shifts,
+    usersMap: state.users.data
   }
 }
 
@@ -172,7 +182,8 @@ function mapDispatchToProps (dispatch) {
   return {
     actions: bindActionCreators({
       ...settingsActions,
-      ...projectActions
+      ...projectActions,
+      ...shiftActions
     }, dispatch)
   }
 }
