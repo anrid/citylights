@@ -5,7 +5,7 @@
   "scripts": {
     "start": "parallelshell 'npm run dev' 'npm run api-dev'",
     "dev": "SKIP_TLS=1 webpack-dev-server --open",
-    "build": "webpack --progress",
+    "build": "rm build/*.js && webpack --progress",
     "api-dev": "SKIP_TLS=1 NODE_ENV=development nodemon --watch api/ api/server.js",
     "api": "NODE_ENV=production node api/server.js",
     "release": "node api/lib/s3.js ../../build/manifest.json",
@@ -19,6 +19,7 @@
     "bson-objectid": "^1.1.4",
     "chalk": "^1.1.3",
     "classnames": "^2.2.5",
+    "draft-js": "^0.7.0",
     "handlebars": "^4.0.5",
     "hapi": "^13.3.0",
     "hiredis": "^0.4.1",

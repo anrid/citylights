@@ -40,6 +40,7 @@ const config = {
       'bluebird',
       'reselect',
       'metaphone',
+      'draft-js',
       Path.join(PATHS.app, 'styles', 'medium-font.css')
     ]
   },

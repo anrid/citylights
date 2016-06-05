@@ -120,7 +120,9 @@ class ProjectRow extends Component {
             <div className='pl-time-planner-project-row__info'>
               {this.renderProjectLabel()}
               <div className='pl-time-planner-project-row__title'>
-                {project.title}
+                <div className='pl-time-planner-project-row__title-text'>
+                  {project.title}
+                </div>
                 <div className='pl-time-planner-project-row__edit-project' onClick={this.onShowProperties}>
                   edit
                 </div>

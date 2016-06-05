@@ -7,6 +7,7 @@ import './ProjectPropertiesForm.scss'
 import ConsultantsWidget from '../../containers/ConsultantsWidget'
 import ConsultantCard from '../../containers/ConsultantCard'
 import Button from '../../planner/Button'
+import TextEditor from '../misc/TextEditor'
 
 export default class ProjectPropertiesForm extends Component {
   constructor (props) {
@@ -14,6 +15,7 @@ export default class ProjectPropertiesForm extends Component {
     this.onValueChange = this.onValueChange.bind(this)
     this.onToggleProjectMember = this.onToggleProjectMember.bind(this)
     this.onSave = this.onSave.bind(this)
+    this.onSaveDesc = this.onSaveDesc.bind(this)
     this.state = {
       showConsultantsWidget: false,
       errors: null,
@@ -40,12 +42,20 @@ export default class ProjectPropertiesForm extends Component {
   onSave () {
     const newProject = this.state.project
     const { project, actions } = this.props
-    Object.keys(newProject).forEach((x) => {
-      if (project[x] !== newProject[x]) {
-        console.log('Saving', x, newProject[x])
-        actions.updateProject(project._id, x, newProject[x])
-      }
-    })
+    if (newProject) {
+      Object.keys(newProject).forEach((x) => {
+        if (project[x] !== newProject[x]) {
+          console.log('Saving', x, newProject[x])
+          actions.updateProject(project._id, x, newProject[x])
+        }
+      })
+    }
+  }
+
+  onSaveDesc (jsonString) {
+    const { project, actions } = this.props
+    console.log('Saving Description.')
+    actions.updateProject(project._id, 'desc', jsonString)
   }
 
   hasError (name) {
@@ -122,6 +132,20 @@ export default class ProjectPropertiesForm extends Component {
           </div>
         </div>
 
+        <div className={'pl-form__row' + (this.hasError('desc') ? '--error' : '')}>
+          <div className='pl-form__section-label'/>
+          <div className='pl-form__input'>
+            <div className='pl-form__label'>Description</div>
+            <TextEditor
+              defaultValue={project.desc}
+              onSave={this.onSaveDesc}
+            />
+            <div className='pl-form__help-text'>
+              The why’s and wherefore’s. Do this, not that, etc.
+            </div>
+          </div>
+        </div>
+
         <div className={'pl-form__row' + (this.hasError('startDate') ? '--error' : '')}>
           <div className='pl-form__section-label'/>
           <div className='pl-form__input'>
@@ -133,25 +157,23 @@ export default class ProjectPropertiesForm extends Component {
               onBlur={this.onSave}
             />
             <div className='pl-form__help-text'>
-              Date and time formats are flexible,
-              e.g. both 5/1/2016 10:00am and 2016-05-01 10:00:00
-              represent the May 1st 2016 at 10:00 am.
+              E.g. 5/1/2016 10:00am or 2016-05-01 10:00
             </div>
           {this.renderError('startDate')}
           </div>
         </div>
 
-        <div className={'pl-form__row' + (this.hasError('endDate') ? '--error' : '')}>
+        <div className={'pl-form__row' + (this.hasError('dueDate') ? '--error' : '')}>
           <div className='pl-form__section-label'/>
           <div className='pl-form__input'>
-            <div className='pl-form__label'>End Date</div>
+            <div className='pl-form__label'>Due Date</div>
             <input type='text'
               placeholder='e.g. 2016-05-01 18:00'
-              defaultValue={project.endDate}
-              onChange={this.onValueChange('project', 'endDate')}
+              defaultValue={project.dueDate}
+              onChange={this.onValueChange('project', 'dueDate')}
               onBlur={this.onSave}
             />
-          {this.renderError('endDate')}
+          {this.renderError('dueDate')}
           </div>
         </div>
       </div>
