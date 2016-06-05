@@ -15,8 +15,8 @@ class Signup extends Component {
     super(props)
     this.state = {
       clean: true,
-      companyName: 'Rocksteady Consulting',
-      email: 'user10@example.com'
+      companyName: '',
+      email: ''
     }
   }
 

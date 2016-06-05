@@ -15,7 +15,7 @@ class Login extends Component {
     super(props)
     this.state = {
       clean: true,
-      email: this.props.email || 'test@example.com',
+      email: this.props.email,
       password: 'test123'
     }
   }

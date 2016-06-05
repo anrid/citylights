@@ -59,19 +59,22 @@ class SideMenu extends Component {
       currentRoute = routing.locationBeforeTransitions.pathname
     }
 
+    // TODO: Re-enable these later.. maybe.
+    // this.renderMenuItem('Quick Planner', 'paper-plane-o', '/planning', currentRoute)
+    // this.renderMenuItem('Discuss', 'comment-o', '/discuss', currentRoute)
+
     return (
       <section className='pl-side-menu'>
         <div className='pl-side-menu__group'>
           {this.renderMenuItem('Overview', 'home', '/overview', currentRoute)}
           {this.renderMenuItem('Consultants', 'users', '/consultants', currentRoute)}
-          {this.renderMenuItem('Time Planner ∀', 'paper-plane', '/time', currentRoute)}
-          {this.renderMenuItem('Quick Planner', 'paper-plane-o', '/planning', currentRoute)}
+          {this.renderMenuItem('Time Planner ∀', 'paper-plane-o', '/time', currentRoute)}
+
         </div>
 
         <div className='pl-side-menu__divider'/>
 
         <div className='pl-side-menu__group'>
-          {this.renderMenuItem('Discuss', 'comment-o', '/discuss', currentRoute)}
           {this.renderMenuItem('Settings', 'cog', '/settings', currentRoute)}
           <div className='pl-side-menu__row nope'><i className='fa fa-fw fa-hand-peace-o' />
             {this.renderThemePicker()}

@@ -55,13 +55,19 @@ class ProjectRow extends Component {
     if (!open) {
       return null
     }
-    const { members, pivotDate } = this.props
+    const { members, pivotDate, actions } = this.props
     return (
       <div className='pl-time-planner-project-row__inner'>
         {this.renderProjectLabel()}
         <div className='pl-time-planner-project-row__inner__members'>
           {members.map((x) => (
-            <ProjectMemberRow key={x._id} member={x} shifts={[]} pivotDate={pivotDate} />
+            <ProjectMemberRow
+              key={x._id}
+              member={x}
+              shifts={[]}
+              pivotDate={pivotDate}
+              actions={actions}
+            />
           ))}
         </div>
         <div className='pl-time-planner-project-row__inner__options'>

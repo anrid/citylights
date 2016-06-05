@@ -9,7 +9,7 @@ import GridOverlay from './GridOverlay'
 
 export default class ProjectMemberRow extends Component {
   render () {
-    const { member } = this.props
+    const { member, actions } = this.props
     const startDate = Moment(this.props.pivotDate).startOf('isoWeek')
     return (
       <section className='pl-time-planner-project-member-row'>
@@ -23,6 +23,7 @@ export default class ProjectMemberRow extends Component {
             </div>
           </div>
           <div className='pl-time-planner-project-member-row__photo'
+            onClick={() => actions.showConsultantProperties(member._id)}
             style={{backgroundImage: `url(${member.photo})`}} />
         </div>
         <div className='pl-time-planner-project-member-row__right'>
@@ -36,5 +37,6 @@ export default class ProjectMemberRow extends Component {
 ProjectMemberRow.propTypes = {
   member: React.PropTypes.object.isRequired,
   shifts: React.PropTypes.array.isRequired,
-  pivotDate: React.PropTypes.any.isRequired
+  pivotDate: React.PropTypes.any.isRequired,
+  actions: React.PropTypes.object.isRequired
 }

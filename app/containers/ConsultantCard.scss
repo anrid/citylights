@@ -18,7 +18,7 @@
       margin-top: 3px;
     }
     &:last-child {
-      margin-bottom: 10px;
+      margin-bottom: 3px;
     }
   }
 
@@ -44,23 +44,23 @@
 
   &__row-info {
     flex: none;
-    align-self: stretch;
     border-radius: 0 3px 3px 0;
     display: flex;
     align-items: flex-start;
     justify-content: center;
     flex-direction: column;
     padding-right: 10px;
+    height: 40px;
 
     &__name {
       font-size: 1.1rem;
       color: $c-gray700;
-      font-weight: 400;
-      line-height: 1.1rem;
+      font-weight: 600;
+      line-height: 1.2rem;
     }
     &__personal {
       font-size: 0.9rem;
-      color: $c-gray400;
+      color: $c-gray500;
     }
   }
 }

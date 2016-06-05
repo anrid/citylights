@@ -7,14 +7,19 @@
     width: 100%;
   }
 
+  .pl-box__content-empty {
+    min-height: 300px;
+    &__text {
+      color: $c-gray600;
+      font-size: 1.4rem;
+    }
+  }
+
   &__header-panel {
     flex: 5 0 auto;
     margin-left: 20px;
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    button {
-      margin-left: 5px;
-    }
   }
 }

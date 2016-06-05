@@ -7,6 +7,7 @@ import './ConsultantList.scss'
 
 import Dropdown from './widgets/Dropdown'
 import ConsultantCard from '../containers/ConsultantCard'
+import Button from '../planner/Button'
 
 export default class ConsultantList extends Component {
   constructor (props) {
@@ -14,6 +15,11 @@ export default class ConsultantList extends Component {
     this.onDropdownSelect = this.onDropdownSelect.bind(this)
     this.onSearch = this.onSearch.bind(this)
     this._doSearch = debounce(this._doSearch.bind(this), 350)
+    this.state = { query: null }
+  }
+
+  componentWillUnmount () {
+    this._doSearch(null)
   }
 
   onDropdownSelect (command) {
@@ -28,6 +34,7 @@ export default class ConsultantList extends Component {
   _doSearch (query) {
     const { actions } = this.props
     console.log('Searching consultants, query=', query)
+    this.setState({ query })
     actions.setSearchQuery({ consultants: query })
   }
 
@@ -57,13 +64,9 @@ export default class ConsultantList extends Component {
   renderButtons () {
     const { actions } = this.props
     return (
-      <button
-        className='pl-form-button'
-        onClick={() => actions.routeTo({ url: '/consultants/add' })}
-      >
-        <i className='fa fa-plus'/>
-        Add
-      </button>
+      <Button onClick={() => actions.routeTo({ url: '/consultants/add' })}>
+        <i className='fa fa-fw fa-plus'/> Add Consultant
+      </Button>
     )
   }
 
@@ -84,18 +87,22 @@ export default class ConsultantList extends Component {
   }
 
   render () {
-    const { consultants, actions } = this.props
+    const { consultants } = this.props
+    const { query } = this.state
     let content
 
-    if (!consultants || !consultants.length) {
+    const isEmpty = !consultants || !consultants.length
+    if (isEmpty) {
+      let text = 'No consultants registered with this Team yet.'
+      if (query) {
+        text = `No consultants found with the name “${query}”.`
+      }
       content = (
         <div className='pl-box__content-empty'>
           <div className='pl-box__content-empty__text'>
-            No consultants registered with this Team yet.
+            {text}
           </div>
-          <button onClick={() => actions.routeTo({ url: '/consultants/add' })}>
-            Add a Consultant
-          </button>
+          {this.renderButtons()}
         </div>
       )
     } else {
@@ -108,12 +115,12 @@ export default class ConsultantList extends Component {
           <div>Consultants</div>
           <div className='pl-consultant-list__header-panel'>
             {this.renderSearchBox()}
-            {this.renderButtons()}
           </div>
           {this.renderDropdown()}
         </div>
         <div className='pl-box__content pl-box__content--with-footer'>
           {content}
+          {!isEmpty && this.renderButtons()}
         </div>
         <div className='pl-box__footer'>
           <div className='pl-box__footer__info'>

@@ -34,7 +34,7 @@ export class ConsultantCard extends Component {
             {consultant.firstName}{' '}{consultant.lastName}
           </div>
           <div className='pl-consultant-card__row-info__personal'>
-            {consultant.email}
+            {consultant.profile && consultant.profile.title || consultant.email}
           </div>
         </div>
       </div>

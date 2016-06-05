@@ -29,6 +29,7 @@
     border-radius: 2px;
     background-position: center;
     background-size: cover;
+    cursor: pointer;
   }
 
   &__right {
@@ -47,19 +48,21 @@
     max-width: 200px;
     text-align: right;
     margin-right: 10px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
     // border: 1px solid red
   }
 
   &__name {
     font-size: 1.1rem;
-    line-height: 1.4;
+    line-height: 1.2rem;
     font-weight: 600;
     color: $c-gray600
   }
 
   &__stats {
     font-size: 0.9rem;
-    line-height: 1.4;
     font-weight: 400;
     color: $c-gray500;
     white-space: nowrap;

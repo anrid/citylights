@@ -68,9 +68,11 @@ export default class ActivityFeed extends Component {
 
 const ActivityRow = (props) => {
   return (
-    <div className='pl-activity-feed__row'>
-      <div className='pl-activity-feed__row-label' />
-      <div className='pl-activity-feed__row-text'>{props.text}</div>
+    <div className='pl-activity-feed__row-wrapper'>
+      <div className='pl-activity-feed__row'>
+        <div className='pl-activity-feed__row-label' />
+        <div className='pl-activity-feed__row-text'>{props.text}</div>
+      </div>
     </div>
   )
 }
