@@ -17,5 +17,15 @@
     font-size: 1.1rem;
     line-height: 1.1;
     color: $c-gray50;
+
+    .fa-angle-left, .fa-angle-right {
+      font-size: 1.1rem;
+      cursor: pointer;
+      &:hover {
+        font-weight: bold;
+      }
+    }
   }
+
+
 }

@@ -84,7 +84,7 @@ export const consultantItemsSelector = createSelector(
         _id: x._id,
         text: `${x.firstName} ${x.lastName}`,
         photo: x.photo,
-        sub: x.profile && i % 2 === 0 && x.profile.title,
+        sub: x.profile && x.profile.title,
         type: 'user'
       }
     ))

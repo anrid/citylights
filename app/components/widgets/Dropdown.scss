@@ -6,11 +6,17 @@
   flex: 1 0 auto;
   height: 100%;
   cursor: pointer;
-  &.caret-only {
+  &.pl-dropdown__caret-only {
     flex: none;
     .pl-dropdown__menu {
       left: auto;
       right: 0;
+    }
+  }
+
+  &.pl-dropdown__text-only {
+    .pl-dropdown__selected__text {
+      border-bottom: 0;
     }
   }
 

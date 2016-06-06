@@ -17,7 +17,30 @@ import ProjectRow from './ProjectRow'
 import PropertiesPanel from '../containers/PropertiesPanel'
 import ProjectControlBar from './ProjectControlBar'
 
+const PROJECTS_PER_PAGE = 5
+
 class TimePlannerApp extends Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      page: 0
+    }
+    this.onChangePage = this.onChangePage.bind(this)
+  }
+
+  onChangePage (move) {
+    const { projectsTotal } = this.props
+    const pages = Math.floor(projectsTotal / PROJECTS_PER_PAGE)
+    let page = this.state.page + move
+    if (page < 0) {
+      page = 0
+    }
+    if (page > pages) {
+      page = pages
+    }
+    this.setState({ page })
+  }
+
   getThemeStyle () {
     const { backgrounds, activeTheme } = this.props
     // Select the theme background.
@@ -35,16 +58,31 @@ class TimePlannerApp extends Component {
   }
 
   render () {
-    const { projects } = this.props
+    const { projects, projectsTotal } = this.props
+    const { page } = this.state
     const pivotDate = '2016-06-01'
+
+    // Show max 5 or so projects at the same time.
+    const start = page * PROJECTS_PER_PAGE
+    const end = start + PROJECTS_PER_PAGE
+    const projectIds = projects.slice(start, end)
+    const pages = Math.floor(projectsTotal / PROJECTS_PER_PAGE)
+
     return (
       <section id='pl-time-planner-app' style={this.getThemeStyle()}>
         <TopNav />
         <ControlBar {...this.props} />
         <TimeBar pivotDate={pivotDate} />
         <section className='pl-time-planner-rows'>
-          {projects.map((x) => <ProjectRow key={x} projectId={x} pivotDate={pivotDate} />)}
-          <ProjectControlBar key='controlBar' {...this.props} />
+          {projectIds.map((x) => <ProjectRow key={x} projectId={x} pivotDate={pivotDate} />)}
+          <ProjectControlBar key='controlBar'
+            actions={this.props.actions}
+            projectsOnPage={projectIds.length}
+            projectsTotal={projectsTotal}
+            page={this.state.page}
+            pages={pages}
+            onChangePage={this.onChangePage}
+          />
         </section>
         <PropertiesPanel />
       </section>
@@ -56,14 +94,10 @@ function mapStateToProps (state) {
   // Currently active workspaceId.
   const { workspaceId } = state.settings.saved
   const { userId } = state.settings.identity
-
-  // Show max 5 projects at the same time.
-  const projects = state.projects.order.slice(0, 5)
-
   return {
     user: state.users.data[userId],
     workspace: state.workspaces.data[workspaceId],
-    projects,
+    projects: state.projects.order,
     projectsTotal: state.projects.order.length,
     activeTheme: state.settings.saved.activeTheme,
     backgrounds: state.settings.backgrounds

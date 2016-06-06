@@ -2,6 +2,7 @@
 
 import React, { Component, PropTypes } from 'react'
 import { Motion, spring } from 'react-motion'
+import classnames from 'classnames'
 
 import './Dropdown.scss'
 
@@ -98,29 +99,32 @@ export default class Dropdown extends Component {
   }
 
   renderSelected () {
-    const { selected, caretOnly } = this.props
-    let selectedText = null
-    let caretClass = 'fa-chevron-down'
+    const { selected, caretOnly, textOnly } = this.props
 
+    let selectedText = null
+    let caretIcon = 'fa-chevron-down'
     if (!caretOnly) {
       selectedText = <div className='pl-dropdown__selected__text'>{selected}</div>
-      caretClass = 'fa-angle-down'
+      caretIcon = 'fa-angle-down'
     }
 
     return (
-      <div className='pl-dropdown__selected'
-        onClick={this.onToggle}
-      >
+      <div className='pl-dropdown__selected' onClick={this.onToggle}>
         {selectedText}
-        <i className={'fa fa-fw ' + caretClass} />
+        {!textOnly && <i className={'fa fa-fw ' + caretIcon} />}
       </div>
     )
   }
 
   render () {
-    const { caretOnly } = this.props
+    const { caretOnly, textOnly } = this.props
+    const cls = classnames({
+      'pl-dropdown': true,
+      'pl-dropdown__caret-only': caretOnly,
+      'pl-dropdown__text-only': textOnly
+    })
     return (
-      <div className={'pl-dropdown ' + (caretOnly ? 'caret-only' : '')}>
+      <div className={cls}>
         {this.renderSelected()}
         {this.state.open && this.renderMenu()}
       </div>
@@ -129,5 +133,14 @@ export default class Dropdown extends Component {
 }
 
 Dropdown.propTypes = {
-  onSelect: PropTypes.func.isRequired
+  onSelect: PropTypes.func.isRequired,
+  closeOnSelect: PropTypes.bool,
+  caretOnly: PropTypes.bool,
+  textOnly: PropTypes.bool,
+  selected: PropTypes.string,
+  items: PropTypes.arrayOf(PropTypes.shape({
+    _id: PropTypes.any.isRequired,
+    text: PropTypes.string,
+    info: PropTypes.string
+  }))
 }

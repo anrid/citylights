@@ -14,7 +14,7 @@ import './ProjectRow.scss'
 
 import ProjectMemberRow from './ProjectMemberRow'
 import ShiftsRow from './ShiftsRow'
-import DropdownButton from './DropdownButton'
+import Dropdown from '../components/widgets/Dropdown'
 import Button from './Button'
 import ConsultantsWidget from '../containers/ConsultantsWidget'
 
@@ -29,6 +29,13 @@ class ProjectRow extends Component {
     this.onToggleMember = this.onToggleMember.bind(this)
     this.onToggleMembersWidget = this.onToggleMembersWidget.bind(this)
     this.onShowProperties = this.onShowProperties.bind(this)
+    this.onActionMenuClick = this.onActionMenuClick.bind(this)
+  }
+
+  onActionMenuClick (item) {
+    console.log('onActionMenuClick, item=', item)
+    // const { project, actions } = this.props
+    // actions.showProjectProperties(project._id)
   }
 
   onShowProperties () {
@@ -58,6 +65,11 @@ class ProjectRow extends Component {
       return null
     }
     const { members, pivotDate, actions } = this.props
+
+    const actionMenu = [
+      { _id: 1, text: 'Delete Project' }
+    ]
+
     return (
       <div className='pl-time-planner-project-row__inner'>
         {this.renderProjectLabel()}
@@ -73,7 +85,13 @@ class ProjectRow extends Component {
           ))}
         </div>
         <div className='pl-time-planner-project-row__inner__options'>
-          <DropdownButton action selected='Actions ..' items={[]} />
+          <Dropdown
+            textOnly
+            selected='Actions ..'
+            items={actionMenu}
+            onSelect={this.onActionMenuClick}
+            closeOnSelect
+          />
           <div className='pl-time-planner-project-row__assign'
             onClick={this.onToggleMembersWidget}>
             <Button>

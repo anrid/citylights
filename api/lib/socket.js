@@ -109,8 +109,24 @@ function setupSocketHandlers (socket) {
         authenticateSocket(socket)(response)
       }
 
-      // Send response.
+      // Include the original request id always.
       response.requestId = message.requestId
+
+      if (response.skipSender) {
+        // Do not broadcast a full payload to the sender as they’ve already
+        // performed an optimistic update.
+        // Send a simple acknowledgement instead.
+        const newResponse = {
+          topic: response.topic + ':response',
+          requestId: message.requestId
+        }
+        socket.emit('server:message', newResponse)
+        return
+      }
+
+      // TODO: Broadcast as needed.
+
+      // Finally, respond.
       socket.emit('server:message', response)
     })
     .catch(getErrorHandler(message, socket))

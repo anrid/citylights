@@ -30,6 +30,7 @@ function update (payload, context) {
     .then((project) => {
       const projectId = project._id.toString()
       return {
+        skipSender: true,
         topic: 'project:update',
         payload: {
           projectId,
@@ -47,6 +48,7 @@ function addMember (payload, context) {
     .then((project) => {
       const projectId = project._id.toString()
       return {
+        skipSender: true,
         topic: 'project:update',
         payload: {
           projectId,
@@ -64,6 +66,7 @@ function removeMember (payload, context) {
     .then((project) => {
       const projectId = project._id.toString()
       return {
+        skipSender: true,
         topic: 'project:update',
         payload: {
           projectId,
