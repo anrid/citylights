@@ -87,14 +87,14 @@ export default class ShiftPropertiesForm extends Component {
             <div className='pl-shift-properties-form__consultants-widget'>
               {showConsultantsWidget && (
                 <ConsultantsWidget
-                  selected={shift.assignees}
+                  selected={[shift.assignee]}
                   onSelect={this.onAssignConsultant}
                   onClose={toggle}
                 />
               )}
             </div>
             <div className='pl-shift-properties-form__assignees'>
-              {shift.assignees.map((x) => <ConsultantCard key={x} userId={x} />)}
+              <ConsultantCard userId={shift.assignee} />
             </div>
           </div>
         </div>

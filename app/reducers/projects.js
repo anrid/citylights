@@ -52,6 +52,14 @@ function toggleMember (state, payload) {
   return n
 }
 
+function removeProject (state, payload) {
+  const n = { ...state }
+  const { projectId } = payload
+  delete n.data[projectId]
+  n.order = n.order.filter((x) => x !== projectId)
+  return n
+}
+
 function updateProject (state, payload) {
   const n = { ...state }
   const { projectId, key, value } = payload
@@ -94,6 +102,8 @@ export default function projects (state = initialState, action = {}) {
       return createProject(state, action.payload)
     case types.UPDATE_PROJECT:
       return updateProject(state, action.payload)
+    case types.REMOVE_PROJECT:
+      return removeProject(state, action.payload)
     case types.RECEIVE_PROJECT:
       return receiveProject(state, action.payload)
     case types.RECEIVE_PROJECT_LIST:

@@ -121,16 +121,16 @@ export default class TimeItem extends Component {
   render () {
     const {
       shift,
-      usersMap,
       pivotDate,
       width,
       onClick,
-      unit
+      unit,
+      fiveDayWeek
     } = this.props
 
     const start = Moment(shift.startDate)
     const end = Moment(shift.endDate)
-    const pivot = Moment(pivotDate)
+    const pivot = Moment(pivotDate).startOf('isoWeek')
 
     let unitsFromPivot = start.diff(pivot, unit)
     if (unitsFromPivot < 0) {
@@ -142,6 +142,11 @@ export default class TimeItem extends Component {
     if (shiftUnits < 0) {
       // TODO: Handle end dates before start date.
       shiftUnits = 0
+    }
+
+    // Adjust to a 5-day week date grid.
+    if (fiveDayWeek && unit === 'days') {
+      
     }
 
     const offsetOnGridX = width * unitsFromPivot
@@ -205,10 +210,9 @@ export default class TimeItem extends Component {
 TimeItem.propTypes = {
   shift: React.PropTypes.object.isRequired,
   width: React.PropTypes.number.isRequired,
-  height: React.PropTypes.number,
   pivotDate: React.PropTypes.any.isRequired,
   onClick: React.PropTypes.func.isRequired,
   updateShiftAction: React.PropTypes.func.isRequired,
-  sevenDayWeek: React.PropTypes.bool,
+  fiveDayWeek: React.PropTypes.bool,
   unit: React.PropTypes.string.isRequired
 }

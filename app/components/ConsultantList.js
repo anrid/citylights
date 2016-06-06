@@ -19,7 +19,7 @@ export default class ConsultantList extends Component {
   }
 
   componentWillUnmount () {
-    this._doSearch(null)
+    this.props.actions.setSearchQuery({ consultants: null })
   }
 
   onDropdownSelect (command) {

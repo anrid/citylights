@@ -141,6 +141,6 @@ Dropdown.propTypes = {
   items: PropTypes.arrayOf(PropTypes.shape({
     _id: PropTypes.any.isRequired,
     text: PropTypes.string,
-    info: PropTypes.string
+    info: PropTypes.any
   }))
 }

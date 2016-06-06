@@ -34,8 +34,10 @@ class ProjectRow extends Component {
 
   onActionMenuClick (item) {
     console.log('onActionMenuClick, item=', item)
-    // const { project, actions } = this.props
-    // actions.showProjectProperties(project._id)
+    const { project, actions } = this.props
+    if (item._id === 'REMOVE_PROJECT') {
+      actions.removeProject(project._id)
+    }
   }
 
   onShowProperties () {
@@ -64,25 +66,37 @@ class ProjectRow extends Component {
     if (!open) {
       return null
     }
-    const { members, pivotDate, actions } = this.props
+    const {
+      project,
+      shifts,
+      members,
+      pivotDate,
+      actions,
+      isOwnerOrAdmin
+    } = this.props
 
-    const actionMenu = [
-      { _id: 1, text: 'Delete Project' }
-    ]
+    const actionMenu = []
+    if (isOwnerOrAdmin) {
+      actionMenu.push({ _id: 'REMOVE_PROJECT', text: 'Delete Project' })
+    }
 
     return (
       <div className='pl-time-planner-project-row__inner'>
         {this.renderProjectLabel()}
         <div className='pl-time-planner-project-row__inner__members'>
-          {members.map((x) => (
-            <ProjectMemberRow
-              key={x._id}
-              member={x}
-              shifts={[]}
-              pivotDate={pivotDate}
-              actions={actions}
-            />
-          ))}
+          {members.map((x) => {
+            const memberShifts = shifts.filter((y) => y.assignee === x._id)
+            // console.log('Filtering shifts=', shifts, 'by user=', x)
+            return (
+              <ProjectMemberRow key={x._id}
+                project={project}
+                member={x}
+                shifts={memberShifts}
+                pivotDate={pivotDate}
+                actions={actions}
+              />
+            )
+          })}
         </div>
         <div className='pl-time-planner-project-row__inner__options'>
           <Dropdown
@@ -186,11 +200,17 @@ function mapStateToProps (state, { projectId }) {
   const project = state.projects.data[projectId]
   let members = project.members.map((x) => state.users.data[x])
   const shifts = projectsToShiftsMapSelector(state)[project._id] || []
+
+  const userId = state.settings.identity.userId
+  const isOwner = project.ownerId === userId
+  const isAdmin = project.admins.find((x) => x === userId)
+
   return {
     project,
     members,
     shifts,
-    usersMap: state.users.data
+    usersMap: state.users.data,
+    isOwnerOrAdmin: isOwner || isAdmin
   }
 }
 

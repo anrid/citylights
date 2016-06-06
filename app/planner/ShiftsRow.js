@@ -1,32 +1,51 @@
 'use strict'
 
 import React, { Component } from 'react'
-import Moment from 'moment'
 
 import './ShiftsRow.scss'
 
-import GridOverlay from './GridOverlay'
+import DateGrid from './DateGrid'
 import TimeItem from './TimeItem'
 
 export default class ShiftsRow extends Component {
+  renderShifts () {
+    const {
+      shifts,
+      actions,
+      pivotDate,
+      preview
+    } = this.props
+
+    if (preview) {
+      return null
+    }
+
+    return shifts.map((x) => (
+      <TimeItem
+        key={x._id}
+        shift={x}
+        width={50}
+        pivotDate={pivotDate}
+        onClick={() => actions.showShiftProperties(x._id)}
+        updateShiftAction={actions.updateShift}
+        unit='days'
+        fiveDayWeek
+      />
+    ))
+  }
+
   render () {
-    const { shifts, actions, pivotDate } = this.props
-    const startDate = Moment(pivotDate).startOf('isoWeek')
+    const { pivotDate, preview, onCreateShift } = this.props
     return (
       <section className='pl-time-planner-shifts-row'>
-        <GridOverlay size={90} />
-        {shifts.map((x) => (
-          <TimeItem
-            key={x._id}
-            shift={x}
-            width={50}
-            pivotDate={startDate}
-            onClick={() => actions.showShiftProperties(x._id)}
-            updateShiftAction={actions.updateShift}
-            unit='days'
-            sevenDayWeek
-          />
-        ))}
+        <DateGrid
+          size={50}
+          preview={preview}
+          fiveDayWeek
+          pivotDate={pivotDate}
+          onClickDate={onCreateShift}
+        />
+        {this.renderShifts()}
       </section>
     )
   }
@@ -35,5 +54,6 @@ export default class ShiftsRow extends Component {
 ShiftsRow.propTypes = {
   shifts: React.PropTypes.array.isRequired,
   pivotDate: React.PropTypes.any.isRequired,
-  actions: React.PropTypes.object.isRequired
+  actions: React.PropTypes.object.isRequired,
+  onCreateShift: React.PropTypes.func
 }

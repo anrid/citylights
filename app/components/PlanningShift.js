@@ -158,11 +158,11 @@ export default class PlanningShift extends Component {
         break
     }
 
-    let assignees = null
-    if (shift.assignees.length) {
-      assignees = (
+    let assignee = null
+    if (shift.assignee) {
+      assignee = (
         <div className='pl-planning-shift__assignees'>
-          {' — ' + shift.assignees.map((x) => users[x].firstName).join(', ')}
+          {' — ' + users[shift.assignee].firstName}
         </div>
       )
     }
@@ -210,7 +210,7 @@ export default class PlanningShift extends Component {
             </span>
             {dateRange}
           </div>
-          {assignees}
+          {assignee}
         </div>
       </Draggable>
     )

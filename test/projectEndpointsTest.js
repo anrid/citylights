@@ -113,6 +113,15 @@ lab.experiment('Project Endpoints', () => {
     })
   })
 
+  lab.test('user2 fails to delete project since he’s not a project admin', () => {
+    const payload = { projectId: project1._id.toString() }
+    return Project.remove(payload, user2)
+    .tap((res) => Code.fail('Expected operation to throw!'))
+    .catch((reason) => {
+      Code.expect(reason.output.payload.message).to.include('Cannot delete project')
+    })
+  })
+
   lab.test('user1 removes user2 from project', () => {
     const payload = {
       projectId: project1._id.toString(),
@@ -133,6 +142,28 @@ lab.experiment('Project Endpoints', () => {
       update: { title: 'test.test.update3' }
     }
     return Project.update(payload, user2)
+    .tap((res) => Code.fail('Expected operation to throw!'))
+    .catch((reason) => {
+      // console.log('result:', reason)
+      Code.expect(reason.output.payload.message).to.include('Cannot find a valid project')
+    })
+  })
+
+  lab.test('user1 deletes project', () => {
+    const payload = { projectId: project1._id.toString() }
+    return Project.remove(payload, user1)
+    .tap((res) => {
+      Code.expect(res.topic).to.equal('project:remove')
+      Code.expect(res.payload.projectId).to.equal(project1._id.toString())
+    })
+  })
+
+  lab.test('user1 fails to update deleted project', () => {
+    const payload = {
+      projectId: project1._id.toString(),
+      update: { title: 'test.test.update3' }
+    }
+    return Project.update(payload, user1)
     .tap((res) => Code.fail('Expected operation to throw!'))
     .catch((reason) => {
       // console.log('result:', reason)

@@ -7,6 +7,17 @@ import './ProjectMemberRow.scss'
 import ShiftsRow from './ShiftsRow'
 
 export default class ProjectMemberRow extends Component {
+  constructor (props) {
+    super(props)
+    this.onCreateShift = this.onCreateShift.bind(this)
+  }
+
+  onCreateShift (startDate) {
+    console.log('onCreateShift, startDate=', startDate)
+    const { project, member, actions } = this.props
+    actions.createShift(project._id, member._id, startDate, project.color)
+  }
+
   render () {
     const { member, actions } = this.props
     return (
@@ -25,7 +36,7 @@ export default class ProjectMemberRow extends Component {
             style={{backgroundImage: `url(${member.photo})`}} />
         </div>
         <div className='pl-time-planner-project-member-row__right'>
-          <ShiftsRow {...this.props} />
+          <ShiftsRow {...this.props} onCreateShift={this.onCreateShift} />
         </div>
       </section>
     )
@@ -33,6 +44,7 @@ export default class ProjectMemberRow extends Component {
 }
 
 ProjectMemberRow.propTypes = {
+  project: React.PropTypes.object.isRequired,
   member: React.PropTypes.object.isRequired,
   shifts: React.PropTypes.array.isRequired,
   pivotDate: React.PropTypes.any.isRequired,

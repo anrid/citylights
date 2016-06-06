@@ -8,6 +8,15 @@
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid $c-gray200;
+  &.pl-time-planner-grid-overlay--preview {
+    .pl-time-planner-grid-overlay__cell {
+      cursor: default;
+      background-color: inherit;
+      &:hover {
+        background-color: inherit;
+      }
+    }
+  }
 
   &__cell {
     flex: none;

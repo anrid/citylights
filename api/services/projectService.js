@@ -2,6 +2,7 @@
 
 const P = require('bluebird')
 const T = require('tcomb')
+const Boom = require('boom')
 
 const Project = require('./projectModel')
 const AccessService = require('./accessService')
@@ -58,6 +59,25 @@ const removeMember = P.coroutine(function * (projectId, memberId, actorId) {
   return project
 })
 
+const remove = P.coroutine(function * (projectId, actorId) {
+  T.String(projectId)
+  T.String(actorId)
+
+  const project = yield AccessService.requireProject(projectId, actorId)
+  const isOwner = project.ownerId === actorId
+  const isAdmin = project.admins.find((x) => x === actorId)
+  if (!isOwner && !isAdmin) {
+    throw Boom.unauthorized('Cannot delete project')
+  }
+
+  const updated = yield Project.findOneAndUpdate(
+    { _id: projectId },
+    { $set: { isDeleted: true } },
+    { new: true }
+  )
+  return updated
+})
+
 function create (opts, actorId) {
   return P.try(() => {
     T.String(opts._id)
@@ -101,5 +121,6 @@ module.exports = {
   update,
   getList,
   addMember,
-  removeMember
+  removeMember,
+  remove
 }

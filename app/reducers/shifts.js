@@ -5,59 +5,38 @@ import ObjectId from 'bson-objectid'
 
 import * as types from '../actions/actionTypes'
 
+// const initialState = {
+//   order: ['SF1', 'SF2', 'SF3', 'SF4'],
+//   data: {
+//     SF1: {
+//       _id: 'SF1',
+//       assignee: null,
+//       startDate: '2016-06-02 10:00:00',
+//       endDate: '2016-06-02 18:00:00',
+//       color: 3,
+//       title: 'H&M',
+//       projectId: 'PROJ4'
+//     }
+//   }
+// }
+
 const initialState = {
-  order: ['SF1', 'SF2', 'SF3', 'SF4'],
-  data: {
-    SF1: {
-      _id: 'SF1',
-      assignees: [],
-      startDate: '2016-06-02 10:00:00',
-      endDate: '2016-06-02 18:00:00',
-      color: 3,
-      title: 'H&M',
-      projectId: 'PROJ4'
-    },
-    SF2: {
-      _id: 'SF2',
-      assignees: [],
-      startDate: '2016-06-02 15:00:00',
-      endDate: '2016-06-04 18:00:00',
-      color: 3,
-      title: 'H&M',
-      projectId: 'PROJ4'
-    },
-    SF3: {
-      _id: 'SF3',
-      assignees: [],
-      startDate: '2016-06-04 10:00:00',
-      endDate: '2016-06-10 18:00:00',
-      color: 1,
-      title: 'Ikea',
-      projectId: 'PROJ2'
-    },
-    SF4: {
-      _id: 'SF4',
-      assignees: [],
-      startDate: '2016-06-03 10:00:00',
-      endDate: '2016-06-03 18:00:00',
-      color: 2,
-      title: 'Konsum',
-      projectId: 'PROJ3'
-    }
-  }
+  order: [],
+  data: { }
 }
 
 function createShift (state, payload) {
   const n = { ...state }
-  const { startDate, ownerId } = payload
+  const { projectId, assignee, startDate, ownerId, color } = payload
   const created = {
     _id: ObjectId.generate(),
     ownerId,
-    assignees: [],
+    projectId,
+    assignee,
     startDate,
     endDate: Moment(startDate).add(8, 'hours').format(),
-    color: 1,
-    title: '[New, untitled shift]'
+    color,
+    title: 'New Untitled Shift'
   }
   n.order = n.order.concat(created._id)
   n.data[created._id] = created
@@ -87,10 +66,10 @@ function assignConsultant (state, payload) {
   const n = { ...state }
   const { shiftId, userId } = payload
   const updated = { ...state.data[shiftId] }
-  if (updated.assignees.find((x) => x === userId)) {
-    updated.assignees = updated.assignees.filter((x) => x !== userId)
+  if (updated.assignee) {
+    updated.assignee = null
   } else {
-    updated.assignees = updated.assignees.concat(userId)
+    updated.assignee = userId
   }
   n.data[shiftId] = updated
   return n

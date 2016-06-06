@@ -9,12 +9,15 @@ export function assignConsultant (shiftId, userId) {
   }
 }
 
-export function createShift (startDate) {
+export function createShift (projectId, assignee, startDate, color) {
   return (dispatch, getState) => {
     dispatch({
       type: types.CREATE_SHIFT,
       payload: {
+        projectId,
+        assignee,
         startDate,
+        color,
         ownerId: getState().settings.identity.userId
       }
     })

@@ -70,6 +70,16 @@ export function updateProject (projectId, key, value) {
   }
 }
 
+export function removeProject (projectId) {
+  return (dispatch) => {
+    dispatch({
+      type: types.REMOVE_PROJECT,
+      payload: { projectId }
+    })
+    dispatch(apiRequest('project:remove', { projectId }))
+  }
+}
+
 export function receiveProject (project) {
   return (dispatch) => {
     dispatch({

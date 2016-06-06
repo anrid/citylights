@@ -77,6 +77,25 @@ function removeMember (payload, context) {
   })
 }
 
+function remove (payload, context) {
+  return P.try(() => {
+    const valid = Schemas.validateOrThrow(payload, removeProjectSchema)
+    return ProjectService.remove(valid.projectId, context.userId)
+    .then((project) => {
+      const projectId = project._id.toString()
+      return {
+        skipSender: true,
+        topic: 'project:remove',
+        payload: { projectId }
+      }
+    })
+  })
+}
+
+const removeProjectSchema = Joi.object().keys({
+  projectId: Joi.string().min(20).required().description('Project id.')
+})
+
 const addOrRemoveMemberSchema = Joi.object().keys({
   projectId: Joi.string().min(20).required().description('Project id.'),
   memberId: Joi.string().min(20).required().description('Member id.')
@@ -96,7 +115,8 @@ const updateProjectSchema = Joi.object().keys({
     isPrivate: Joi.boolean().description('Project privacy setting.'),
     startDate: Joi.date().iso().description('Project start date.'),
     dueDate: Joi.date().iso().description('Project due date.'),
-    completedDate: Joi.date().iso().description('Project completed date.')
+    completedDate: Joi.date().iso().description('Project completed date.'),
+    color: Joi.date().iso().description('Project color.')
   }).xor(
     // Force updating one field at a time.
     'title',
@@ -104,7 +124,8 @@ const updateProjectSchema = Joi.object().keys({
     'isPrivate',
     'startDate',
     'dueDate',
-    'completedDate'
+    'completedDate',
+    'color'
   )
 })
 
@@ -112,5 +133,6 @@ module.exports = {
   create,
   update,
   addMember,
-  removeMember
+  removeMember,
+  remove
 }
