@@ -28,13 +28,14 @@ const initialState = {
 function createShift (state, payload) {
   const n = { ...state }
   const { projectId, assignee, startDate, ownerId, color } = payload
+  const shiftStart = Moment(startDate).startOf('day').add(8, 'hours')
   const created = {
     _id: ObjectId.generate(),
     ownerId,
     projectId,
     assignee,
-    startDate,
-    endDate: Moment(startDate).add(8, 'hours').format(),
+    startDate: shiftStart.format(),
+    endDate: shiftStart.clone().add(8, 'hours').format(),
     color,
     title: 'New Untitled Shift'
   }

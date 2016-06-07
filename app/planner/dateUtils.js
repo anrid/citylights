@@ -25,7 +25,7 @@ export function createDatesFromWeekStart (opts) {
 
 export function getDateRangeString (from, to) {
   const fromDate = Moment(from).format('MMM D')
-  const fromTime = Moment(to).format('HH:mm')
+  const fromTime = Moment(from).format('HH:mm')
   const toDate = Moment(to).format('MMM D')
   const toTime = Moment(to).format('HH:mm')
   if (fromDate === toDate) {

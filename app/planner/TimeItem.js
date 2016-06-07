@@ -140,15 +140,15 @@ export default class TimeItem extends Component {
     const { dateRangeOverlay } = this.state
     if (dateRangeOverlay) {
       return (
-        <span className='pl-time-planner-time-item__date-range-active'>
+        <div className='pl-time-planner-time-item__date-range-active'>
           {getDateRangeString(dateRangeOverlay.newStart, dateRangeOverlay.newEnd)}
-        </span>
+        </div>
       )
     }
     return (
-      <span className='pl-time-planner-time-item__date-range'>
+      <div className='pl-time-planner-time-item__date-range'>
         {getDateRangeString(shift.startDate, shift.endDate)}
-      </span>
+      </div>
     )
   }
 
@@ -204,7 +204,7 @@ export default class TimeItem extends Component {
         cancel='.react-resizable-handle'
         position={{ x: offsetOnGridX, y: 0 }}
       >
-        <div className={cls} style={style}>
+        <div className={cls} style={style} onDoubleClick={onClick}>
           <ResizableBox
             onResizeStart={this.onResizeStart}
             onResizeStop={this.onResizeStop}
@@ -213,12 +213,13 @@ export default class TimeItem extends Component {
             minConstraints={[width, width]} maxConstraints={[2000, width]}
             draggableOpts={{ axis: 'x', grid: [width, width] }}
           >
-            <div className='pl-time-planner-time-item__inner' ref='shiftSize' />
+            <div className='pl-time-planner-time-item__inner' ref='shiftSize'>
+              <div className='pl-time-planner-time-item__title-box'>
+                {this.renderDateRange()}
+              </div>
+            </div>
           </ResizableBox>
-          <div className='pl-time-planner-time-item__drag-handle'></div>
-          <div className='pl-time-planner-time-item__title-box' onClick={onClick}>
-            {this.renderDateRange()}
-          </div>
+          <div className='pl-time-planner-time-item__drag-handle' onClick={(e) => e.stopPropagation()}></div>
         </div>
       </Draggable>
     )

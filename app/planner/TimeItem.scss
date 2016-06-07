@@ -2,11 +2,11 @@
 @import '../styles/colors';
 
 // Shift height.
-$shift-height: 36px;
+$shift-height: 20px;
 
 .pl-time-planner-time-item {
   position: absolute;
-  top: 7px;
+  top: 5px;
   min-width: 50px;
   height: $shift-height;
   &:last-child {
@@ -16,7 +16,7 @@ $shift-height: 36px;
 
   &.react-draggable-dragging {
     .pl-time-planner-time-item__drag-handle {
-      visibility: visible;
+      opacity: 0.1;
     }
   }
 
@@ -29,18 +29,14 @@ $shift-height: 36px;
       display: flex;
     }
     .pl-time-planner-time-item__title-box {
-      display: flex;
-    }
-    .pl-time-planner-time-item__drag-handle {
       visibility: visible;
     }
   }
 
   &__drag-handle {
-    visibility: hidden;
     width: 20px;
-    height: 36px;
-    opacity: 0.1;
+    height: 20px;
+    opacity: 0;
     border-radius: 3px 0 0 3px;
     background-color: black;
     position: absolute;
@@ -48,67 +44,52 @@ $shift-height: 36px;
     left: 0;
     z-index: 5;
     cursor: move;
+    &:hover {
+      opacity: 0.1;
+    }
   }
 
   &__inner {
     border-radius: 2px;
     // Default color is teal.
-    background-color: $c-green400;
+    background-color: $c-green200;
+    border: 1px solid $c-green600;
     height: $shift-height;
     width: 100%;
-    z-index: 2;
     position: relative;
     box-shadow: 0 1px 1px 0 rgba(50,50,50,0.3);
+    cursor: pointer;
   }
 
   &__title-box {
-    display: none;
+    visibility: hidden;
+    display: flex;
     justify-content: flex-start;
     align-items: center;
     position: absolute;
-    height: 24px;
+    height: 20px;
     width: 200px;
-    top: 0;
-    right: -205px;
-    z-index: 30;
-    padding: 0;
+    top: 20px;
+    left: 1px;
+    // border: 1px solid red;
   }
 
   &__date-range {
     font-size: 0.9rem;
     font-weight: 400;
-    height: 20px;
-    line-height: 20px;
     white-space: nowrap;
     text-overflow: ellipsis;
     max-width: 200px;
-    padding: 0;
     overflow: hidden;
+    padding: 0;
     cursor: pointer;
     color: $c-gray600;
-    // border: 1px solid red;
   }
 
   &__date-range-active {
     @extend .pl-time-planner-time-item__date-range;
-    display: inline;
     font-weight: 600;
     color: $c-gray600;
-  }
-
-  &__assignees {
-    position: absolute;
-    height: $shift-height;
-    font-size: 1.1rem;
-    line-height: $shift-height;
-    top: 0;
-    right: -150px;
-    white-space: nowrap;
-    width: 150px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    padding-left: 6px;
-    z-index: 3;
   }
 
   &.pl-time-planner-time-item--amber {
@@ -142,8 +123,8 @@ $shift-height: 36px;
   .react-resizable-handle {
     position: absolute;
     width: 16px;
-    height: 36px;
-    bottom: 14px;
+    height: 20px;
+    top: 0;
     right: 0;
     background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pg08IS0tIEdlbmVyYXRvcjogQWRvYmUgRmlyZXdvcmtzIENTNiwgRXhwb3J0IFNWRyBFeHRlbnNpb24gYnkgQWFyb24gQmVhbGwgKGh0dHA6Ly9maXJld29ya3MuYWJlYWxsLmNvbSkgLiBWZXJzaW9uOiAwLjYuMSAgLS0+DTwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DTxzdmcgaWQ9IlVudGl0bGVkLVBhZ2UlMjAxIiB2aWV3Qm94PSIwIDAgNiA2IiBzdHlsZT0iYmFja2dyb3VuZC1jb2xvcjojZmZmZmZmMDAiIHZlcnNpb249IjEuMSINCXhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHhtbDpzcGFjZT0icHJlc2VydmUiDQl4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjZweCIgaGVpZ2h0PSI2cHgiDT4NCTxnIG9wYWNpdHk9IjAuMzAyIj4NCQk8cGF0aCBkPSJNIDYgNiBMIDAgNiBMIDAgNC4yIEwgNCA0LjIgTCA0LjIgNC4yIEwgNC4yIDAgTCA2IDAgTCA2IDYgTCA2IDYgWiIgZmlsbD0iIzAwMDAwMCIvPg0JPC9nPg08L3N2Zz4=');
     background-position: bottom right;
