@@ -6,7 +6,7 @@ $shift-height: 20px;
 
 .pl-time-planner-time-item {
   position: absolute;
-  top: 5px;
+  top: 7px;
   min-width: 50px;
   height: $shift-height;
   &:last-child {
@@ -27,6 +27,9 @@ $shift-height: 20px;
     }
     .pl-time-planner-time-item__info-box {
       display: flex;
+    }
+    .react-resizable-handle {
+      visibility: visible;
     }
     .pl-time-planner-time-item__title-box {
       visibility: visible;
@@ -52,7 +55,7 @@ $shift-height: 20px;
   &__inner {
     border-radius: 2px;
     // Default color is teal.
-    background-color: $c-green200;
+    background-color: $c-green400;
     border: 1px solid $c-green600;
     height: $shift-height;
     width: 100%;
@@ -70,7 +73,7 @@ $shift-height: 20px;
     height: 20px;
     width: 200px;
     top: 20px;
-    left: 1px;
+    left: 2px;
     // border: 1px solid red;
   }
 
@@ -134,5 +137,6 @@ $shift-height: 20px;
     box-sizing: border-box;
     cursor: se-resize;
     z-index: 10;
+    visibility: visible;
   }
 }
