@@ -41,16 +41,19 @@ export function getDateAsOffsetFromDate (_from, units, unit, skipWeekends) {
   }
 
   let total = 0
-  let dayCount = 0
   for (let i = 0; i < units; ++i) {
     ++total
-    ++dayCount
     // Skip weekends when unit is `days`
-    if (unit === 'days' && dayCount === 5) {
-      total += 2
-      dayCount = 0
+    if (unit === 'days') {
+      const weekday = from.clone().add(total, unit).isoWeekday()
+      if (weekday === 6) {
+        total += 2
+      } else if (weekday === 7) {
+        total += 1
+      }
     }
   }
+
   return from.clone().add(total, unit)
 }
 

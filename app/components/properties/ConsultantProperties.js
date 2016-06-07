@@ -47,7 +47,8 @@ export default class ConsultantProperties extends Component {
         </div>
       )
     }
-    console.log('Render consultant=', consultant)
+
+    // console.log('Render consultant=', consultant)
 
     return (
       <div className='pl-consultant-properties__profile'>

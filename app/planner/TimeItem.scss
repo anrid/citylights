@@ -14,6 +14,12 @@ $shift-height: 36px;
     height: $shift-height;
   }
 
+  &.react-draggable-dragging {
+    .pl-time-planner-time-item__drag-handle {
+      visibility: visible;
+    }
+  }
+
   &:hover {
     .pl-time-planner-time-item__left-bar,
     .pl-time-planner-time-item__right-bar {
@@ -25,19 +31,34 @@ $shift-height: 36px;
     .pl-time-planner-time-item__title-box {
       display: flex;
     }
+    .pl-time-planner-time-item__drag-handle {
+      visibility: visible;
+    }
+  }
+
+  &__drag-handle {
+    visibility: hidden;
+    width: 20px;
+    height: 36px;
+    opacity: 0.1;
+    border-radius: 3px 0 0 3px;
+    background-color: black;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 5;
+    cursor: move;
   }
 
   &__inner {
     border-radius: 2px;
     // Default color is teal.
-    background-color: $c-teal400;
-    border: 1px solid $c-teal500;
+    background-color: $c-green400;
     height: $shift-height;
     width: 100%;
     z-index: 2;
     position: relative;
-    cursor: move;
-    box-shadow: 0 1px 1px 0 rgba(50,50,50,0.5);
+    box-shadow: 0 1px 1px 0 rgba(50,50,50,0.3);
   }
 
   &__title-box {
@@ -93,28 +114,24 @@ $shift-height: 36px;
   &.pl-time-planner-time-item--amber {
     .pl-time-planner-time-item__inner {
       background-color: $c-amber400;
-      border: 1px solid $c-amber500;
     }
   }
 
   &.pl-time-planner-time-item--red {
     .pl-time-planner-time-item__inner {
       background-color: $c-red400;
-      border: 1px solid $c-red500;
     }
   }
 
   &.pl-time-planner-time-item--green {
     .pl-time-planner-time-item__inner {
       background-color: $c-green400;
-      border: 1px solid $c-green500;
     }
   }
 
   &.pl-time-planner-time-item--blue {
     .pl-time-planner-time-item__inner {
       background-color: $c-blue400;
-      border: 1px solid $c-blue500;
     }
   }
 
