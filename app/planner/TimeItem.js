@@ -5,12 +5,20 @@ import ReactDOM from 'react-dom'
 import Moment from 'moment'
 import Draggable from 'react-draggable'
 import { ResizableBox } from 'react-resizable'
+import PureRenderMixin from 'react-addons-pure-render-mixin'
 
 import './TimeItem.scss'
+
+import {
+  getDiff,
+  getDateRangeString,
+  getDateAsOffsetFromDate
+} from './dateUtils'
 
 export default class TimeItem extends Component {
   constructor (props) {
     super(props)
+    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this)
     this.onDragStart = this.onDragStart.bind(this)
     this.onDragging = this.onDragging.bind(this)
     this.onDragStop = this.onDragStop.bind(this)
@@ -38,8 +46,8 @@ export default class TimeItem extends Component {
     const range = this.calcShiftDateRange(data.lastX)
     console.log('old date range:', range.start.format(), '-', range.end.format())
     console.log('new date range:', range.newStart.format(), '-', range.newEnd.format())
-    // updateShiftAction(shift._id, 'startDate', range.newStart.format())
-    // updateShiftAction(shift._id, 'endDate', range.newEnd.format())
+    updateShiftAction(shift._id, 'startDate', range.newStart.format())
+    updateShiftAction(shift._id, 'endDate', range.newEnd.format())
   }
 
   onResizeStart (e, data) {
@@ -65,23 +73,27 @@ export default class TimeItem extends Component {
     const newEnd = this.calcShiftEndDateAfterResize(node.getBoundingClientRect().width)
     console.log('old end date:', Moment(shift.endDate).format())
     console.log('new end date:', newEnd.format())
-    // updateShiftAction(shift._id, 'endDate', newEnd.format())
+    updateShiftAction(shift._id, 'endDate', newEnd.format())
   }
 
   calcShiftEndDateAfterResize (shiftWidth) {
-    const { shift, width, unit } = this.props
+    const { shift, width, unit, skipWeekends } = this.props
     let units = Math.floor(shiftWidth / width)
     if (units < 1) {
       units = 1
     }
-    const endDateHours = Moment(shift.endDate).hours()
-    return Moment(shift.startDate)
-    .add(units - 1, unit)
-    .hours(endDateHours)
+    return getDateAsOffsetFromDate(shift.endDate, units - 1, unit, skipWeekends)
   }
 
   calcShiftDateRange (offsetOnGridX) {
-    const { shift, width, unit } = this.props
+    const {
+      pivotDate,
+      shift,
+      width,
+      unit,
+      skipWeekends
+    } = this.props
+
     let units = Math.floor(offsetOnGridX / width)
     if (units < 0) {
       units = 0
@@ -90,32 +102,24 @@ export default class TimeItem extends Component {
     const end = Moment(shift.endDate)
     const shiftLengthMinutes = end.diff(start, 'minutes')
 
-    const newStart = start.clone()
-    .startOf('month')
-    .add(units, unit)
+    const pivot = Moment(pivotDate).startOf('isoWeek')
+    const newStart = getDateAsOffsetFromDate(pivot, units, unit, skipWeekends)
     if (unit !== 'hours') {
       newStart.add(start.hours(), 'hours')
     }
     newStart.add(start.minutes(), 'minutes')
+    const tmpEnd = newStart.clone().add(shiftLengthMinutes, 'minutes')
 
-    const newEnd = newStart.clone().add(shiftLengthMinutes, 'minutes')
+    // Adjust end date as needed when using a 5-day week.
+    const newShiftLength = getDiff(newStart, tmpEnd, unit, skipWeekends)
+    const newEnd = newStart.clone().add(newShiftLength, unit)
+
     return {
       start,
       end,
       newStart,
       newEnd
     }
-  }
-
-  getDateRangeString (from, to) {
-    const fromDate = from.format('MMM D')
-    const fromTime = from.format('HH:mm')
-    const toDate = to.format('MMM D')
-    const toTime = to.format('HH:mm')
-    if (fromDate === toDate) {
-      return `${fromDate} ${fromTime} — ${toTime}`
-    }
-    return `${fromDate} ${fromTime} — ${toDate} ${toTime}`
   }
 
   render () {
@@ -125,29 +129,27 @@ export default class TimeItem extends Component {
       width,
       onClick,
       unit,
-      fiveDayWeek
+      skipWeekends
     } = this.props
+    // console.log('Rendering time item, shift=', shift._id)
 
-    const start = Moment(shift.startDate)
-    const end = Moment(shift.endDate)
+    const start = shift.startDate
+    const end = shift.endDate
     const pivot = Moment(pivotDate).startOf('isoWeek')
 
-    let unitsFromPivot = start.diff(pivot, unit)
+    let unitsFromPivot = getDiff(pivot, start, unit, skipWeekends)
     if (unitsFromPivot < 0) {
       // TODO: Handle start dates before pivot date.
       unitsFromPivot = 0
     }
 
-    let shiftUnits = end.diff(start, unit)
+    let shiftUnits = getDiff(start, end, unit, skipWeekends)
     if (shiftUnits < 0) {
       // TODO: Handle end dates before start date.
       shiftUnits = 0
     }
 
-    // Adjust to a 5-day week date grid.
-    if (fiveDayWeek && unit === 'days') {
-      
-    }
+    // console.log('Shift: unitsFromPivot=', unitsFromPivot, 'shiftUnits=', shiftUnits)
 
     const offsetOnGridX = width * unitsFromPivot
     const style = {
@@ -163,13 +165,13 @@ export default class TimeItem extends Component {
     if (dateRangeOverlay) {
       dateRange = (
         <span className='pl-time-planner-time-item__date-range-active'>
-          {this.getDateRangeString(dateRangeOverlay.newStart, dateRangeOverlay.newEnd)}
+          {getDateRangeString(dateRangeOverlay.newStart, dateRangeOverlay.newEnd)}
         </span>
       )
     } else {
       dateRange = (
         <span className='pl-time-planner-time-item__date-range'>
-          {this.getDateRangeString(start, end)}
+          {getDateRangeString(shift.startDate, shift.endDate)}
         </span>
       )
     }
@@ -195,10 +197,7 @@ export default class TimeItem extends Component {
           >
             <div className='pl-time-planner-time-item__inner' ref='shiftSize' />
           </ResizableBox>
-          <div className='pl-time-planner-time-item__title-box'>
-            <span className='pl-time-planner-time-item__title' onClick={onClick}>
-              {shift.title}
-            </span>
+          <div className='pl-time-planner-time-item__title-box' onClick={onClick}>
             {dateRange}
           </div>
         </div>
@@ -213,6 +212,6 @@ TimeItem.propTypes = {
   pivotDate: React.PropTypes.any.isRequired,
   onClick: React.PropTypes.func.isRequired,
   updateShiftAction: React.PropTypes.func.isRequired,
-  fiveDayWeek: React.PropTypes.bool,
+  skipWeekends: React.PropTypes.bool,
   unit: React.PropTypes.string.isRequired
 }

@@ -29,7 +29,7 @@ export default class ShiftsRow extends Component {
         onClick={() => actions.showShiftProperties(x._id)}
         updateShiftAction={actions.updateShift}
         unit='days'
-        fiveDayWeek
+        skipWeekends
       />
     ))
   }
@@ -41,7 +41,7 @@ export default class ShiftsRow extends Component {
         <DateGrid
           size={50}
           preview={preview}
-          fiveDayWeek
+          skipWeekends
           pivotDate={pivotDate}
           onClickDate={onCreateShift}
         />

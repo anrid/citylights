@@ -2,35 +2,40 @@
 
 import React, { Component } from 'react'
 import classnames from 'classnames'
-import Moment from 'moment'
 
 import './DateGrid.scss'
 
+import { createDatesFromWeekStart } from './dateUtils'
+
 export default class DateGrid extends Component {
+  shouldComponentUpdate (newProps) {
+    if (newProps.size !== this.props.size) {
+      return true
+    }
+    if (newProps.pivotDate !== this.props.pivotDate) {
+      return true
+    }
+    if (newProps.skipWeekends !== this.props.skipWeekends) {
+      return true
+    }
+    return false
+  }
+
   render () {
+    // console.log('render DateGrid, ts=', Date.now())
     const {
       size,
       preview,
       onClickDate,
-      fiveDayWeek,
+      skipWeekends,
       pivotDate
     } = this.props
 
-    let count = 0
-    let dayCount = 0
-    let startDate = Moment(pivotDate).startOf('isoWeek')
-    const dates = [ ...new Array(size) ].map((x) => {
-      ++count
-      if (preview) {
-        return count
-      }
-      ++dayCount
-      if (fiveDayWeek && dayCount === 5) {
-        count += 2
-        dayCount = 0
-        return startDate.clone().add(count - 3, 'days').format()
-      }
-      return startDate.clone().add(count - 1, 'days').format()
+    const dates = createDatesFromWeekStart({
+      pivotDate,
+      size,
+      preview,
+      skipWeekends
     })
 
     const cls = classnames({
@@ -44,7 +49,7 @@ export default class DateGrid extends Component {
           <div
             key={i}
             className='pl-time-planner-grid-overlay__cell'
-            onClick={() => preview ? null : onClickDate(x)}
+            onClick={x ? () => onClickDate(x) : null}
           />
         ))}
       </section>
@@ -56,6 +61,6 @@ DateGrid.propTypes = {
   size: React.PropTypes.number.isRequired,
   pivotDate: React.PropTypes.any.isRequired,
   preview: React.PropTypes.bool,
-  fiveDayWeek: React.PropTypes.bool,
+  skipWeekends: React.PropTypes.bool,
   onClickDate: React.PropTypes.func
 }
