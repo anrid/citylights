@@ -1,0 +1,39 @@
+
+@import '../../styles/colors';
+
+.pl-color-picker {
+  width: 250px;
+  min-height: 30px;
+  padding: 0 12px;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 1rem;
+  font-weight: 400;
+
+  &__dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    flex: none;
+    & + & {
+      margin-left: 10px;
+    }
+    cursor: pointer;
+  }
+
+  &__selected {
+    border: 3px solid rgba(255,255,255,0.5);
+  }
+
+  &__gray { background-color: $c-gray700 }
+  &__amber { background-color: $c-amber400 }
+  &__green { background-color: $c-green400 }
+  &__red { background-color: $c-red400 }
+  &__teal { background-color: $c-teal400 }
+  &__blue { background-color: $c-blue500 }
+  &__purple { background-color: $c-purple500 }
+  &__brown { background-color: $c-brown500 }
+}

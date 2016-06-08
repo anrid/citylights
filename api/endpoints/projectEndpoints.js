@@ -116,7 +116,7 @@ const updateProjectSchema = Joi.object().keys({
     startDate: Joi.date().iso().description('Project start date.'),
     dueDate: Joi.date().iso().description('Project due date.'),
     completedDate: Joi.date().iso().description('Project completed date.'),
-    color: Joi.date().iso().description('Project color.')
+    color: Joi.number().description('Project color.')
   }).xor(
     // Force updating one field at a time.
     'title',

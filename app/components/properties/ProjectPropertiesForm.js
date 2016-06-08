@@ -8,14 +8,19 @@ import ConsultantsWidget from '../../containers/ConsultantsWidget'
 import ConsultantCard from '../../containers/ConsultantCard'
 import Button from '../../planner/Button'
 import TextEditor from '../misc/TextEditor'
+import ColorPicker from '../widgets/ColorPicker'
 
 export default class ProjectPropertiesForm extends Component {
   constructor (props) {
     super(props)
+
     this.onValueChange = this.onValueChange.bind(this)
     this.onToggleProjectMember = this.onToggleProjectMember.bind(this)
+
     this.onSave = this.onSave.bind(this)
     this.onSaveDesc = this.onSaveDesc.bind(this)
+    this.onSaveColor = this.onSaveColor.bind(this)
+
     this.state = {
       showConsultantsWidget: false,
       errors: null,
@@ -50,6 +55,12 @@ export default class ProjectPropertiesForm extends Component {
         }
       })
     }
+  }
+
+  onSaveColor (color) {
+    const { project, actions } = this.props
+    console.log('saving color:', color)
+    actions.updateProject(project._id, 'color', color)
   }
 
   onSaveDesc (jsonString) {
@@ -174,6 +185,14 @@ export default class ProjectPropertiesForm extends Component {
               onBlur={this.onSave}
             />
           {this.renderError('dueDate')}
+          </div>
+        </div>
+
+        <div className='pl-form__row'>
+          <div className='pl-form__section-label'/>
+          <div className='pl-form__input'>
+            <div className='pl-form__label'>Color</div>
+            <ColorPicker selected={project.color} onSelect={this.onSaveColor} />
           </div>
         </div>
       </div>
