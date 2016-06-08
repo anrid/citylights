@@ -68,7 +68,8 @@ const createShiftSchema = Joi.object().keys({
   endDate: Joi.date().iso().required().description('Shift end date.'),
   title: Joi.string().min(3).required().description('Shift title.'),
   // Optional.
-  assignee: Joi.string().min(20).description('Assignee user id.')
+  assignee: Joi.string().min(20).description('Assignee user id.'),
+  color: Joi.number().description('Shift color.')
 })
 
 const updateShiftSchema = Joi.object().keys({

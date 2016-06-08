@@ -98,24 +98,35 @@ $shift-height: 20px;
   &.pl-time-planner-time-item--amber {
     .pl-time-planner-time-item__inner {
       background-color: $c-amber400;
+      border: 1px solid $c-amber600;
     }
   }
 
   &.pl-time-planner-time-item--red {
     .pl-time-planner-time-item__inner {
       background-color: $c-red400;
+      border: 1px solid $c-red600;
     }
   }
 
   &.pl-time-planner-time-item--green {
     .pl-time-planner-time-item__inner {
       background-color: $c-green400;
+      border: 1px solid $c-green600;
     }
   }
 
   &.pl-time-planner-time-item--blue {
     .pl-time-planner-time-item__inner {
       background-color: $c-blue400;
+      border: 1px solid $c-blue600;
+    }
+  }
+
+  &.pl-time-planner-time-item--teal {
+    .pl-time-planner-time-item__inner {
+      background-color: $c-teal400;
+      border: 1px solid $c-teal600;
     }
   }
 
