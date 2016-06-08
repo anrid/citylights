@@ -1,8 +1,5 @@
 'use strict'
 
-import Moment from 'moment'
-import ObjectId from 'bson-objectid'
-
 import * as types from '../actions/actionTypes'
 
 // const initialState = {
@@ -27,18 +24,7 @@ const initialState = {
 
 function createShift (state, payload) {
   const n = { ...state }
-  const { projectId, assignee, startDate, ownerId, color } = payload
-  const shiftStart = Moment(startDate).startOf('day').add(8, 'hours')
-  const created = {
-    _id: ObjectId.generate(),
-    ownerId,
-    projectId,
-    assignee,
-    startDate: shiftStart.format(),
-    endDate: shiftStart.clone().add(8, 'hours').format(),
-    color,
-    title: 'New Untitled Shift'
-  }
+  const created = { ...payload }
   n.order = n.order.concat(created._id)
   n.data[created._id] = created
   return n

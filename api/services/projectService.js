@@ -29,9 +29,9 @@ const update = P.coroutine(function * (projectId, update, actorId) {
   return project
 })
 
-const addMember = P.coroutine(function * (projectId, memberId, actorId) {
-  T.String(projectId)
+const addMember = P.coroutine(function * (memberId, projectId, actorId) {
   T.String(memberId)
+  T.String(projectId)
   T.String(actorId)
 
   yield AccessService.requireProject(projectId, actorId)
@@ -44,9 +44,9 @@ const addMember = P.coroutine(function * (projectId, memberId, actorId) {
   return project
 })
 
-const removeMember = P.coroutine(function * (projectId, memberId, actorId) {
-  T.String(projectId)
+const removeMember = P.coroutine(function * (memberId, projectId, actorId) {
   T.String(memberId)
+  T.String(projectId)
   T.String(actorId)
 
   yield AccessService.requireProject(projectId, actorId)

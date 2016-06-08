@@ -4,6 +4,7 @@ const Auth = require('./authEndpoints')
 const User = require('./userEndpoints')
 const Workspace = require('./workspaceEndpoints')
 const Project = require('./projectEndpoints')
+const Shift = require('./shiftEndpoints')
 
 function echo (payload) {
   return {
@@ -34,6 +35,10 @@ const socketEndpoints = {
   'project:addMember': { func: Project.addMember, auth: true },
   'project:removeMember': { func: Project.removeMember, auth: true },
   'project:remove': { func: Project.remove, auth: true },
+
+  'shift:create': { func: Shift.create, auth: true },
+  'shift:update': { func: Shift.update, auth: true },
+  'shift:remove': { func: Shift.remove, auth: true },
 
   'user:invite': { func: User.invite, auth: true }
 }

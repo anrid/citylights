@@ -6,6 +6,7 @@ const T = require('tcomb')
 const UserService = require('./userService')
 const WorkspaceService = require('./workspaceService')
 const ProjectService = require('./projectService')
+const ShiftService = require('./shiftService')
 const AccessService = require('./accessService')
 
 const getStarter = P.coroutine(function * (workspaceId, userId) {
@@ -27,12 +28,17 @@ const getStarter = P.coroutine(function * (workspaceId, userId) {
   // Fetch all available, accessible projects in the current workspace.
   const projectList = yield ProjectService.getList(workspaceId, userId)
 
+  // Fetch all available, accessible shifts based on loaded projects.
+  const projectIds = projectList.map((x) => x._id.toString())
+  const shiftList = yield ShiftService.getList(projectIds, userId)
+
   return {
     user,
     userList,
     workspace,
     workspaceList,
-    projectList
+    projectList,
+    shiftList
   }
 })
 

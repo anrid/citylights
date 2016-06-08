@@ -3,6 +3,7 @@ import * as userActions from './userActions'
 import * as settingsActions from './settingsActions'
 import * as workspaceActions from './workspaceActions'
 import * as projectActions from './projectActions'
+import * as shiftActions from './shiftActions'
 
 import { request } from '../lib/apiClient'
 
@@ -49,6 +50,10 @@ export function receiveBackendEvent (event) {
       case 'project:update':
         return dispatch(projectActions.receiveProject(event.payload.project))
 
+      case 'shift:create':
+      case 'shift:update':
+        return dispatch(shiftActions.receiveShift(event.payload.shift))
+
       case 'auth:successful':
         return dispatch(onAuthSuccessful(event.payload))
 
@@ -78,6 +83,8 @@ function onAppStarter (payload) {
     dispatch(workspaceActions.receiveWorkspace(payload.workspace))
 
     dispatch(projectActions.receiveProjectList(payload.projectList))
+
+    dispatch(shiftActions.receiveShiftList(payload.shiftList))
 
     // Declare app `loaded` at this point.
     dispatch(settingsActions.setAppLoaded(true))

@@ -7,6 +7,7 @@ const T = require('tcomb')
 const User = require('./userModel')
 const Workspace = require('./workspaceModel')
 const Project = require('./projectModel')
+const Shift = require('./shiftModel')
 const WorkspaceMembers = require('./workspaceMembersModel')
 
 function requireUser (userId) {
@@ -80,8 +81,36 @@ const requireProject = P.coroutine(function * (projectId, userId) {
   return project
 })
 
+const requireShift = P.coroutine(function * (shiftId, userId) {
+  T.String(shiftId)
+  T.String(userId)
+
+  const shift = yield Shift.findOne({
+    _id: shiftId,
+    isEnabled: true,
+    isDeleted: false
+  })
+  if (!shift) {
+    throw Boom.unauthorized('Cannot find a valid shift')
+  }
+
+  return shift
+})
+
+const requireProjectAsAdmin = P.coroutine(function * (projectId, actorId) {
+  const project = yield requireProject(projectId, actorId)
+  const isOwner = project.ownerId === actorId
+  const isAdmin = project.admins.find((x) => x === actorId)
+  if (!isOwner && !isAdmin) {
+    throw Boom.unauthorized('Is not project owner or admin')
+  }
+  return project
+})
+
 module.exports = {
   requireUser,
   requireWorkspace,
-  requireProject
+  requireProject,
+  requireProjectAsAdmin,
+  requireShift
 }

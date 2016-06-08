@@ -17,7 +17,10 @@ const UserPassword = require('../api/services/userPasswordModel')
 const WorkspaceMembers = require('../api/services/workspaceMembersModel')
 
 const Project = require('../api/services/projectModel')
+const ProjectService = require('../api/services/projectService')
 const MemberService = require('../api/services/memberService')
+
+const Shift = require('../api/services/shiftModel')
 
 module.exports = {
   _chain: P.resolve(),
@@ -56,7 +59,8 @@ module.exports = {
       Workspace.remove(),
       WorkspaceMembers.remove(),
       UserPassword.remove(),
-      Project.remove()
+      Project.remove(),
+      Shift.remove()
     ])
     return this.queue(() => removeAllTestData)
   },
@@ -80,6 +84,20 @@ module.exports = {
     }, name)
   },
 
+  project (name, workspaceName, ownerName) {
+    return this.queue(() => {
+      const owner = this._context[ownerName]
+      const workspace = this._context[workspaceName]
+      Hoek.assert(owner, `Missing user in context: ${ownerName}`)
+      Hoek.assert(workspace, `Missing workspace in context: ${workspaceName}`)
+      return ProjectService.create({
+        _id: module.exports.getId(),
+        title: `${name}.test.test`,
+        workspaceId: workspace._id.toString()
+      }, owner._id.toString())
+    }, name)
+  },
+
   addToWorkspace (userName, workspaceName) {
     return this.queue(() => {
       const user = this._context[userName]
@@ -87,6 +105,22 @@ module.exports = {
       Hoek.assert(user, `Missing user in context: ${userName}`)
       Hoek.assert(workspace, `Missing workspace in context: ${workspaceName}`)
       return MemberService.addUserToWorkspace(user._id.toString(), workspace._id.toString())
+    })
+  },
+
+  addMemberToProject (userName, projectName, actorName) {
+    return this.queue(() => {
+      const user = this._context[userName]
+      const project = this._context[projectName]
+      const actor = this._context[actorName]
+      Hoek.assert(user, `Missing user in context: ${userName}`)
+      Hoek.assert(project, `Missing project in context: ${projectName}`)
+      Hoek.assert(actor, `Missing actor in context: ${actorName}`)
+      return ProjectService.addMember(
+        user._id.toString(),
+        project._id.toString(),
+        actor._id.toString()
+      )
     })
   }
 

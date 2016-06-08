@@ -1,7 +1,5 @@
 'use strict'
 
-import ObjectId from 'bson-objectid'
-
 import * as types from '../actions/actionTypes'
 
 // const initialState = {
@@ -24,12 +22,9 @@ const initialState = {
 
 function createProject (state, payload) {
   const n = { ...state }
-  const { title, workspaceId, ownerId } = payload
   const created = {
-    _id: ObjectId.generate(),
-    title,
-    workspaceId,
-    ownerId,
+    ...payload,
+    // Defaults !
     members: [],
     color: 1,
     type: 'tasks'

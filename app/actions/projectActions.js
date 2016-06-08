@@ -1,5 +1,7 @@
 'use strict'
 
+import ObjectId from 'bson-objectid'
+
 import * as types from './actionTypes'
 import * as settingsActions from './settingsActions'
 
@@ -23,24 +25,18 @@ export function toggleProjectMember (projectId, userId) {
 
 export function createAndEditProject (title) {
   return (dispatch, getState) => {
-    const workspaceId = getState().settings.saved.workspaceId
-    const title = 'New Untitled Project'
-    dispatch({
-      type: types.CREATE_PROJECT,
-      payload: {
-        title,
-        workspaceId,
-        ownerId: getState().settings.identity.userId
-      }
-    })
-    const projectId = getState().projects.order[0]
-    dispatch(settingsActions.showProjectProperties(projectId))
+    const data = {
+      _id: ObjectId.generate(),
+      title: 'New Untitled Project',
+      ownerId: getState().settings.identity.userId,
+      workspaceId: getState().settings.saved.workspaceId
+    }
 
-    dispatch(apiRequest('project:create', {
-      _id: projectId,
-      title,
-      workspaceId
-    }))
+    dispatch({ type: types.CREATE_PROJECT, payload: data })
+
+    dispatch(settingsActions.showProjectProperties(data._id))
+
+    dispatch(apiRequest('project:create', data))
   }
 }
 

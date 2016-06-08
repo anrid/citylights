@@ -44,7 +44,7 @@ function update (payload, context) {
 function addMember (payload, context) {
   return P.try(() => {
     const valid = Schemas.validateOrThrow(payload, addOrRemoveMemberSchema)
-    return ProjectService.addMember(valid.projectId, valid.memberId, context.userId)
+    return ProjectService.addMember(valid.memberId, valid.projectId, context.userId)
     .then((project) => {
       const projectId = project._id.toString()
       return {
@@ -62,7 +62,7 @@ function addMember (payload, context) {
 function removeMember (payload, context) {
   return P.try(() => {
     const valid = Schemas.validateOrThrow(payload, addOrRemoveMemberSchema)
-    return ProjectService.removeMember(valid.projectId, valid.memberId, context.userId)
+    return ProjectService.removeMember(valid.memberId, valid.projectId, context.userId)
     .then((project) => {
       const projectId = project._id.toString()
       return {
