@@ -82,3 +82,55 @@ export function getDiff (_from, _to, unit, skipWeekends) {
   }
   return units
 }
+
+export function getShiftInfo (shift, _pivotDate) {
+  const pivot = _pivotDate ? Moment(_pivotDate) : Moment()
+
+  const start = Moment(shift.startDate)
+  const end = Moment(shift.endDate)
+  const shiftEnd = start.clone().hours(end.hours()).minutes(end.minutes())
+  const shiftMinutes = Math.abs(start.diff(shiftEnd, 'minutes'))
+
+  let fromPivotToStart = pivot.diff(start, 'minutes')
+  let fromPivotToEnd = pivot.diff(end, 'minutes')
+
+  let shiftMinutesCompleted = 0
+  if (fromPivotToStart > 0) {
+    // Shift starts before pivot.
+    let completed = fromPivotToStart
+    if (fromPivotToEnd > 0) {
+      // Shift also ends before pivot. Deduct those minutes !
+      completed -= fromPivotToEnd
+    }
+    // Gives us the total number of completed hours within part of the
+    // shift range that’s before the pivot date.
+    shiftMinutesCompleted = Math.floor(shiftMinutes * Math.ceil(completed / (60 * 24)))
+  }
+
+  let shiftMinutesPlanned = 0
+  if (fromPivotToEnd < 0) {
+    // Shift end after pivot.
+    let planned = fromPivotToEnd
+    if (fromPivotToStart < 0) {
+      // Shift also starts after pivot. Deduct those minutes !
+      planned -= fromPivotToStart
+    }
+    shiftMinutesPlanned = Math.floor(shiftMinutes * Math.ceil(Math.abs(planned) / (60 * 24)))
+  }
+
+  // console.log(`
+  // Shift: ${shiftMinutes / 60}h
+  //        ${shiftMinutesCompleted} completed
+  //        ${shiftMinutesPlanned} planned
+  // `)
+
+  return {
+    completed: shiftMinutesCompleted,
+    planned: shiftMinutesPlanned,
+    lengthMinutes: shiftMinutes
+  }
+}
+
+export function minutesToFormattedHour (minutes) {
+  return `${Math.floor(minutes / 60)}.${minutes % 60}`
+}

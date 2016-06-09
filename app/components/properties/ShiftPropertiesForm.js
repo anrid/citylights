@@ -1,11 +1,14 @@
 'use strict'
 
 import React, { Component } from 'react'
+import Moment from 'moment'
 
 import './ShiftPropertiesForm.scss'
 
 import ConsultantsWidget from '../../containers/ConsultantsWidget'
 import ConsultantCard from '../../containers/ConsultantCard'
+import Button from '../../planner/Button'
+import ColorPicker from '../widgets/ColorPicker'
 
 export default class ShiftPropertiesForm extends Component {
   constructor (props) {
@@ -13,11 +16,18 @@ export default class ShiftPropertiesForm extends Component {
     this.onValueChange = this.onValueChange.bind(this)
     this.onAssignConsultant = this.onAssignConsultant.bind(this)
     this.onSave = this.onSave.bind(this)
+    this.onSaveColor = this.onSaveColor.bind(this)
     this.state = {
       showConsultantsWidget: false,
       errors: null,
       shift: null
     }
+  }
+
+  onSaveColor (color) {
+    const { shift, actions } = this.props
+    console.log('saving color:', color)
+    actions.updateShift(shift._id, 'color', color)
   }
 
   onAssignConsultant (userId) {
@@ -80,10 +90,9 @@ export default class ShiftPropertiesForm extends Component {
           <div className='pl-form__section-label'>Assignees</div>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Consultants</div>
-            <button className='pl-form-button'
-              onClick={toggle}>
+            <Button onClick={toggle}>
               <i className='fa fa-fw fa-plus' />Assign
-            </button>
+            </Button>
             <div className='pl-shift-properties-form__consultants-widget'>
               {showConsultantsWidget && (
                 <ConsultantsWidget
@@ -125,7 +134,7 @@ export default class ShiftPropertiesForm extends Component {
             <div className='pl-form__label'>Start Date</div>
             <input type='text'
               placeholder='e.g. 2016-05-01 10:00'
-              defaultValue={shift.startDate}
+              defaultValue={Moment(shift.startDate).format('YYYY-MM-DD HH:mm')}
               onChange={this.onValueChange('shift', 'startDate')}
               onBlur={this.onSave}
             />
@@ -144,11 +153,19 @@ export default class ShiftPropertiesForm extends Component {
             <div className='pl-form__label'>End Date</div>
             <input type='text'
               placeholder='e.g. 2016-05-01 18:00'
-              defaultValue={shift.endDate}
+              defaultValue={Moment(shift.endDate).format('YYYY-MM-DD HH:mm')}
               onChange={this.onValueChange('shift', 'endDate')}
               onBlur={this.onSave}
             />
           {this.renderError('endDate')}
+          </div>
+        </div>
+
+        <div className='pl-form__row'>
+          <div className='pl-form__section-label'/>
+          <div className='pl-form__input'>
+            <div className='pl-form__label'>Color</div>
+            <ColorPicker selected={shift.color} onSelect={this.onSaveColor} />
           </div>
         </div>
 

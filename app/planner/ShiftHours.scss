@@ -1,0 +1,25 @@
+
+@import '../styles/colors';
+
+.pl-time-planner-shift-hours {
+  flex: none;
+  width: 100px;
+  height: 50px;
+  padding: 5px 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.1;
+  text-align: right;
+  color: $c-gray600;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex-direction: column;
+  border-right: 1px solid $c-gray300;
+  &__completed {
+    color: $c-gray600;
+  }
+  &__planned {
+    color: $c-green500;
+  }
+}

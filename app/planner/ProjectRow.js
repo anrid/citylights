@@ -17,6 +17,7 @@ import ShiftsRow from './ShiftsRow'
 import Dropdown from '../components/widgets/Dropdown'
 import Button from './Button'
 import ConsultantsWidget from '../containers/ConsultantsWidget'
+import ShiftHours from './ShiftHours'
 
 class ProjectRow extends Component {
   constructor (props) {
@@ -72,7 +73,8 @@ class ProjectRow extends Component {
       members,
       pivotDate,
       actions,
-      isOwnerOrAdmin
+      isOwnerOrAdmin,
+      showHours
     } = this.props
 
     const actionMenu = []
@@ -94,6 +96,7 @@ class ProjectRow extends Component {
                 shifts={memberShifts}
                 pivotDate={pivotDate}
                 actions={actions}
+                showHours={showHours}
               />
             )
           })}
@@ -149,7 +152,7 @@ class ProjectRow extends Component {
   }
 
   render () {
-    const { project } = this.props
+    const { project, showHours } = this.props
     const { open } = this.state
 
     let rowCls = 'pl-time-planner-project-row-wrapper '
@@ -180,6 +183,7 @@ class ProjectRow extends Component {
             <i className={angleCls} onClick={this.onToggleOpen} />
           </div>
           <div className='pl-time-planner-project-row__right'>
+            {showHours && <ShiftHours {...this.props} />}
             <ShiftsRow {...this.props} preview />
           </div>
         </section>
@@ -193,7 +197,8 @@ ProjectRow.propTypes = {
   project: React.PropTypes.object.isRequired,
   members: React.PropTypes.array.isRequired,
   shifts: React.PropTypes.array.isRequired,
-  pivotDate: React.PropTypes.any.isRequired
+  pivotDate: React.PropTypes.any.isRequired,
+  showHours: React.PropTypes.bool
 }
 
 function mapStateToProps (state, { projectId }) {

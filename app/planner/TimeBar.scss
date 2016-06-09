@@ -40,6 +40,21 @@
     overflow: hidden
   }
 
+  &__hours {
+    flex: none;
+    width: 100px;
+    height: 50px;
+    padding: 5px 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.1;
+    text-align: right;
+    color: $c-gray500;
+    display: flex;
+    align-items: center;
+    border-right: 1px solid $c-gray300;
+  }
+
   &__filter-input {
     padding: 0;
     margin: 0;

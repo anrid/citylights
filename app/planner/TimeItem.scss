@@ -95,6 +95,13 @@ $shift-height: 20px;
     color: $c-gray600;
   }
 
+  &.pl-time-planner-time-item--gray {
+    .pl-time-planner-time-item__inner {
+      background-color: $c-gray300;
+      border: 1px solid $c-gray400;
+    }
+  }
+
   &.pl-time-planner-time-item--amber {
     .pl-time-planner-time-item__inner {
       background-color: $c-amber400;
@@ -127,6 +134,20 @@ $shift-height: 20px;
     .pl-time-planner-time-item__inner {
       background-color: $c-teal400;
       border: 1px solid $c-teal600;
+    }
+  }
+
+  &.pl-time-planner-time-item--purple {
+    .pl-time-planner-time-item__inner {
+      background-color: $c-purple500;
+      border: 1px solid $c-purple600;
+    }
+  }
+
+  &.pl-time-planner-time-item--brown {
+    .pl-time-planner-time-item__inner {
+      background-color: $c-brown500;
+      border: 1px solid $c-brown600;
     }
   }
 

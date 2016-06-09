@@ -20,6 +20,7 @@ export function createShift (projectId, assignee, _startDate, color) {
 
     const startDate = start.format()
     const endDate = start.clone().add(8, 'hours').format()
+
     const ownerId = getState().settings.identity.userId
     const workspaceId = getState().settings.saved.workspaceId
 

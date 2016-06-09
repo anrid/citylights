@@ -9,7 +9,8 @@ import WeekHeader from './WeekHeader'
 
 export default class TimeBar extends Component {
   render () {
-    const week1 = Moment(this.props.pivotDate)
+    const { pivotDate, showHours } = this.props
+    const week1 = Moment(pivotDate)
     const weeks = []
     for (let i = 0; i < 9; ++i) {
       weeks.push(week1.clone().add(i, 'week'))
@@ -23,6 +24,11 @@ export default class TimeBar extends Component {
           <i className='fa fa-angle-down' />
         </div>
         <div className='pl-time-planner-time-bar__right'>
+          {showHours && (
+            <div className='pl-time-planner-time-bar__hours'>
+              Scheduled Hours Total
+            </div>
+          )}
           {weeks.map((x, i) => <WeekHeader key={i} pivotDate={x} />)}
         </div>
       </section>
@@ -31,5 +37,6 @@ export default class TimeBar extends Component {
 }
 
 TimeBar.propTypes = {
-  pivotDate: React.PropTypes.any.isRequired
+  pivotDate: React.PropTypes.any.isRequired,
+  showHours: React.PropTypes.bool
 }

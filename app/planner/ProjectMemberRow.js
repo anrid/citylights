@@ -5,6 +5,7 @@ import React, { Component } from 'react'
 import './ProjectMemberRow.scss'
 
 import ShiftsRow from './ShiftsRow'
+import ShiftHours from './ShiftHours'
 
 export default class ProjectMemberRow extends Component {
   constructor (props) {
@@ -19,7 +20,7 @@ export default class ProjectMemberRow extends Component {
   }
 
   render () {
-    const { member, actions } = this.props
+    const { member, actions, showHours } = this.props
     return (
       <section className='pl-time-planner-project-member-row'>
         <div className='pl-time-planner-project-member-row__left'>
@@ -36,6 +37,7 @@ export default class ProjectMemberRow extends Component {
             style={{backgroundImage: `url(${member.photo})`}} />
         </div>
         <div className='pl-time-planner-project-member-row__right'>
+          {showHours && <ShiftHours {...this.props} />}
           <ShiftsRow {...this.props} onCreateShift={this.onCreateShift} />
         </div>
       </section>
@@ -48,5 +50,6 @@ ProjectMemberRow.propTypes = {
   member: React.PropTypes.object.isRequired,
   shifts: React.PropTypes.array.isRequired,
   pivotDate: React.PropTypes.any.isRequired,
-  actions: React.PropTypes.object.isRequired
+  actions: React.PropTypes.object.isRequired,
+  showHours: React.PropTypes.bool
 }

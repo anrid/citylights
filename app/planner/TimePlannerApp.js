@@ -72,9 +72,11 @@ class TimePlannerApp extends Component {
       <section id='pl-time-planner-app' style={this.getThemeStyle()}>
         <TopNav />
         <ControlBar {...this.props} />
-        <TimeBar pivotDate={pivotDate} />
+        <TimeBar pivotDate={pivotDate} showHours />
         <section className='pl-time-planner-rows'>
-          {projectIds.map((x) => <ProjectRow key={x} projectId={x} pivotDate={pivotDate} />)}
+          {projectIds.map((x) => (
+            <ProjectRow key={x} projectId={x} pivotDate={pivotDate} showHours />
+          ))}
           <ProjectControlBar key='controlBar'
             actions={this.props.actions}
             projectsOnPage={projectIds.length}
