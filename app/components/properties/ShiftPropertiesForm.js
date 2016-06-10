@@ -13,6 +13,7 @@ import ColorPicker from '../widgets/ColorPicker'
 export default class ShiftPropertiesForm extends Component {
   constructor (props) {
     super(props)
+    this.onDelete = this.onDelete.bind(this)
     this.onValueChange = this.onValueChange.bind(this)
     this.onAssignConsultant = this.onAssignConsultant.bind(this)
     this.onSave = this.onSave.bind(this)
@@ -22,6 +23,12 @@ export default class ShiftPropertiesForm extends Component {
       errors: null,
       shift: null
     }
+  }
+
+  onDelete () {
+    const { shift, actions } = this.props
+    actions.setPropertiesPanelOpen(false)
+    actions.removeShift(shift._id)
   }
 
   onSaveColor (color) {
@@ -104,6 +111,27 @@ export default class ShiftPropertiesForm extends Component {
             </div>
             <div className='pl-shift-properties-form__assignees'>
               <ConsultantCard userId={shift.assignee} />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  renderMiscSection () {
+    return (
+      <div className='pl-form__section'>
+        <div className='pl-form__row'>
+          <div className='pl-form__section-label'>Delete Shift</div>
+          <div className='pl-form__input'>
+            <Button onClick={this.onDelete}>
+              <i className='fa fa-fw fa-plus' />Delete Shift
+            </Button>
+            <div className='pl-form__help-text'>
+              Deleting the shift will automatically unassign all
+              consultants.
+              NOTE: This action <em>can be undone</em>,
+              you can browse deleted items in the trash.
             </div>
           </div>
         </div>
@@ -195,6 +223,7 @@ export default class ShiftPropertiesForm extends Component {
       <section className='pl-shift-properties-form'>
         {this.renderShiftInformationSection()}
         {this.renderAssigeesSection()}
+        {this.renderMiscSection()}
       </section>
     )
   }

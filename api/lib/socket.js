@@ -1,3 +1,4 @@
+'use strict'
 
 const Boom = require('boom')
 const P = require('bluebird')
@@ -6,6 +7,7 @@ const SocketIO = require('socket.io')
 const Moment = require('moment')
 
 const socketEndpoints = require('../endpoints')
+const Audit = require('./auditLog')
 
 function handleClientMessage (topic, payload, userId) {
   return P.try(() => {
@@ -23,6 +25,12 @@ function handleClientMessage (topic, payload, userId) {
     }
 
     return P.resolve(endpoint.func(payload, { userId }))
+    .tap((response) => {
+      // Audit all the things, assuming request was successful.
+      if (endpoint.audit !== false) {
+        Audit.log(userId, topic, payload)
+      }
+    })
   })
 }
 

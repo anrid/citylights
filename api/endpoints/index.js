@@ -21,9 +21,9 @@ const socketEndpoints = {
   'signup': { func: Auth.signup, auth: false },
   'logout': { func: Auth.logout, auth: false },
 
-  'echo': { func: echo, auth: false },
+  'echo': { func: echo, auth: false, audit: false },
 
-  'heartbeat': { func: echo, auth: false },
+  'heartbeat': { func: echo, auth: false, audit: false },
 
   'app:starter': { func: Auth.appStarter, auth: true },
 

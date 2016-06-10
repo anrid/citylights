@@ -49,6 +49,14 @@ function receiveShift (state, payload) {
   return n
 }
 
+function removeShift (state, payload) {
+  const n = { ...state }
+  const { shiftId } = payload
+  n.order = n.order.filter((x) => x !== shiftId)
+  delete n.data[shiftId]
+  return n
+}
+
 function assignConsultant (state, payload) {
   const n = { ...state }
   const { shiftId, userId } = payload
@@ -86,6 +94,8 @@ export default function shifts (state = initialState, action = {}) {
       return updateShift(state, action.payload)
     case types.RECEIVE_SHIFT:
       return receiveShift(state, action.payload)
+    case types.REMOVE_SHIFT:
+      return removeShift(state, action.payload)
     case types.ASSIGN_CONSULTANT:
       return assignConsultant(state, action.payload)
     case types.RECEIVE_SHIFT_LIST:

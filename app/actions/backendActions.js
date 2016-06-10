@@ -69,7 +69,11 @@ export function receiveBackendEvent (event) {
         return
 
       default:
-        console.log('Unknown event=', event)
+        if (event.topic && event.topic.indexOf(':response') !== -1) {
+          console.log('Server responded:', event.topic.replace(':response', ' [OK]'))
+        } else {
+          console.log('Unknown event=', event)
+        }
     }
   }
 }
