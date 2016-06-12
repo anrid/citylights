@@ -4,13 +4,14 @@ const P = require('bluebird')
 const T = require('tcomb')
 
 const Workspace = require('./workspaceModel')
-const WorkspaceMembers = require('./workspaceMembersModel')
+const WorkspaceMember = require('./workspaceMemberModel')
+const WorkspaceProfile = require('./workspaceProfileModel')
 const User = require('./userModel')
 
 function getAllMembers (workspaceId) {
   return P.try(() => {
     T.String(workspaceId)
-    return WorkspaceMembers.findOne({ workspaceId })
+    return WorkspaceMember.findOne({ workspaceId })
     .then((members) => {
       return [
         members.ownerId,
@@ -20,6 +21,29 @@ function getAllMembers (workspaceId) {
     })
   })
 }
+
+const createWorkspaceProfile = P.coroutine(function * (opts) {
+  T.String(opts.userId)
+  T.String(opts.workspaceId)
+  T.Object(opts.profile)
+
+  // Create or update workspace profile for user.
+  const profile = {
+    invited: new Date(),
+    removed: null,
+    isConsultant: true,
+    isPrivate: opts.profile.isPrivate || false,
+    title: opts.profile.title,
+    phoneWork: opts.profile.phoneWork,
+    photo: opts.profile.photo
+  }
+
+  return yield WorkspaceProfile.findOneAndUpdate(
+    { userId: opts.userId, workspaceId: opts.workspaceId },
+    { $set: { profile } },
+    { new: true, upsert: true }
+  )
+})
 
 const addUserToWorkspace = P.coroutine(function * (userId, workspaceId, _opts) {
   T.String(userId)
@@ -35,27 +59,12 @@ const addUserToWorkspace = P.coroutine(function * (userId, workspaceId, _opts) {
 
   // Add to either members or admins depending on given flag.
   const memberField = opts.admin ? 'admins' : 'members'
-  const workspaceMembers = yield WorkspaceMembers.findOneAndUpdate(
+  const workspaceMembers = yield WorkspaceMember.findOneAndUpdate(
     { workspaceId },
     {
       // Set user as owner if there’s no entry for this workspace.
       $setOnInsert: { ownerId: userId },
       $addToSet: { [memberField]: userId }
-    },
-    { new: true, upsert: true }
-  )
-
-  // Create a workspace profile for this user.
-  const profilePath = `profiles.${userId}`
-  yield WorkspaceMembers.findOneAndUpdate(
-    { workspaceId, [profilePath]: { $exists: false } },
-    {
-      $set: {
-        [profilePath]: {
-          invited: new Date(),
-          isConsultant: true
-        }
-      }
     },
     { new: true, upsert: true }
   )
@@ -81,5 +90,6 @@ const addUserToWorkspace = P.coroutine(function * (userId, workspaceId, _opts) {
 
 module.exports = {
   addUserToWorkspace,
-  getAllMembers
+  getAllMembers,
+  createWorkspaceProfile
 }

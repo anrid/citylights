@@ -28,18 +28,30 @@ lab.experiment('User Endpoints', () => {
 
   lab.test('user1 invites friend1', () => {
     return UserEndpoints.invite({
-      email: 'friend1@test.test',
-      firstName: 'Friendly',
-      lastName: 'Buddy',
-      workspaceId
+      email: 'punx.phil@test.test',
+      firstName: 'Punxsutawney',
+      lastName: 'Phil',
+      workspaceId,
+      phoneWork: '555-6969',
+      photo: 'https://avatars.com/groundhog.jpg',
+      title: 'Prognosticator of Prognosticators'
     },
     { userId: user1.userId })
     .then((res) => {
-      // console.log('res=', res)
+      // console.log('res=', res.payload.user.profile)
+      // console.log('res=', res.payload.profile)
       Code.expect(res.topic).to.equal('user:invite:successful')
-      Code.expect(res.payload.user.email).to.equal('friend1@test.test')
+      Code.expect(res.payload.user.email).to.equal('punx.phil@test.test')
       Code.expect(res.payload.workspace._id.toString()).to.equal(workspaceId)
       Code.expect(res.payload.workspace.membersCount).to.equal(2)
+
+      Code.expect(res.payload.user.profile.title).to.include('Prog')
+      Code.expect(res.payload.profile.profile.title).to.include('Prog')
+      Code.expect(res.payload.user.profile.photo).to.include('groundhog')
+      Code.expect(res.payload.profile.profile.photo).to.include('groundhog')
+
+      Code.expect(res.payload.profile.userId).to.equal(res.payload.user._id.toString())
+      Code.expect(res.payload.profile.workspaceId).to.equal(workspaceId)
     })
   })
 })

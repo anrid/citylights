@@ -14,13 +14,15 @@ const invite = P.coroutine(function * (payload, context) {
   const result = yield UserService.invite(valid, context.userId)
   const user = result.user
   const workspace = result.workspace
+  const profile = result.profile
 
   console.log(`TODO: send invitation email to ${user.email}`)
   // console.log('result=', result)
 
   const response = {
     user,
-    workspace
+    workspace,
+    profile
   }
 
   // Broadcast to workspace.
@@ -42,7 +44,9 @@ const inviteFormSchema = Joi.object().keys({
   workspaceId: Joi.string().min(20).required().description('Invite user to this workspace id.'),
   firstName: Joi.string().min(1).description('User first name.'),
   lastName: Joi.string().min(1).description('User last name.'),
-  phoneWork: Joi.string().min(6).description('User work contact number.')
+  phoneWork: Joi.string().min(6).description('User work contact number.'),
+  title: Joi.string().min(1).description('User title, in this workspace.'),
+  photo: Joi.string().uri({ scheme: [ /https?/ ] }).description('User photo url, starting with http(s)://')
 })
 
 module.exports = {

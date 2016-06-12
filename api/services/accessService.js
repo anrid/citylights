@@ -8,7 +8,7 @@ const User = require('./userModel')
 const Workspace = require('./workspaceModel')
 const Project = require('./projectModel')
 const Shift = require('./shiftModel')
-const WorkspaceMembers = require('./workspaceMembersModel')
+const WorkspaceMember = require('./workspaceMemberModel')
 
 function requireUser (userId) {
   return P.try(() => {
@@ -41,7 +41,7 @@ const requireWorkspace = P.coroutine(function * (workspaceId, userId) {
     throw Boom.unauthorized('Cannot find a valid workspace')
   }
 
-  const members = yield WorkspaceMembers.findOne({
+  const members = yield WorkspaceMember.findOne({
     workspaceId,
     $or: [
       { ownerId: userId },

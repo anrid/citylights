@@ -89,16 +89,36 @@ const invite = P.coroutine(function * (opts, actorId) {
       email: opts.email,
       firstName: opts.firstName,
       lastName: opts.lastName,
-      'profile.phoneWork': opts.phoneWork
+      // Create a default user profile.
+      profile: {
+        phoneWork: opts.phoneWork,
+        title: opts.title,
+        photo: opts.photo
+      }
     })
     // Create a temporary password.
     UserPassword.createRandomPassword(user)
   }
 
-  const updatedUserAndWorkspace = yield MemberService.addUserToWorkspace(
-    user._id.toString(), opts.workspaceId
+  const response = yield MemberService.addUserToWorkspace(
+    user._id.toString(),
+    opts.workspaceId
   )
-  return updatedUserAndWorkspace
+
+  const profile = yield MemberService.createWorkspaceProfile({
+    userId: user._id.toString(),
+    workspaceId: opts.workspaceId,
+    profile: {
+      phoneWork: opts.phoneWork,
+      title: opts.title,
+      photo: opts.photo,
+      isPrivate: opts.isPrivate
+    }
+  })
+
+  response.profile = profile
+
+  return response
 })
 
 function logout (accessToken) {

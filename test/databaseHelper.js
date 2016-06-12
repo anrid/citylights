@@ -14,7 +14,8 @@ const Workspace = require('../api/services/workspaceModel')
 const WorkspaceService = require('../api/services/workspaceService')
 
 const UserPassword = require('../api/services/userPasswordModel')
-const WorkspaceMembers = require('../api/services/workspaceMembersModel')
+const WorkspaceMember = require('../api/services/workspaceMemberModel')
+const WorkspaceProfile = require('../api/services/workspaceProfileModel')
 
 const Project = require('../api/services/projectModel')
 const ProjectService = require('../api/services/projectService')
@@ -57,7 +58,8 @@ module.exports = {
     const removeAllTestData = P.all([
       User.remove(),
       Workspace.remove(),
-      WorkspaceMembers.remove(),
+      WorkspaceMember.remove(),
+      WorkspaceProfile.remove(),
       UserPassword.remove(),
       Project.remove(),
       Shift.remove()

@@ -10,8 +10,7 @@ const schema = new Schema({
   },
   ownerId: { type: String, required: true },
   members: [String],
-  admins: [String],
-  profiles: { type: Object, default: { } }
+  admins: [String]
 })
 
-module.exports = Mongoose.model('workspace_members', schema)
+module.exports = Mongoose.model('workspace_member', schema)
