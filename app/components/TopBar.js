@@ -57,7 +57,7 @@ export default class TopBar extends Component {
           {slogan}
         </div>
         <div className='pl-top-bar__info'>
-          <div className='pl-top-bar__avatar' />
+          <div className='pl-top-bar__avatar pl-default-avatar' />
 
           <div className='pl-top-bar__whoami'>
             {user.email}

@@ -34,7 +34,7 @@ export default class ProjectMemberRow extends Component {
           </div>
           <div className='pl-time-planner-project-member-row__photo'
             onClick={() => actions.showConsultantProperties(member._id)}
-            style={{backgroundImage: `url(${member.photo})`}} />
+            style={{backgroundImage: `url(${member.profile.photo})`}} />
         </div>
         <div className='pl-time-planner-project-member-row__right'>
           {showHours && <ShiftHours {...this.props} />}

@@ -4,6 +4,9 @@ import metaphone from 'metaphone'
 import { createSelector } from 'reselect'
 
 function getSwedishMetaphoneValue (value) {
+  if (value == null || !value.length) {
+    return ''
+  }
   let adjusted = value
   .replace(/[åÅ]/g, 'aa')
   .replace(/[äÄ]/g, 'ae')

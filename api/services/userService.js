@@ -83,18 +83,19 @@ const invite = P.coroutine(function * (opts, actorId) {
   yield AccessService.requireWorkspace(opts.workspaceId, actorId)
 
   let user = yield User.findOne({ email: opts.email })
+  const profile = {
+    phoneWork: opts.phoneWork,
+    title: opts.title,
+    photo: opts.photo
+  }
+
   // Sign-up user on-the-fly if they’re not our system.
   if (!user) {
     user = yield User.create({
       email: opts.email,
       firstName: opts.firstName,
       lastName: opts.lastName,
-      // Create a default user profile.
-      profile: {
-        phoneWork: opts.phoneWork,
-        title: opts.title,
-        photo: opts.photo
-      }
+      profile // Create a default user profile.
     })
     // Create a temporary password.
     UserPassword.createRandomPassword(user)
@@ -102,21 +103,9 @@ const invite = P.coroutine(function * (opts, actorId) {
 
   const response = yield MemberService.addUserToWorkspace(
     user._id.toString(),
-    opts.workspaceId
+    opts.workspaceId,
+    { profile }
   )
-
-  const profile = yield MemberService.createWorkspaceProfile({
-    userId: user._id.toString(),
-    workspaceId: opts.workspaceId,
-    profile: {
-      phoneWork: opts.phoneWork,
-      title: opts.title,
-      photo: opts.photo,
-      isPrivate: opts.isPrivate
-    }
-  })
-
-  response.profile = profile
 
   return response
 })

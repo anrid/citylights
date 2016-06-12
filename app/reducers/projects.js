@@ -26,6 +26,7 @@ function createProject (state, payload) {
     ...payload,
     // Defaults !
     members: [],
+    admins: [],
     color: 1,
     type: 'tasks'
   }

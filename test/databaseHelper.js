@@ -106,7 +106,11 @@ module.exports = {
       const workspace = this._context[workspaceName]
       Hoek.assert(user, `Missing user in context: ${userName}`)
       Hoek.assert(workspace, `Missing workspace in context: ${workspaceName}`)
-      return MemberService.addUserToWorkspace(user._id.toString(), workspace._id.toString())
+      return MemberService.addUserToWorkspace(
+        user._id.toString(),
+        workspace._id.toString(),
+        { profile: { isTestUser: true } }
+      )
     })
   },
 

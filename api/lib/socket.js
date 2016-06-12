@@ -111,14 +111,15 @@ function setupSocketHandlers (socket) {
       return handleClientMessage(message.topic, message.payload, socket.userId)
     })
     .then((response) => {
+      // Include the original request id always.
+      response.requestId = message.requestId
+
       // NOTE: `auth:successful` will be sent this way on successful signup via
       // the public socket API.
       if (response.topic === 'auth:successful') {
         authenticateSocket(socket)(response)
+        return
       }
-
-      // Include the original request id always.
-      response.requestId = message.requestId
 
       if (response.skipSender) {
         // Do not broadcast a full payload to the sender as they’ve already

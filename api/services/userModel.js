@@ -19,7 +19,7 @@ const schema = new Schema({
   inWorkspaces: [String],
   lastWorkspaceId: String,
   isOnboarded: { type: Boolean, default: false },
-  profile: { type: Object, default: { } }
+  profile: { type: Schema.Types.Mixed, default: { photo: null } }
 })
 
 module.exports = Mongoose.model('user', schema)

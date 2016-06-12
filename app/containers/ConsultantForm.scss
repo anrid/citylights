@@ -1,0 +1,31 @@
+
+@import '../styles/colors';
+
+.pl-consultant-form {
+  .pl-form__section:last-child {
+    padding-bottom: 0;
+  }
+
+  &__random {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    &__info {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    &__photo {
+      width: 36px;
+      height: 36px;
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      margin-right: 10px;
+      border-radius: 2px;
+    }
+  }
+}

@@ -3,25 +3,15 @@
 import React, { Component } from 'react'
 
 import './Avatar.scss'
-import * as names from '../reducers/generators/names'
 
 export default class Avatar extends Component {
   render () {
-    // TODO: Redux me.
-    const user = {
-      _id: 1,
-      email: 'massa.c@example.com',
-      firstName: 'Massa',
-      lastName: 'Curry',
-      photo: names.getRandomAvatar('2016-06-02'),
-      title: names.getRandomConsultantTitle('2016-06-01')
-    }
-
-    const { withName } = this.props
+    const { user, withName } = this.props
 
     return (
       <div className='pl-time-planner-avatar'>
-        <div className='pl-time-planner-avatar__photo' style={{ backgroundImage: `url("${user.photo}")` }} />
+        <div className='pl-time-planner-avatar__photo'
+          style={{ backgroundImage: `url("${user.profile.photo}")` }} />
         {withName && (
           <div className='pl-time-planner-avatar__name'>
             {user.firstName}
@@ -34,5 +24,6 @@ export default class Avatar extends Component {
 }
 
 Avatar.propTypes = {
+  user: React.PropTypes.object.isRequired,
   withName: React.PropTypes.bool
 }

@@ -55,7 +55,8 @@ const login = P.coroutine(function * (payload) {
       },
       info: {
         email: user.email,
-        workspaceId
+        workspaceId,
+        login: new Date()
       }
     }
   }
@@ -77,7 +78,8 @@ const signup = P.coroutine(function * (payload) {
       },
       info: {
         email: user.email,
-        workspaceId: workspace._id.toString()
+        workspaceId: workspace._id.toString(),
+        signup: new Date()
       }
     }
   }

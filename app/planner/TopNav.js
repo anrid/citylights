@@ -19,7 +19,8 @@ class TopNav extends Component {
       { text: 'Export' }
     ]
 
-    const { routeTo } = this.props.actions
+    const { currentUser, actions } = this.props
+    const { routeTo } = actions
 
     return (
       <section className='pl-time-planner-top-nav'>
@@ -36,7 +37,7 @@ class TopNav extends Component {
           </NavButton>
           <NavButton>Help</NavButton>
           <NavButton>Settings</NavButton>
-          <NavButton noPadding><Avatar withName /></NavButton>
+          <NavButton noPadding><Avatar user={currentUser} withName /></NavButton>
         </div>
       </section>
     )
@@ -51,6 +52,12 @@ const NavButton = ({ children, noPadding, onClick }) => (
   </div>
 )
 
+function mapStateToProps (state) {
+  return {
+    currentUser: state.users.data[state.settings.identity.userId]
+  }
+}
+
 function mapDispatchToProps (dispatch) {
   return {
     actions: bindActionCreators({
@@ -60,6 +67,6 @@ function mapDispatchToProps (dispatch) {
 }
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(TopNav)

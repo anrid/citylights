@@ -22,6 +22,16 @@ function getAllMembers (workspaceId) {
   })
 }
 
+const getWorkspaceProfiles = P.coroutine(function * (opts) {
+  T.Array(opts.userIds)
+  T.String(opts.workspaceId)
+
+  return yield WorkspaceProfile.find({
+    userId: { $in: opts.userIds },
+    workspaceId: opts.workspaceId
+  }).exec()
+})
+
 const createWorkspaceProfile = P.coroutine(function * (opts) {
   T.String(opts.userId)
   T.String(opts.workspaceId)
@@ -45,10 +55,10 @@ const createWorkspaceProfile = P.coroutine(function * (opts) {
   )
 })
 
-const addUserToWorkspace = P.coroutine(function * (userId, workspaceId, _opts) {
+const addUserToWorkspace = P.coroutine(function * (userId, workspaceId, opts) {
   T.String(userId)
   T.String(workspaceId)
-  const opts = _opts || { }
+  T.Object(opts.profile)
 
   // Add workspaceId to user.
   const user = yield User.findOneAndUpdate(
@@ -82,14 +92,22 @@ const addUserToWorkspace = P.coroutine(function * (userId, workspaceId, _opts) {
     { new: true }
   )
 
+  const profile = yield createWorkspaceProfile({
+    userId,
+    workspaceId,
+    profile: opts.profile
+  })
+
   return {
     user,
-    workspace
+    workspace,
+    profile
   }
 })
 
 module.exports = {
   addUserToWorkspace,
   getAllMembers,
-  createWorkspaceProfile
+  createWorkspaceProfile,
+  getWorkspaceProfiles
 }

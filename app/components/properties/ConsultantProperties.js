@@ -55,7 +55,7 @@ export default class ConsultantProperties extends Component {
         <div className='pl-consultant-properties__profile-block'>
           <div className='pl-consultant-properties__left'>
             <div className='pl-consultant-properties__profile-photo'
-              style={{ backgroundImage: `url(${consultant.photo})` }}/>
+              style={{ backgroundImage: `url(${consultant.profile.photo})` }}/>
           </div>
 
           <div className='pl-consultant-properties__right'>

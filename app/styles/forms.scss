@@ -112,6 +112,16 @@
     color: $c-red500;
   }
 
+  &__help-label {
+    margin-top: 3px;
+    display: inline-block;
+    border-radius: 2px;
+    background-color: $c-teal400;
+    color: white;
+    font-weight: 600;
+    padding: 1px 6px;
+  }
+
   &__input {
     flex: none;
 

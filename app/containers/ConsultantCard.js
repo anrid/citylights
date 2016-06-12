@@ -27,7 +27,7 @@ export class ConsultantCard extends Component {
       <div className='pl-consultant-card__row' onClick={this.onClick}>
         <div className='pl-consultant-card__row-label' />
         <div className='pl-consultant-card__row-avatar'
-          style={{ backgroundImage: `url(${consultant.photo})` }}
+          style={{ backgroundImage: `url(${consultant.profile.photo})` }}
         />
         <div className='pl-consultant-card__row-info'>
           <div className='pl-consultant-card__row-info__name'>

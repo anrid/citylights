@@ -119,7 +119,7 @@ function getLastNamesTable () {
     '15059', 'Gunnarsson', '14389', 'Bergman', '14239', 'Björk', '14217', 'Holm', '14215', 'Samuelsson', '14108', 'Fransson', '14048',
     'Wikström', '13913', 'Isaksson', '13781', 'Bergqvist', '13458', 'Arvidsson', '13317', 'Nyström', '13292', 'Holmberg', '13162', 'Löfgren',
     '12847', 'Söderberg', '12693', 'Nyberg', '12587', 'Blomqvist', '12546', 'Claesson', '12544', 'Mårtensson', '12303', 'Nordström', '12134',
-    'Lundström', '11863', 'Ali', '11576', 'Mohamed', '11574', 'Eliasson', '11527', 'Pålsson', '11514', 'Viklund', '11416', 'Björklund', '11362',
+    'Lundström', '11863', 'Eliasson', '11527', 'Pålsson', '11514', 'Viklund', '11416', 'Björklund', '11362',
     'Berggren', '11171', 'Sandström', '10793', 'Lund', '10779', 'Nordin', '10698', 'Ström', '10577', 'Åberg', '10504', 'Hermansson', '10431',
     'Ekström', '10285', 'Holmgren', '10182', 'Hedlund', '10023', 'Sundberg', '9990', 'Dahlberg', '9890', 'Falk', '9870', 'Hellström', '9864',
     'Sjögren', '9796', 'Abrahamsson', '9607', 'Martinsson', '9519', 'Ek', '9454', 'Blom', '9449', 'Öberg', '9439', 'Andreasson', '9345',
@@ -221,6 +221,25 @@ export function getRandomConsultantTitle (createdDate) {
 
   const titleIndex = (Moment(createdDate).unix() % titles.length)
   return titles[titleIndex]
+}
+
+export function generateTestConsultantFormData (userId) {
+  const firstName = getRandomFirstName(Moment().format())
+  const lastName = getRandomLastName(Moment().format())
+  const title = getRandomConsultantTitle(Moment().format())
+  const phoneWork = '555-123-1234'
+  const email = `${firstName}.${lastName}.${userId}@example.com`.toLowerCase()
+  return {
+    email,
+    firstName,
+    lastName,
+    phoneWork,
+    title
+  }
+}
+
+export function getDefaultAvatar () {
+  return 'https://c2.staticflickr.com/2/1611/24054237413_5df01389b4_q.jpg'
 }
 
 // Give it a whirl.

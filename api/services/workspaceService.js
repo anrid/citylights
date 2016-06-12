@@ -41,9 +41,13 @@ function create (name, actorId) {
       url
     })
     .then((workspace) => {
-      return MemberService.addUserToWorkspace(
-        actorId, workspace._id.toString(), { admin: true }
-      )
+      const opts = {
+        admin: true,
+        profile: {
+          isCreator: true
+        }
+      }
+      return MemberService.addUserToWorkspace(actorId, workspace._id.toString(), opts)
       .then(() => workspace)
     })
   })

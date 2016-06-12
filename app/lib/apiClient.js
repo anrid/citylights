@@ -204,6 +204,7 @@ function setup () {
   _ws.on('server:auth', function (data) {
     console.log('API: Socket is authenticated.')
     _isAuthenticated = true
+    resolveRequest(data)
     publish(data)
   })
 

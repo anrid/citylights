@@ -7,23 +7,16 @@ import {
   getRandomFirstName,
   getRandomLastName,
   getRandomAvatar,
-  getRandomConsultantTitle
+  getRandomConsultantTitle,
+  getDefaultAvatar
 } from './generators/names'
 
 const initialState = {
-  order: ['USER1'],
-  data: {
-    USER1: {
-      _id: 'USER1',
-      firstName: 'Ace',
-      LastName: 'Base',
-      email: 'ace@base.com',
-      photo: 'http://pickaface.net/includes/themes/clean/img/slide2.png'
-    }
-  }
+  order: [],
+  data: { }
 }
 
-function fillInMissingUserInfo (user) {
+export function fillInMissingUserInfo (user) {
   // Set a temp avatar if user doesn’t have one yet !
   if (!user.photo) {
     user.photo = getRandomAvatar(user.created)
@@ -41,6 +34,12 @@ function fillInMissingUserInfo (user) {
   }
 }
 
+export function setDefaults (user) {
+  if (!user.profile.photo) {
+    user.profile.photo = getDefaultAvatar()
+  }
+}
+
 export default function users (state = initialState, action = {}) {
   let n
   switch (action.type) {
@@ -50,8 +49,8 @@ export default function users (state = initialState, action = {}) {
       n.order = n.order.concat(user._id)
       n.order = [ ...new Set(n.order) ] // Ensure it’s unique.
 
-      // TODO: Remove this later !
-      fillInMissingUserInfo(user)
+      // fillInMissingUserInfo(user)
+      setDefaults(user)
 
       n.data[user._id] = user
       return n
@@ -66,8 +65,8 @@ export default function users (state = initialState, action = {}) {
       n.order.sort()
 
       n.data = userList.reduce((acc, x) => {
-        // TODO: Remove this later !
-        fillInMissingUserInfo(x)
+        // fillInMissingUserInfo(x)
+        setDefaults(x)
 
         acc[x._id] = x
         return acc
