@@ -3,6 +3,7 @@
 import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { Motion, spring } from 'react-motion'
 
 import './Login.scss'
 
@@ -10,20 +11,50 @@ import * as settingsActions from '../../actions/settingsActions'
 import Spinner from '../../components/Spinner'
 import { getPopupError } from '../errorUtils'
 
+const springModel = { stiffness: 150, damping: 13 }
+const fadeModel = { stiffness: 50, damping: 9 }
+const lettersModel = { stiffness: 150, damping: 13 }
+
+const logoStartValues = {
+  scale: 2,
+  fade: 0,
+  spacing: 2
+}
+
+const logoSpring = {
+  scale: spring(1, springModel),
+  fade: spring(1, fadeModel),
+  spacing: spring(-0.5, lettersModel)
+}
+
 class Login extends Component {
   constructor (props) {
     super(props)
     this.state = {
       clean: true,
       email: this.props.email,
-      password: 'test123'
+      password: 'test123',
+      animationComplete: false
     }
+    this.onAnimationComplete = this.onAnimationComplete.bind(this)
   }
 
-  componentDidUpdate () {
+  onAnimationComplete () {
+    this.setState({ animationComplete: true })
+  }
+
+  focus () {
     if (this.state.clean) {
       this.refs.email.focus()
     }
+  }
+
+  componentDidMount () {
+    this.focus()
+  }
+
+  componentDidUpdate () {
+    this.focus()
   }
 
   renderSubmitButton () {
@@ -47,6 +78,22 @@ class Login extends Component {
         className='pl-login'
         style={{ backgroundImage: 'url("https://farm3.staticflickr.com/2836/12431136253_1ff3466b8f_b.jpg")' }}
       >
+        <Motion
+          defaultStyle={logoStartValues}
+          style={logoSpring}
+          onRest={this.onAnimationComplete}
+        >
+          {({ scale, fade, spacing }) => (
+            <div className='pl-login__logo' style={{
+              transform: `scale(${scale},${scale})`,
+              opacity: fade,
+              letterSpacing: `${spacing}px`
+            }}>
+              Citylights<span style={{ visibility: !this.state.animationComplete ? 'hidden' : 'visible' }}>.</span>
+            </div>
+          )}
+        </Motion>
+
         <div className='pl-login__box'>
 
           {getPopupError(error)}

@@ -19,6 +19,8 @@ lab.experiment('Auth Endpoints', () => {
     return Auth.signup({
       companyName: 'company.x.test.test',
       email: 'massa@test.test',
+      firstName: 'Massa',
+      lastName: 'Mun',
       password: 'test123'
     })
     .then((res) => {

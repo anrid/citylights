@@ -23,7 +23,7 @@ export default class ProjectMemberRow extends Component {
     const { member, actions, showHours } = this.props
     let name = member.email
     if (member.firstName || member.lastName) {
-      name = `${member.firstName} {member.lastName}`
+      name = `${member.firstName} ${member.lastName}`
     }
     return (
       <section className='pl-time-planner-project-member-row'>

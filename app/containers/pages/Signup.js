@@ -15,15 +15,25 @@ class Signup extends Component {
     super(props)
     this.state = {
       clean: true,
+      firstName: '',
+      lastName: '',
       companyName: '',
       email: ''
     }
   }
 
-  componentDidUpdate () {
+  focus () {
     if (this.state.clean) {
-      this.refs.email.focus()
+      this.refs.companyName.focus()
     }
+  }
+
+  componentDidMount () {
+    this.focus()
+  }
+
+  componentDidUpdate () {
+    this.focus()
   }
 
   renderSubmitButton () {
@@ -33,7 +43,7 @@ class Signup extends Component {
       return <Spinner/>
     }
     return (
-      <button onClick={() => signup(this.state.companyName, this.state.email)}>
+      <button onClick={() => signup({ ...this.state })}>
         Do it.
       </button>
     )
@@ -58,6 +68,7 @@ class Signup extends Component {
           <div className='pl-input-field-box'>
             <input
               type='text'
+              ref='companyName'
               maxLength={140}
               disabled={!isConnected}
               placeholder='Company Name'
@@ -67,10 +78,30 @@ class Signup extends Component {
             />
           </div>
 
+          <div className='pl-input-field-group pl-input-field-box'>
+            <input
+              type='text'
+              maxLength={140}
+              disabled={!isConnected}
+              placeholder='First Name'
+              className='pl-input-field'
+              onChange={(e) => this.setState({ firstName: e.target.value, clean: false })}
+              value={this.state.firstName}
+            />
+            <input
+              type='text'
+              maxLength={140}
+              disabled={!isConnected}
+              placeholder='Last Name'
+              className='pl-input-field'
+              onChange={(e) => this.setState({ lastName: e.target.value, clean: false })}
+              value={this.state.lastName}
+            />
+          </div>
+
           <div className='pl-input-field-box'>
             <input
               type='email'
-              ref='email'
               maxLength={140}
               disabled={!isConnected}
               placeholder='Email'

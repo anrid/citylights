@@ -94,10 +94,10 @@ export function clearIdentity () {
   }
 }
 
-export function signup (companyName, email) {
+export function signup (data) {
   return (dispatch) => {
     dispatch(showServerError(null))
-    dispatch(apiRequest('signup', { companyName, email }, { buffer: false }))
+    dispatch(apiRequest('signup', data, { buffer: false }))
   }
 }
 

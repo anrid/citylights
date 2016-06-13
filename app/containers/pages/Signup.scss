@@ -1,5 +1,18 @@
 
 .pl-signup {
+
+  .pl-input-field-group {
+    display: flex;
+    justify-content: space-between;
+    .pl-input-field:nth-child(1) {
+      border-radius: 3px 0 0 3px;
+    }
+    .pl-input-field:nth-child(2) {
+      border-left: 0;
+      border-radius: 0 3px 3px 0;
+    }
+  }
+
   .pl-input-field-box + .pl-input-field-box {
     margin-top: 6px;
   }

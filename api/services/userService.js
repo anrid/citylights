@@ -75,7 +75,7 @@ const login = P.coroutine(function * (email, password) {
   // HACK: Allow login with any password for <number>@example.com
   // email addresses when in development mode.
   // const isDevMode = process.env.NODE_ENV === 'development'
-  const isTestEmail = /\d+@example.com$/.test(user.email)
+  const isTestEmail = /@example.com$/.test(user.email)
   if (isTestEmail) {
     return user
   }

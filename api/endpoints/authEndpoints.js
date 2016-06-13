@@ -115,7 +115,9 @@ const loginFormSchema = Joi.object().keys({
 const signupFormSimpleSchema = Joi.object().keys({
   companyName: Joi.string().min(3).required().description('The name of the company this user represents.'),
   email: Joi.string().email().required().description('User email address.'),
-  password: Joi.string().min(6).description('User password (optional).')
+  firstName: Joi.string().min(1).required().description('User first name.'),
+  lastName: Joi.string().min(1).required().description('User last name.'),
+  password: Joi.string().min(6).optional().description('User password.')
 })
 
 const logoutSchema = Joi.object().keys({
