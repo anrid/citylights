@@ -3,8 +3,8 @@
 import { push, pop } from 'react-router-redux'
 
 import * as types from './actionTypes'
-import { publicApiRequest } from './backendActions'
-import { authenticate, request } from '../lib/apiClient'
+import { apiRequest } from './backendActions'
+import { request } from '../lib/apiClient'
 
 import * as Storage from '../lib/storage'
 
@@ -72,7 +72,7 @@ export function fetchAppStarter (workspaceId) {
   return (dispatch) => {
     setAppLoaded(false)
     console.log('Fetching app starter for workspaceId:', workspaceId)
-    request('app:starter', { workspaceId })
+    request('app:starter', { workspaceId }, { buffer: false })
     .catch((error) => {
       console.log('Couldn’t fetch app starter! Bailing out with error=', error)
       dispatch(clearIdentity())
@@ -97,14 +97,14 @@ export function clearIdentity () {
 export function signup (companyName, email) {
   return (dispatch) => {
     dispatch(showServerError(null))
-    dispatch(publicApiRequest('signup', { companyName, email }))
+    dispatch(apiRequest('signup', { companyName, email }, { buffer: false }))
   }
 }
 
 export function login (email, password) {
   return (dispatch) => {
     dispatch(showServerError(null))
-    authenticate(email, password)
+    dispatch(apiRequest('auth', { email, password }, { buffer: false }))
   }
 }
 

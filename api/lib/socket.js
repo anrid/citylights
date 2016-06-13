@@ -74,19 +74,6 @@ function authenticateSocket (socket) {
 function setupSocketHandlers (socket) {
   console.log('Socket connected:', socket.id)
 
-  // Handle auth events separately !
-  socket.on('client:auth', (message) => {
-    return handleClientMessage('auth', message)
-    .then(authenticateSocket(socket))
-    .catch(getErrorHandler(message, socket))
-  })
-
-  socket.on('client:auth:token', (message) => {
-    return handleClientMessage('auth:token', message)
-    .then(authenticateSocket(socket))
-    .catch(getErrorHandler(message, socket))
-  })
-
   // Handle API calls.
   socket.on('client:message', (message, ack) => {
     return P.try(() => {
@@ -114,11 +101,11 @@ function setupSocketHandlers (socket) {
       // Include the original request id always.
       response.requestId = message.requestId
 
-      // NOTE: `auth:successful` will be sent this way on successful signup via
-      // the public socket API.
-      if (response.topic === 'auth:successful') {
+      // On successful authentication; Upgrade socket reference to `authenticated`
+      // status on both server and client.
+      if (response.topic === 'auth:successful' ||
+          response.topic === 'auth:token:successful') {
         authenticateSocket(socket)(response)
-        return
       }
 
       if (response.skipSender) {

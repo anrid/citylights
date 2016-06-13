@@ -41,32 +41,33 @@ export function connect (opts = { }) {
   setup()
 }
 
-export function send (topic, payload) {
+export function send (topic, payload, opts = { }) {
   const requestId = getRequestId()
+  const message = { topic, payload, requestId }
+  if (opts.buffer === false) {
+    // Emit an unbuffered message without waiting for an acknowledgement.
+    console.log('API: Sending unbuffered message:', message)
+    _ws.emit('client:message', message)
+    return
+  }
+  // Buffer message to be sent later.
   _buffer.add({ topic, payload, requestId })
   return requestId
 }
 
 const requests = { }
 
-export function authenticate (email, password) {
-  _ws.emit('client:auth', { email, password })
-}
-
 export function request (topic, payload, opts = { }) {
   const requestId = getRequestId()
   return new P((resolve, reject) => {
     requests[requestId] = { resolve, reject }
     const message = { topic, payload, requestId }
-
-    // Check if this is a public API call.
-    if (opts.requireAuth === false) {
-      console.log('API: Emitting unbuffered public API message:', message)
-      // Emit an unbuffered message without waiting for acknowledgement.
+    if (opts.buffer === false) {
+      console.log('API: Sending unbuffered request:', message)
+      // Emit an unbuffered message without waiting for an acknowledgement.
       _ws.emit('client:message', message)
       return
     }
-
     // Buffer message to be sent later.
     _buffer.add(message)
   })
@@ -191,7 +192,8 @@ function setup () {
 
     if (_accessToken) {
       console.log('API: Found access token, authenticating ..')
-      _ws.emit('client:auth:token', { accessToken: _accessToken })
+      request('auth:token', { accessToken: _accessToken }, { buffer: false })
+      .then(() => console.log('Authenticated successfully using token.'))
     }
 
     // Start sender.
@@ -202,10 +204,8 @@ function setup () {
   })
 
   _ws.on('server:auth', function (data) {
-    console.log('API: Socket is authenticated.')
+    console.debug('API: Socket successfully upgraded to authenticated on server and client.')
     _isAuthenticated = true
-    resolveRequest(data)
-    publish(data)
   })
 
   _ws.on('server:message', function (data) {

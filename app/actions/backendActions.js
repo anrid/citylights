@@ -7,10 +7,6 @@ import * as shiftActions from './shiftActions'
 
 import { request } from '../lib/apiClient'
 
-export function publicApiRequest (topic, payload) {
-  return apiRequest(topic, payload, { requireAuth: false })
-}
-
 export function apiRequest (topic, payload, opts = { }) {
   return (dispatch, getState) => {
     dispatch(settingsActions.setRequestInProgress(true))
