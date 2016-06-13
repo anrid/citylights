@@ -11,19 +11,27 @@ const AccessService = require('../services/accessService')
 const Schemas = require('./schemas')
 
 const checkAccessToken = P.coroutine(function * (payload) {
-  const valid = Schemas.validateOrThrow(payload, checkAccessTokenSchema)
+  try {
+    const valid = Schemas.validateOrThrow(payload, checkAccessTokenSchema)
 
-  const decoded = Jwt.verifyToken(valid.accessToken)
-  const userId = decoded.userId
+    const decoded = Jwt.verifyToken(valid.accessToken)
+    const userId = decoded.userId
 
-  // Get user or throw if the account has been disabled, deleted, or doesn’t exist !
-  const user = yield AccessService.requireUser(userId)
+    // Get user or throw if the account has been disabled, deleted, or doesn’t exist !
+    const user = yield AccessService.requireUser(userId)
 
-  return {
-    topic: 'auth:token:successful',
-    payload: {
-      identity: { userId: user._id.toString() },
-      info: { email: user.email }
+    return {
+      topic: 'auth:token:successful',
+      payload: {
+        identity: { userId: user._id.toString() },
+        info: { email: user.email }
+      }
+    }
+  } catch (err) {
+    console.log('Auth token failed:', err)
+    return {
+      topic: 'auth:failed',
+      payload: { error: 'Blow all the tanks ! Blow everything !' }
     }
   }
 })

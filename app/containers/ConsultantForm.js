@@ -22,7 +22,8 @@ class ConsultantForm extends Component {
         firstName: '',
         lastName: '',
         phoneWork: '',
-        title: ''
+        title: '',
+        photo: null
       },
       errors: null
     }

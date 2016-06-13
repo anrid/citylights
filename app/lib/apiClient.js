@@ -193,7 +193,6 @@ function setup () {
     if (_accessToken) {
       console.log('API: Found access token, authenticating ..')
       request('auth:token', { accessToken: _accessToken }, { buffer: false })
-      .then(() => console.log('Authenticated successfully using token.'))
     }
 
     // Start sender.

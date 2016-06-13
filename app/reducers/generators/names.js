@@ -224,17 +224,27 @@ export function getRandomConsultantTitle (createdDate) {
 }
 
 export function generateTestConsultantFormData (userId) {
-  const firstName = getRandomFirstName(Moment().format())
-  const lastName = getRandomLastName(Moment().format())
-  const title = getRandomConsultantTitle(Moment().format())
+  const now = Moment().format()
+
+  const firstName = getRandomFirstName(now)
+  const lastName = getRandomLastName(now)
+  const title = getRandomConsultantTitle(now)
   const phoneWork = '555-123-1234'
-  const email = `${firstName}.${lastName}.${userId}@example.com`.toLowerCase()
+  const email = `${firstName}.${lastName}.${userId}@example.com`
+  .toLowerCase()
+  .replace(/å/g, 'a')
+  .replace(/ä/g, 'a')
+  .replace(/ö/g, 'o')
+
+  const photo = getRandomAvatar(now)
+
   return {
     email,
     firstName,
     lastName,
     phoneWork,
-    title
+    title,
+    photo
   }
 }
 
