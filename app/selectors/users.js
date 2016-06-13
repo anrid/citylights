@@ -82,14 +82,18 @@ export const filteredConsultantsInputWidgetSelector = createSelector(
 export const consultantItemsSelector = createSelector(
   filteredConsultantsInputWidgetSelector,
   (filtered) => {
-    return filtered.map((x, i) => (
-      {
+    return filtered.map((x, i) => {
+      let name = x.email
+      if (x.firstName || x.lastName) {
+        name = `${x.firstName} ${x.lastName}`
+      }
+      return {
         _id: x._id,
-        text: `${x.firstName} ${x.lastName}`,
-        photo: x.photo,
+        text: name,
+        photo: x.profile.photo,
         sub: x.profile && x.profile.title,
         type: 'user'
       }
-    ))
+    })
   }
 )

@@ -21,12 +21,16 @@ export default class ProjectMemberRow extends Component {
 
   render () {
     const { member, actions, showHours } = this.props
+    let name = member.email
+    if (member.firstName || member.lastName) {
+      name = `${member.firstName} {member.lastName}`
+    }
     return (
       <section className='pl-time-planner-project-member-row'>
         <div className='pl-time-planner-project-member-row__left'>
           <div className='pl-time-planner-project-member-row__info'>
             <div className='pl-time-planner-project-member-row__name'>
-              {member.firstName} {member.lastName}
+              {name}
             </div>
             <div className='pl-time-planner-project-member-row__stats'>
               {member.profile.title}

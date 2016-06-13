@@ -7,7 +7,6 @@ const UserService = require('./userService')
 const WorkspaceService = require('./workspaceService')
 const ProjectService = require('./projectService')
 const ShiftService = require('./shiftService')
-const MemberService = require('./memberService')
 const AccessService = require('./accessService')
 
 const getStarter = P.coroutine(function * (workspaceId, userId) {
@@ -24,12 +23,7 @@ const getStarter = P.coroutine(function * (workspaceId, userId) {
   let workspaceList = yield WorkspaceService.getList(userId)
 
   // Fetch all members of the current workspace.
-  const userList = yield UserService.getByWorkspaceId(workspace._id.toString())
-
-  // Fetch workspace member profiles and merge on top of each user’s
-  // default profile.
-  const userIds = userList.map((x) => x._id.toString())
-  const workspaceProfiles = yield MemberService.getWorkspaceProfiles({ userIds, workspaceId })
+  const userList = yield UserService.getWorkspaceMembersWithProfiles(workspace._id.toString())
 
   // Fetch all available, accessible projects in the current workspace.
   const projectList = yield ProjectService.getList(workspaceId, userId)
@@ -43,7 +37,6 @@ const getStarter = P.coroutine(function * (workspaceId, userId) {
     userList,
     workspace,
     workspaceList,
-    workspaceProfiles,
     projectList,
     shiftList
   }

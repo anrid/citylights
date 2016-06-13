@@ -28,7 +28,39 @@ function getByWorkspaceId (workspaceId) {
   return P.try(() => {
     T.String(workspaceId)
     return MemberService.getAllMembers(workspaceId)
-    .then((all) => User.find({ _id: { $in: all } }).exec())
+    .then((all) => User.find({ _id: { $in: all } }).lean(true).exec())
+  })
+}
+
+function getWorkspaceMembersWithProfiles (workspaceId) {
+  return P.try(() => {
+    T.String(workspaceId)
+    return MemberService.getAllMembers(workspaceId)
+    .then((userIds) => {
+      const p1 = User.find({ _id: { $in: userIds } }).lean(true).exec()
+      const p2 = MemberService.getWorkspaceProfiles({ userIds, workspaceId })
+      return P.all([p1, p2])
+    })
+    .spread((userList, workspaceProfilesList) => {
+      const profilesMap = workspaceProfilesList.reduce((acc, x) => {
+        acc[x.userId] = x.toObject().profile
+        return acc
+      }, { })
+
+      userList.forEach((user) => {
+        const id = user._id.toString()
+        const profile = profilesMap[id]
+        if (profile) {
+          // Overwrite non-null found in the user’s workspace profile.
+          Object.keys(profile).forEach((x) => {
+            if (profile[x] != null || user.profile[x] == null) {
+              user.profile[x] = profile[x]
+            }
+          })
+        }
+      })
+      return userList
+    })
   })
 }
 
@@ -144,5 +176,6 @@ module.exports = {
   getByEmail,
   getByWorkspaceId,
   setLastWorkspace,
-  isValid
+  isValid,
+  getWorkspaceMembersWithProfiles
 }

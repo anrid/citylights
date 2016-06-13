@@ -46,7 +46,7 @@ export function send (topic, payload, opts = { }) {
   const message = { topic, payload, requestId }
   if (opts.buffer === false) {
     // Emit an unbuffered message without waiting for an acknowledgement.
-    console.log('API: Sending unbuffered message:', message)
+    // console.debug('API: Sending unbuffered message:', message)
     _ws.emit('client:message', message)
     return
   }
@@ -63,7 +63,7 @@ export function request (topic, payload, opts = { }) {
     requests[requestId] = { resolve, reject }
     const message = { topic, payload, requestId }
     if (opts.buffer === false) {
-      console.log('API: Sending unbuffered request:', message)
+      // console.debug('API: Sending unbuffered request:', message)
       // Emit an unbuffered message without waiting for an acknowledgement.
       _ws.emit('client:message', message)
       return
@@ -204,7 +204,7 @@ function setup () {
   })
 
   _ws.on('server:auth', function (data) {
-    console.debug('API: Socket successfully upgraded to authenticated on server and client.')
+    console.debug('API: Socket upgraded to authenticated on server and client.')
     _isAuthenticated = true
   })
 

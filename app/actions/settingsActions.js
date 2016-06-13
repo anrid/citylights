@@ -41,7 +41,7 @@ export function initApp () {
       dispatch(clearIdentity())
       return
     }
-    console.log('Using existing identity:', identity)
+    console.log('Using stored identity, user id:', identity.userId)
   }
 }
 
@@ -71,7 +71,7 @@ export function setIdentity (payload) {
 export function fetchAppStarter (workspaceId) {
   return (dispatch) => {
     setAppLoaded(false)
-    console.log('Fetching app starter for workspaceId:', workspaceId)
+    console.log('Fetching app starter for workspace id:', workspaceId)
     request('app:starter', { workspaceId }, { buffer: false })
     .catch((error) => {
       console.log('Couldn’t fetch app starter! Bailing out with error=', error)
