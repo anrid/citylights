@@ -6,6 +6,7 @@ const T = require('tcomb')
 
 const AccessService = require('./accessService')
 const MemberService = require('./memberService')
+const WorkspaceProfileService = require('./workspaceProfileService')
 
 const User = require('./userModel')
 const UserPassword = require('./userPasswordModel')
@@ -38,7 +39,7 @@ function getWorkspaceMembersWithProfiles (workspaceId) {
     return MemberService.getAllMembers(workspaceId)
     .then((userIds) => {
       const p1 = User.find({ _id: { $in: userIds } }).lean(true).exec()
-      const p2 = MemberService.getWorkspaceProfiles({ userIds, workspaceId })
+      const p2 = WorkspaceProfileService.getWorkspaceProfiles({ userIds, workspaceId })
       return P.all([p1, p2])
     })
     .spread((userList, workspaceProfilesList) => {
@@ -167,6 +168,28 @@ function isValid (user) {
   throw Boom.unauthorized('User account is suspended or deleted.')
 }
 
+const update = P.coroutine(function * (workspaceId, userId, update, actorId) {
+  T.String(workspaceId)
+  T.String(userId)
+  T.Object(update)
+  T.String(actorId)
+
+  if (userId === actorId) {
+    // Allow users to change their own personal data.
+    yield AccessService.requireWorkspace(workspaceId, actorId)
+  } else {
+    // Allow admins to change any user’s personal data.
+    yield AccessService.requireWorkspaceAsAdmin(workspaceId, actorId)
+  }
+
+  const updated = yield User.findOneAndUpdate(
+    { _id: userId },
+    { $set: update },
+    { new: true }
+  )
+  return updated
+})
+
 module.exports = {
   login,
   signup,
@@ -177,5 +200,6 @@ module.exports = {
   getByWorkspaceId,
   setLastWorkspace,
   isValid,
-  getWorkspaceMembersWithProfiles
+  getWorkspaceMembersWithProfiles,
+  update
 }

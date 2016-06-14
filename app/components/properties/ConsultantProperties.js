@@ -88,13 +88,33 @@ export default class ConsultantProperties extends Component {
               </div>
             </div>
 
-            <div className='pl-consultant-properties__work-info'>
+            <div className='pl-consultant-properties__columns'>
               <div className='pl-consultant-properties__profile-entry'>
                 <div className='pl-consultant-properties__profile-label'>
                   Title:
                 </div>
                 <div className='pl-consultant-properties__profile-medium-text'>
                   {consultant.profile.title}
+                </div>
+              </div>
+
+              <div className='pl-consultant-properties__profile-entry'>
+                <div className='pl-consultant-properties__profile-label'>
+                  Phone (Work):
+                </div>
+                <div className='pl-consultant-properties__profile-medium-text'>
+                  {consultant.profile.phoneWork}
+                </div>
+              </div>
+            </div>
+
+            <div className='pl-consultant-properties__columns'>
+              <div className='pl-consultant-properties__profile-entry'>
+                <div className='pl-consultant-properties__profile-label'>
+                  Email:
+                </div>
+                <div className='pl-consultant-properties__profile-small-text'>
+                  {consultant.email}
                 </div>
               </div>
             </div>

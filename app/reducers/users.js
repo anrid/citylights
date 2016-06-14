@@ -40,39 +40,68 @@ export function setDefaults (user) {
   }
 }
 
+function updateUser (state, payload) {
+  const n = { ...state }
+  const { userId, key, value } = payload
+  const updated = { ...state.data[userId] }
+  updated[key] = value
+  updated.updated = new Date()
+  n.data[updated._id] = updated
+  return n
+}
+
+function updateUserWorkProfile (state, payload) {
+  const n = { ...state }
+  const { userId, key, value } = payload
+  const updated = { ...state.data[userId] }
+  updated.profile = { ...updated.profile }
+  updated.profile[key] = value
+  n.data[updated._id] = updated
+  return n
+}
+
+function receiveUser (state, payload) {
+  const { user } = payload
+  const n = { ...state }
+  n.order = n.order.concat(user._id)
+  n.order = [ ...new Set(n.order) ] // Ensure it’s unique.
+
+  // fillInMissingUserInfo(user)
+  setDefaults(user)
+
+  n.data[user._id] = user
+  return n
+}
+
+function receiveUserList (state, payload) {
+  const { userList } = payload
+  const n = { ...state }
+
+  // Replace all local state.
+  n.order = userList.map((x) => x._id)
+  n.order = [ ...new Set(n.order) ]
+  n.order.sort()
+
+  n.data = userList.reduce((acc, x) => {
+    // fillInMissingUserInfo(x)
+    setDefaults(x)
+
+    acc[x._id] = x
+    return acc
+  }, { })
+  return n
+}
+
 export default function users (state = initialState, action = {}) {
-  let n
   switch (action.type) {
+    case types.UPDATE_USER:
+      return updateUser(state, action.payload)
+    case types.UPDATE_USER_WORK_PROFILE:
+      return updateUserWorkProfile(state, action.payload)
     case types.RECEIVE_USER:
-      const { user } = action.payload
-      n = { ...state }
-      n.order = n.order.concat(user._id)
-      n.order = [ ...new Set(n.order) ] // Ensure it’s unique.
-
-      // fillInMissingUserInfo(user)
-      setDefaults(user)
-
-      n.data[user._id] = user
-      return n
-
+      return receiveUser(state, action.payload)
     case types.RECEIVE_USER_LIST:
-      const { userList } = action.payload
-      n = { ...state }
-
-      // Replace all local state.
-      n.order = userList.map((x) => x._id)
-      n.order = [ ...new Set(n.order) ]
-      n.order.sort()
-
-      n.data = userList.reduce((acc, x) => {
-        // fillInMissingUserInfo(x)
-        setDefaults(x)
-
-        acc[x._id] = x
-        return acc
-      }, { })
-      return n
-
+      return receiveUserList(state, action.payload)
     default:
       return state
   }

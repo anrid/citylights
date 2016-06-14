@@ -3,9 +3,9 @@
 const P = require('bluebird')
 const T = require('tcomb')
 
+const WorkspaceProfileService = require('./workspaceProfileService')
 const Workspace = require('./workspaceModel')
 const WorkspaceMember = require('./workspaceMemberModel')
-const WorkspaceProfile = require('./workspaceProfileModel')
 const User = require('./userModel')
 
 function getAllMembers (workspaceId) {
@@ -21,39 +21,6 @@ function getAllMembers (workspaceId) {
     })
   })
 }
-
-const getWorkspaceProfiles = P.coroutine(function * (opts) {
-  T.Array(opts.userIds)
-  T.String(opts.workspaceId)
-
-  return yield WorkspaceProfile.find({
-    userId: { $in: opts.userIds },
-    workspaceId: opts.workspaceId
-  }).exec()
-})
-
-const createWorkspaceProfile = P.coroutine(function * (opts) {
-  T.String(opts.userId)
-  T.String(opts.workspaceId)
-  T.Object(opts.profile)
-
-  // Create or update workspace profile for user.
-  const profile = {
-    invited: new Date(),
-    removed: null,
-    isConsultant: true,
-    isPrivate: opts.profile.isPrivate || false,
-    title: opts.profile.title,
-    phoneWork: opts.profile.phoneWork,
-    photo: opts.profile.photo
-  }
-
-  return yield WorkspaceProfile.findOneAndUpdate(
-    { userId: opts.userId, workspaceId: opts.workspaceId },
-    { $set: { profile } },
-    { new: true, upsert: true }
-  )
-})
 
 const addUserToWorkspace = P.coroutine(function * (userId, workspaceId, opts) {
   T.String(userId)
@@ -92,7 +59,7 @@ const addUserToWorkspace = P.coroutine(function * (userId, workspaceId, opts) {
     { new: true }
   )
 
-  const profile = yield createWorkspaceProfile({
+  const profile = yield WorkspaceProfileService.createWorkspaceProfile({
     userId,
     workspaceId,
     profile: opts.profile
@@ -107,7 +74,5 @@ const addUserToWorkspace = P.coroutine(function * (userId, workspaceId, opts) {
 
 module.exports = {
   addUserToWorkspace,
-  getAllMembers,
-  createWorkspaceProfile,
-  getWorkspaceProfiles
+  getAllMembers
 }

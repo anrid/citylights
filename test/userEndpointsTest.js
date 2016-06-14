@@ -11,6 +11,7 @@ lab.experiment('User Endpoints', () => {
   // Rock on.
   let ctx
   let user1
+  let philId
   let workspaceId
 
   lab.before((done) => {
@@ -26,15 +27,15 @@ lab.experiment('User Endpoints', () => {
     })
   })
 
-  lab.test('user1 invites friend1', () => {
+  lab.test('user1 invites Phil', () => {
     return UserEndpoints.invite({
       email: 'punx.phil@test.test',
-      firstName: 'Punxsutawney',
+      firstName: 'Punxsutawnieee',
       lastName: 'Phil',
       workspaceId,
       phoneWork: '555-6969',
       photo: 'https://avatars.com/groundhog.jpg',
-      title: 'Prognosticator of Prognosticators'
+      title: 'Prognosticator'
     },
     { userId: user1.userId })
     .then((res) => {
@@ -50,8 +51,71 @@ lab.experiment('User Endpoints', () => {
       Code.expect(res.payload.user.profile.photo).to.include('groundhog')
       Code.expect(res.payload.profile.profile.photo).to.include('groundhog')
 
-      Code.expect(res.payload.profile.userId).to.equal(res.payload.user._id.toString())
+      // Save for later !
+      philId = res.payload.user._id.toString()
+
+      Code.expect(res.payload.profile.userId).to.equal(philId)
       Code.expect(res.payload.profile.workspaceId).to.equal(workspaceId)
+    })
+  })
+
+  lab.test('user1 sets his own first name to “Admin”', () => {
+    return UserEndpoints.update({
+      workspaceId,
+      userId: user1.userId,
+      update: { firstName: 'Admin' }
+    },
+    { userId: user1.userId })
+    .then((res) => {
+      // console.log('res=', res.payload)
+      Code.expect(res.topic).to.equal('user:update')
+      Code.expect(res.payload.user.firstName).to.equal('Admin')
+      Code.expect(res.payload.user.lastName).to.not.exist()
+    })
+  })
+
+  lab.test('user1 fixes the glaring a typo Phil’s first name !', () => {
+    return UserEndpoints.update({
+      workspaceId,
+      userId: philId,
+      update: { firstName: 'Punxsutawney' }
+    },
+    { userId: user1.userId })
+    .then((res) => {
+      // console.log('res=', res.payload)
+      Code.expect(res.topic).to.equal('user:update')
+      Code.expect(res.payload.user.firstName).to.equal('Punxsutawney')
+      Code.expect(res.payload.user.lastName).to.equal('Phil')
+    })
+  })
+
+  lab.test('user1 updates the title in his work profile', () => {
+    return UserEndpoints.updateWorkProfile({
+      workspaceId,
+      userId: user1.userId,
+      update: { title: 'Yip Sifu' }
+    },
+    { userId: user1.userId })
+    .then((res) => {
+      // console.log('res=', res.payload)
+      Code.expect(res.topic).to.equal('user:updateWorkProfile')
+      Code.expect(res.payload.profile.userId).to.equal(user1.userId)
+      Code.expect(res.payload.profile.profile.title).to.equal('Yip Sifu')
+    })
+  })
+
+  lab.test('user1 updates Phil’s title', () => {
+    return UserEndpoints.updateWorkProfile({
+      workspaceId,
+      userId: philId,
+      update: { title: 'Prognosticator of Prognosticators' }
+    },
+    { userId: user1.userId })
+    .then((res) => {
+      // console.log('res=', res.payload)
+      Code.expect(res.topic).to.equal('user:updateWorkProfile')
+      Code.expect(res.payload.profile.userId).to.equal(philId)
+      Code.expect(res.payload.profile.profile.title).to.include('Prognosticators')
     })
   })
 })

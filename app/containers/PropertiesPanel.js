@@ -9,6 +9,7 @@ import './PropertiesPanel.scss'
 import * as settingsActions from '../actions/settingsActions'
 import * as projectActions from '../actions/projectActions'
 import * as shiftActions from '../actions/shiftActions'
+import * as userActions from '../actions/userActions'
 
 import { getRoute } from '../selectors/routing'
 
@@ -105,7 +106,8 @@ function mapDispatchToProps (dispatch) {
     actions: bindActionCreators({
       ...settingsActions,
       ...shiftActions,
-      ...projectActions
+      ...projectActions,
+      ...userActions
     }, dispatch)
   }
 }

@@ -40,7 +40,9 @@ const socketEndpoints = {
   'shift:update': { func: Shift.update, auth: true },
   'shift:remove': { func: Shift.remove, auth: true },
 
-  'user:invite': { func: User.invite, auth: true }
+  'user:invite': { func: User.invite, auth: true },
+  'user:update': { func: User.update, auth: true },
+  'user:updateWorkProfile': { func: User.updateWorkProfile, auth: true }
 }
 
 module.exports = socketEndpoints

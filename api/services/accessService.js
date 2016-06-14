@@ -28,7 +28,7 @@ function requireUser (userId) {
   })
 }
 
-const requireWorkspace = P.coroutine(function * (workspaceId, userId) {
+const requireWorkspace = P.coroutine(function * (workspaceId, userId, opts = { }) {
   T.String(workspaceId)
   T.String(userId)
 
@@ -41,13 +41,23 @@ const requireWorkspace = P.coroutine(function * (workspaceId, userId) {
     throw Boom.unauthorized('Cannot find a valid workspace')
   }
 
+  // Require normal member.
+  let memberLevel = [
+    { ownerId: userId },
+    { admins: userId },
+    { members: userId }
+  ]
+  if (opts.admin) {
+    // Require workspace owner or admin.
+    memberLevel = [
+      { ownerId: userId },
+      { admins: userId }
+    ]
+  }
+
   const members = yield WorkspaceMember.findOne({
     workspaceId,
-    $or: [
-      { ownerId: userId },
-      { admins: userId },
-      { members: userId }
-    ]
+    $or: memberLevel
   })
   if (!members) {
     throw Boom.unauthorized('Cannot access workspace')
@@ -107,10 +117,16 @@ const requireProjectAsAdmin = P.coroutine(function * (projectId, actorId) {
   return project
 })
 
+const requireWorkspaceAsAdmin = P.coroutine(function * (workspaceId, actorId) {
+  const workspace = yield requireWorkspace(workspaceId, actorId, { admin: true })
+  return workspace
+})
+
 module.exports = {
   requireUser,
   requireWorkspace,
   requireProject,
   requireProjectAsAdmin,
-  requireShift
+  requireShift,
+  requireWorkspaceAsAdmin
 }
