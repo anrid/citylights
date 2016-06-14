@@ -167,15 +167,15 @@ export default class TimeItem extends Component {
     const end = shift.endDate
     const pivot = Moment(pivotDate).startOf('isoWeek')
 
-    let unitsFromPivot = getDiff(pivot, start, unit, skipWeekends)
-    if (unitsFromPivot < 0) {
-      // TODO: Handle start dates before pivot date.
-      unitsFromPivot = 0
+    if (Moment(start).isBefore(pivot)) {
+      // Do not render shifts that start before the pivot date.
+      // TODO: handle this properly later !
+      return null
     }
 
+    const unitsFromPivot = getDiff(pivot, start, unit, skipWeekends)
     let shiftUnits = getDiff(start, end, unit, skipWeekends)
     if (shiftUnits < 0) {
-      // TODO: Handle end dates before start date.
       shiftUnits = 0
     }
 

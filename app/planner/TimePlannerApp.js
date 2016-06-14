@@ -3,6 +3,7 @@
 import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import Moment from 'moment'
 
 import * as settingsActions from '../actions/settingsActions'
 import * as projectActions from '../actions/projectActions'
@@ -22,10 +23,31 @@ const PROJECTS_PER_PAGE = 5
 class TimePlannerApp extends Component {
   constructor (props) {
     super(props)
-    this.state = {
-      page: 0
+
+    let pivotDate = this.props.savedPivotDate
+    if (!pivotDate) {
+      pivotDate = Moment().subtract(1, 'week').startOf('isoWeek').format('YYYY-MM-DD')
     }
+
+    this.state = {
+      page: 0,
+      pivotDate
+    }
+
     this.onChangePage = this.onChangePage.bind(this)
+    this.onChangePivotDate = this.onChangePivotDate.bind(this)
+  }
+
+  onChangePivotDate (move) {
+    let { pivotDate } = this.state
+    const { actions } = this.props
+    if (move > 0) {
+      pivotDate = Moment(pivotDate).add(1, 'week').startOf('isoWeek').format('YYYY-MM-DD')
+    } else {
+      pivotDate = Moment(pivotDate).subtract(1, 'week').startOf('isoWeek').format('YYYY-MM-DD')
+    }
+    this.setState({ pivotDate })
+    actions.saveSettings({ pivotDate })
   }
 
   onChangePage (move) {
@@ -58,9 +80,8 @@ class TimePlannerApp extends Component {
   }
 
   render () {
-    const { projects, projectsTotal } = this.props
-    const { page } = this.state
-    const pivotDate = '2016-06-01'
+    const { projects, projectsTotal, actions } = this.props
+    const { page, pivotDate } = this.state
 
     // Show max 5 or so projects at the same time.
     const start = page * PROJECTS_PER_PAGE
@@ -71,7 +92,9 @@ class TimePlannerApp extends Component {
     return (
       <section id='pl-time-planner-app' style={this.getThemeStyle()}>
         <TopNav />
-        <ControlBar {...this.props} />
+        <ControlBar actions={actions}
+          pivotDate={pivotDate}
+          onChangePivotDate={this.onChangePivotDate} />
         <TimeBar pivotDate={pivotDate} showHours />
         <section className='pl-time-planner-rows'>
           {projectIds.map((x) => (
@@ -97,6 +120,7 @@ function mapStateToProps (state) {
   const { workspaceId } = state.settings.saved
   const { userId } = state.settings.identity
   return {
+    savedPivotDate: state.settings.saved.pivotDate,
     user: state.users.data[userId],
     workspace: state.workspaces.data[workspaceId],
     projects: state.projects.order,

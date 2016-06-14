@@ -35,7 +35,8 @@ const initialState = {
   },
   search: {
     consultants: null,
-    clients: null
+    clients: null,
+    projects: null
   },
   backgrounds: {
     BG1: { _id: 'BG1', title: 'Tokyo Tower', url: 'https://c2.staticflickr.com/8/7332/13907706121_b1606f09b2_o.jpg' },

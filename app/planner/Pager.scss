@@ -1,0 +1,59 @@
+
+@import '../styles/colors';
+
+.pl-time-planner-pager {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.2s;
+  cursor: pointer;
+
+  &__button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.05rem;
+    font-weight: 600;
+    min-width: 40px;
+    height: 30px;
+    color: $c-gray600;
+    // transition: background 0.1s;
+    cursor: pointer;
+    background: linear-gradient(#ffffff, #eeeeee);
+  }
+
+  &__left {
+    @extend .pl-time-planner-pager__button;
+    border: 1px solid $c-gray300;
+    border-radius: 3px 0 0 3px;
+    &:hover {
+      background: linear-gradient($c-gray100, $c-gray200);
+    }
+  }
+
+  &__center {
+    @extend .pl-time-planner-pager__button;
+    padding: 0 16px;
+    border-top: 1px solid $c-gray300;
+    border-bottom: 1px solid $c-gray300;
+    border-right: 1px solid $c-gray300;
+  }
+
+  &__right {
+    @extend .pl-time-planner-pager__button;
+    border-top: 1px solid $c-gray300;
+    border-right: 1px solid $c-gray300;
+    border-bottom: 1px solid $c-gray300;
+    border-left: 0;
+    border-radius: 0 3px 3px 0;
+    &:hover {
+      background: linear-gradient($c-gray100, $c-gray200);
+    }
+  }
+
+  .fa {
+    font-size: 1.3rem;
+    color: $c-gray500;
+    font-weight: 400
+  }
+}
