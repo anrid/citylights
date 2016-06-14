@@ -41,6 +41,10 @@ export function connect (opts = { }) {
   setup()
 }
 
+export function getMessageBuffer () {
+  return _buffer
+}
+
 export function send (topic, payload, opts = { }) {
   const requestId = getRequestId()
   const message = { topic, payload, requestId }
@@ -268,6 +272,15 @@ function MessageBuffer () {
 
     size () {
       return messages.length
+    },
+
+    clear () {
+      messages = []
+      persist()
+    },
+
+    getAll () {
+      return [ ...messages ]
     }
   }
 }

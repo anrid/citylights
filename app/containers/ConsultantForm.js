@@ -126,7 +126,7 @@ class ConsultantForm extends Component {
           <div className='pl-form__section-label'/>
           <div className='pl-form__input'>
             <div className='pl-form__label'>First name</div>
-            <input type='text'
+            <input type='text' className='karma-first-name'
               value={consultant.firstName}
               onChange={this.onValueChange('firstName')}
             />
