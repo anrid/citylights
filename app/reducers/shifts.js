@@ -61,11 +61,7 @@ function assignConsultant (state, payload) {
   const n = { ...state }
   const { shiftId, userId } = payload
   const updated = { ...state.data[shiftId] }
-  if (updated.assignee) {
-    updated.assignee = null
-  } else {
-    updated.assignee = userId
-  }
+  updated.assignee = userId
   n.data[shiftId] = updated
   return n
 }
