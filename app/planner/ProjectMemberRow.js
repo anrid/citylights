@@ -28,6 +28,9 @@ export default class ProjectMemberRow extends Component {
     return (
       <section className='pl-time-planner-project-member-row'>
         <div className='pl-time-planner-project-member-row__left'>
+          <div className='pl-time-planner-project-member-row__photo'
+            onClick={() => actions.showConsultantProperties(member._id)}
+            style={{backgroundImage: `url(${member.profile.photo})`}} />
           <div className='pl-time-planner-project-member-row__info'>
             <div className='pl-time-planner-project-member-row__name'>
               {name}
@@ -36,9 +39,6 @@ export default class ProjectMemberRow extends Component {
               {member.profile.title}
             </div>
           </div>
-          <div className='pl-time-planner-project-member-row__photo'
-            onClick={() => actions.showConsultantProperties(member._id)}
-            style={{backgroundImage: `url(${member.profile.photo})`}} />
         </div>
         <div className='pl-time-planner-project-member-row__right'>
           {showHours && <ShiftHours {...this.props} />}

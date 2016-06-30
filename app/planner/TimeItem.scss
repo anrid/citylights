@@ -104,36 +104,36 @@ $shift-height: 20px;
 
   &.pl-time-planner-time-item--amber {
     .pl-time-planner-time-item__inner {
-      background-color: $c-amber400;
-      border: 1px solid $c-amber600;
+      background-color: $c-amber300;
+      border: 1px solid $c-amber400;
     }
   }
 
   &.pl-time-planner-time-item--red {
     .pl-time-planner-time-item__inner {
-      background-color: $c-red400;
-      border: 1px solid $c-red600;
+      background-color: $c-red300;
+      border: 1px solid $c-red400;
     }
   }
 
   &.pl-time-planner-time-item--green {
     .pl-time-planner-time-item__inner {
-      background-color: $c-green400;
-      border: 1px solid $c-green600;
+      background-color: $c-green300;
+      border: 1px solid $c-green500;
     }
   }
 
   &.pl-time-planner-time-item--blue {
     .pl-time-planner-time-item__inner {
-      background-color: $c-blue400;
-      border: 1px solid $c-blue600;
+      background-color: $c-blue300;
+      border: 1px solid $c-blue400;
     }
   }
 
   &.pl-time-planner-time-item--teal {
     .pl-time-planner-time-item__inner {
-      background-color: $c-teal400;
-      border: 1px solid $c-teal600;
+      background-color: $c-teal300;
+      border: 1px solid $c-teal500;
     }
   }
 
