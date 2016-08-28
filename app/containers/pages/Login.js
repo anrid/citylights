@@ -32,7 +32,9 @@ class Login extends Component {
     super(props)
     this.state = {
       clean: true,
-      email: this.props.email,
+      // HACK: Use `test@example.com` for demo purposes.
+      email: this.props.email || 'test@example.com',
+      // HACK: Use any password as `@example.com` emails are essentially passwordless.
       password: 'test123',
       animationComplete: false
     }
@@ -129,6 +131,10 @@ class Login extends Component {
 
           <div className='pl-login__buttons'>
             {this.renderSubmitButton()}
+            <PopupTip>
+              <div>We’re good to go!</div>
+              <div>Click Login to run the demo app.</div>
+            </PopupTip>
           </div>
 
           <div
@@ -144,6 +150,27 @@ class Login extends Component {
     )
   }
 }
+
+const PopupTip = ({ children }) => (
+  <Motion
+    defaultStyle={{ scale: 0.5, fade: 0, left: 100 }}
+    style={{
+      scale: spring(1, { stiffness: 150, damping: 20 }),
+      fade: spring(1, fadeModel),
+      left: spring(1, fadeModel)
+    }}
+  >
+    {({ scale, fade, left }) => (
+      <div className='pl-login__popup-message' style={{
+        transform: `scale(${scale},${scale}) translateX(${left}px)`,
+        opacity: fade
+      }}>
+        <div className='pl-login__popup-message-tri' />
+        {children}
+      </div>
+    )}
+  </Motion>
+)
 
 function mapStateToProps (state) {
   // console.log('Login: state=', state)
