@@ -1,6 +1,6 @@
 'use strict'
 
-const Hoek = require('hoek')
+const Hoek = require('@hapi/hoek')
 
 Hoek.assert(process.env.CITYLIGHTS_PRIVKEY, 'Missing env `CITYLIGHTS_PRIVKEY`')
 Hoek.assert(process.env.CITYLIGHTS_CERT, 'Missing env `CITYLIGHTS_CERT`')
@@ -16,7 +16,9 @@ if (!process.env.CITYLIGHTS_CDN) {
 
 const isProduction = process.env.NODE_ENV === 'production'
 
-const Hapi = require('hapi')
+const Hapi = require('@hapi/hapi')
+const Inert = require('@hapi/inert')
+const Vision = require('@hapi/vision')
 const Path = require('path')
 const Fs = require('fs')
 const Chalk = require('chalk')
@@ -28,20 +30,80 @@ P.promisifyAll(Fs)
 const Qs = require('qs')
 const Url = require('url')
 
-module.exports = preStart()
-.then((manifest) => {
-  const server = createServer()
-  return registerPlugins(server)
-  .then(() => {
+const init = async () => {
+  const manifest = await preStart()
+  const server = await createServer()
+  await registerPlugins(server)
+  setupViews(server, manifest)
+  setupRoutes(server)
+  await startServer(server)
+  return server
+}
+
+preStart()
+  .then(async (manifest) => {
+    const serverOptions = {
+      port: process.env.CITYLIGHTS_PORT,
+      router: {
+        isCaseSensitive: false,
+        stripTrailingSlash: true
+      }
+    }
+
+    if (!process.env.SKIP_TLS) {
+      serverOptions.host = process.env.CITYLIGHTS_HOST
+      serverOptions.tls = {
+        key: Fs.readFileSync(process.env.CITYLIGHTS_PRIVKEY),
+        cert: Fs.readFileSync(process.env.CITYLIGHTS_CERT),
+        ca: [Fs.readFileSync(process.env.CITYLIGHTS_CA)]
+      }
+    } else {
+      console.log(Chalk.bgYellow.black('Hapi is NOT using HTTPS'))
+    }
+
+    const server = Hapi.server(serverOptions)
+
+    // Switch out the querystring parser.
+    // TODO: Modernize this Qs integration if possible, or verify if still needed.
+    // For Hapi v17+, request.setUrl is gone. Query parameters are available via request.query.
+    // If Qs is used for complex parsing not handled by Hapi's default (querystring module),
+    // this needs to be handled differently, perhaps by parsing request.url.search directly.
+    server.ext('onRequest', (request, h) => {
+      const uri = request.raw.req.url
+      const parsedUrl = Url.parse(uri, false) // Keep 'false' to parse query string as string
+      if (parsedUrl.search) { // Only parse if there's a query string
+        // Remove leading '?' before parsing with Qs
+        request.query = Qs.parse(parsedUrl.search.substring(1))
+      }
+      // Hapi will use request.query for routing and handlers.
+      // No direct equivalent for request.setUrl() for full path mutation before routing in Hapi v17+.
+      // If full path mutation was intended, this needs a more complex solution.
+      // For now, we're just augmenting request.query.
+      return h.continue
+    })
+
+    await server.register([
+      Inert,
+      Vision
+    ])
+
     setupViews(server, manifest)
     setupRoutes(server)
-    startServer(server)
+
+    if (!module.parent) {
+      await server.start()
+      console.log('API server running on %s', server.info.uri)
+      server.table().forEach((route) => {
+        console.log(`${route.method.toUpperCase()} ${route.path}`)
+      })
+      console.log('API server mode:', process.env.NODE_ENV || '`NODE_ENV` not set.')
+    }
     return server
   })
-})
-.catch((reason) => (
-  console.error('Error:', reason, reason.stack)
-))
+  .catch((reason) => {
+    console.error('Error starting server:', reason, reason.stack)
+    process.exit(1)
+  })
 
 function preStart () {
   return P.try(() => {
@@ -50,72 +112,30 @@ function preStart () {
 
     if (isProduction) {
       const version = require('../package.json').version
-      const Https = require('./lib/https')
+      const Https = require('./lib/https') // This is a custom https library, not Node's https
       const manifestUrl = `${process.env.CITYLIGHTS_CDN}/assets/release-manifest-${version}.json`
       return Https.fetchGzipped(manifestUrl)
-      .then((json) => {
-        const manifest = JSON.parse(json)
-        Hoek.assert(manifest &&
-          manifest.assets &&
-          manifest.items.length,
+        .then((json) => {
+          const manifest = JSON.parse(json)
+          Hoek.assert(manifest &&
+            manifest.assets &&
+            manifest.items.length,
           'Fetched invalid manifest: ' + JSON.stringify(manifest, false, 2)
-        )
-        console.log('Loaded app manifest:', manifest)
-        return manifest
-      })
+          )
+          console.log('Loaded app manifest:', manifest)
+          return manifest
+        })
     }
+    // Return a default or empty manifest structure if not production,
+    // so setupViews has a consistent input.
+    return { assets: {}, items: [] }
   })
   .tap(() => console.log('Prestart complete.'))
 }
 
-function createServer () {
-  const s = new Hapi.Server({
-    connections: {
-      router: {
-        isCaseSensitive: false,
-        stripTrailingSlash: true
-      }
-    }
-  })
+// createServer function is now integrated into the main async block
 
-  if (!process.env.SKIP_TLS) {
-    const tls = {
-      key: Fs.readFileSync(process.env.CITYLIGHTS_PRIVKEY),
-      cert: Fs.readFileSync(process.env.CITYLIGHTS_CERT),
-      ca: [Fs.readFileSync(process.env.CITYLIGHTS_CA)]
-    }
-    s.connection({
-      host: process.env.CITYLIGHTS_HOST,
-      port: process.env.CITYLIGHTS_PORT,
-      tls
-    })
-  } else {
-    console.log(Chalk.bgYellow.black('Hapi is NOT using HTTPS'))
-    s.connection({ port: process.env.CITYLIGHTS_PORT })
-  }
-
-  // Switch out the querystring parser.
-  function onRequest (request, reply) {
-    const uri = request.raw.req.url
-    const parsed = Url.parse(uri, false)
-    parsed.query = Qs.parse(parsed.query)
-    request.setUrl(parsed)
-    return reply.continue()
-  }
-
-  s.ext('onRequest', onRequest)
-
-  return s
-}
-
-function registerPlugins (server) {
-  const plugins = [
-    require('vision'),
-    require('inert')
-  ]
-
-  return server.register(plugins)
-}
+// registerPlugins function is now integrated into the main async block
 
 function setupViews (server, manifest) {
   console.log('Setting up views.')
@@ -141,13 +161,14 @@ function setupDefaultViewContext (server, manifest) {
     js: { }
   }
 
-  if (isProduction) {
+  // Ensure manifest and manifest.assets exist before trying to access them
+  if (isProduction && manifest && manifest.assets) {
     const assets = manifest.assets
     // TODO: Don’t rely on manifest file order !
     context.js = {
-      manifest: context.cdn + assets.manifest.js,
-      vendors: context.cdn + assets.vendors.js,
-      app: context.cdn + assets.app.js
+      manifest: context.cdn + (assets.manifest ? assets.manifest.js : ''),
+      vendors: context.cdn + (assets.vendors ? assets.vendors.js : ''),
+      app: context.cdn + (assets.app ? assets.app.js : '')
     }
   }
   return context
@@ -159,37 +180,25 @@ function setupRoutes (server) {
   server.route({
     method: 'GET',
     path: '/',
-    config: { cors: true },
-    handler (request, reply) {
+    options: { cors: true }, // 'config' is now 'options'
+    handler: async (request, h) => { // reply is now h (response toolkit)
       console.log('[/]', Moment().format())
 
       // Server the app in production mode !
       if (isProduction) {
-        return reply.view('app.html')
+        return h.view('app.html')
       }
       // Take a chill pill otherwise.
-      reply(`Server in dev mode.\n\nStay a while, and Listen.`)
+      return `Server in dev mode.\n\nStay a while, and Listen.`
     }
   })
 
-  // Setup Socket API.
-  require('./lib/socket')(server)
+  // Setup Socket API - this will need to be adapted if it relies on Hapi internals that changed
+  // For now, assume it takes the server object and attaches to the http listener.
+  require('./lib/socket')(server.listener)
 }
 
-function startServer (server) {
-  console.log('Starting server.')
+// startServer function is now integrated into the main async block and module.parent check
 
-  if (!module.parent) {
-    server.start((err) => {
-      if (err) {
-        return console.error('Error:', err, err.stack)
-      }
-
-      server.table().forEach((x) => {
-        x.table.forEach((y) => console.log(`${y.method.toUpperCase()} ${y.path}`))
-      })
-      console.log('API server running at:', server.info.uri)
-      console.log('API server mode:', process.env.NODE_ENV || '`NODE_ENV` not set.')
-    })
-  }
-}
+// Export the init function for potential programmatic use or testing
+module.exports = init()

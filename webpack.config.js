@@ -14,8 +14,8 @@ const API_PORT = process.env.CITYLIGHTS_PORT
 
 const production = TARGET.match(/build/)
 const startServer = TARGET.match(/dev/)
-// Webpack 5 recommends [contenthash] for long-term caching, but [chunkhash] is also good.
-const filename = production ? '[name]-[chunkhash:10].js' : '[name]-[fullhash:10].js' // [hash] is now [fullhash]
+// Webpack 5 recommends [contenthash] for long-term caching.
+const filename = production ? '[name]-[contenthash:10].js' : '[name]-[fullhash:10].js' // Using contenthash for prod
 const version = process.env.npm_package_version
 
 const PATHS = {
@@ -27,9 +27,9 @@ const config = {
   mode: production ? 'production' : 'development',
   entry: {
     app: PATHS.app,
-    // It's generally better to import CSS from your JS files.
-    // Including CSS directly in an entry point for splitChunks can be tricky.
-    // For now, we'll keep it and rely on style-loader/css-loader.
+    // CSS (e.g., medium-font.css) should be imported from within your JavaScript files (e.g., app/index.js)
+    // or handled via a dedicated CSS entry point if using mini-css-extract-plugin extensively.
+    // Removing it from here as it's not standard for JS vendor chunk.
     vendors: [
       'react',
       'react-dom',
@@ -45,8 +45,8 @@ const config = {
       'bluebird',
       'reselect',
       'metaphone',
-      'draft-js',
-      // Path.join(PATHS.app, 'styles', 'medium-font.css') // Consider importing this in app.js
+      'draft-js'
+      // Removed: Path.join(PATHS.app, 'styles', 'medium-font.css')
     ]
   },
   output: {
@@ -95,10 +95,8 @@ const config = {
 
 if (production) {
   config.plugins = config.plugins.concat([
-    new AssetsPlugin({ filename: 'manifest.json', path: PATHS.build, fullPath: false }),
-    // OccurenceOrderPlugin is on by default in Webpack 2+
-    // DedupePlugin is removed
-    // UglifyJsPlugin is removed (handled by mode: 'production')
+    new AssetsPlugin({ filename: 'manifest.json', path: PATHS.build, fullPath: false })
+    // OccurenceOrderPlugin, DedupePlugin, UglifyJsPlugin are implicitly handled or replaced in Webpack 5.
   ])
   // If specific Terser options are needed:
   // config.optimization.minimizer = [
@@ -135,7 +133,7 @@ if (startServer) {
         options: {
           key: Fs.readFileSync(process.env.CITYLIGHTS_PRIVKEY, 'utf8'),
           cert: Fs.readFileSync(process.env.CITYLIGHTS_CERT, 'utf8'),
-          cacert: Fs.readFileSync(process.env.CITYLIGHTS_CA, 'utf8'), // Note: cacert might be 'ca' or array
+          ca: Fs.readFileSync(process.env.CITYLIGHTS_CA, 'utf8'), // Changed cacert to ca
         }
       },
       // host: process.env.CITYLIGHTS_HOST // This should be set if different from general host

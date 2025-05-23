@@ -1,6 +1,6 @@
 'use strict'
 
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 const Joi = require('joi')
 
 function validateOrThrow (data, schema) {

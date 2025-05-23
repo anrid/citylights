@@ -1,8 +1,8 @@
 'use strict'
 
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 const P = require('bluebird')
-const Hoek = require('hoek')
+const Hoek = require('@hapi/hoek')
 const SocketIO = require('socket.io')
 const Moment = require('moment')
 

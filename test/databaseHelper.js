@@ -1,10 +1,18 @@
 'use strict'
+console.log('[DB_HELPER_LOG] Starting test/databaseHelper.js');
 
 const P = require('bluebird')
 const Jwt = require('../api/lib/jwt')
-const Hoek = require('hoek')
+const Hoek = require('@hapi/hoek')
 
-require('../api/lib/database.js')()
+console.log('[DB_HELPER_LOG] About to require and execute database.js');
+try {
+  require('../api/lib/database.js')();
+  console.log('[DB_HELPER_LOG] Finished requiring and executing database.js');
+} catch (e) {
+  console.error('[DB_HELPER_LOG] Error during require/execution of database.js:', e.message, e.stack);
+  throw e; 
+}
 
 const Mongoose = require('mongoose')
 const User = require('../api/services/userModel')
@@ -31,14 +39,25 @@ module.exports = {
   // All queued functions will be executed in sequence (waterfall) and their
   // results added to our context.
   queue (func, name) {
+    const funcName = name || func.name || 'anonymous_queue_func';
+    console.log(`[DB_HELPER_LOG] Queuing function: ${funcName}`);
     this._chain = this._chain
-    .then(() => P.resolve(func()))
+    .then(() => {
+      console.log(`[DB_HELPER_LOG] Executing queued function: ${funcName}`);
+      return P.resolve(func());
+    })
     .tap((result) => {
-      if (name) {
-        // console.log(`Adding ${name} to context:`, result)
-        this._context[name] = result
+      if (name) { 
+        console.log(`[DB_HELPER_LOG] Added ${name} to context after running ${funcName}`);
+        this._context[name] = result;
+      } else {
+        console.log(`[DB_HELPER_LOG] Finished executing ${funcName} (no context name)`);
       }
     })
+    .catch(err => {
+      console.error(`[DB_HELPER_LOG] Error in queued function ${funcName}:`, err.message, err.stack);
+      throw err; 
+    });
     return this
   },
 
@@ -51,20 +70,30 @@ module.exports = {
   },
 
   wait (func) {
-    return this._chain.then(() => func(this._context))
+    console.log('[DB_HELPER_LOG] Entering wait function');
+    return this._chain
+      .then(() => {
+        console.log('[DB_HELPER_LOG] Executing wait callback after promise chain completion.');
+        return func(this._context);
+      })
+      .catch(err => {
+        console.error('[DB_HELPER_LOG] Error in promise chain before or during wait callback:', err.message, err.stack);
+        throw err;
+      });
   },
 
   reset () {
+    console.log('[DB_HELPER_LOG] Db.reset() called');
     const removeAllTestData = P.all([
-      User.remove(),
-      Workspace.remove(),
-      WorkspaceMember.remove(),
-      WorkspaceProfile.remove(),
-      UserPassword.remove(),
-      Project.remove(),
-      Shift.remove()
-    ])
-    return this.queue(() => removeAllTestData)
+      User.deleteMany({}).exec(),
+      Workspace.deleteMany({}).exec(),
+      WorkspaceMember.deleteMany({}).exec(),
+      WorkspaceProfile.deleteMany({}).exec(),
+      UserPassword.deleteMany({}).exec(),
+      Project.deleteMany({}).exec(),
+      Shift.deleteMany({}).exec()
+    ]);
+    return this.queue(() => removeAllTestData, 'dbReset');
   },
 
   user (name) {
