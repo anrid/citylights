@@ -1,7 +1,7 @@
 'use strict'
 
 const P = require('bluebird')
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 const T = require('tcomb')
 
 const AccessService = require('./accessService')

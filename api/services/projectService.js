@@ -2,7 +2,7 @@
 
 const P = require('bluebird')
 const T = require('tcomb')
-const Boom = require('boom')
+const Boom = require('@hapi/boom')
 
 const Project = require('./projectModel')
 const AccessService = require('./accessService')
