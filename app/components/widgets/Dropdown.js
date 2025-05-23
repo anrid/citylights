@@ -1,15 +1,16 @@
 'use strict'
 
 import React, { Component, PropTypes } from 'react'
-import { Motion, spring } from 'react-motion'
+// import { Motion, spring } from 'react-motion' // Removed react-motion
+import { motion, AnimatePresence } from 'framer-motion' // Added framer-motion
 import classnames from 'classnames'
 
 import './Dropdown.scss'
 
-const springModel = {
-  stiffness: 300,
-  damping: 15
-}
+// const springModel = { // No longer needed in this format for framer-motion
+//   stiffness: 300,
+//   damping: 15
+// }
 
 export default class Dropdown extends Component {
   constructor (props) {
@@ -76,25 +77,39 @@ export default class Dropdown extends Component {
     }
 
     return (
-      <Motion
-        defaultStyle={{ scale: 0.8, fade: 0 }}
-        style={{ scale: spring(1, springModel), fade: spring(1) }}
-      >
-        {({ scale, fade }) => (
-          <div className='pl-dropdown__menu-container'>
-            <div className='pl-dropdown__outside-overlay' onClick={this.onToggle} />
-            <div className='pl-dropdown__menu'
-              style={{
-                transform: `scale(${scale},${scale})`,
-                opacity: fade
-              }}
-            >
-              {headingRow}
-              {rows}
-            </div>
-          </div>
-        )}
-      </Motion>
+      // <Motion
+      //   defaultStyle={{ scale: 0.8, fade: 0 }}
+      //   style={{ scale: spring(1, springModel), fade: spring(1) }}
+      // >
+      //   {({ scale, fade }) => (
+      //     <div className='pl-dropdown__menu-container'>
+      //       <div className='pl-dropdown__outside-overlay' onClick={this.onToggle} />
+      //       <div className='pl-dropdown__menu'
+      //         style={{
+      //           transform: `scale(${scale},${scale})`,
+      //           opacity: fade
+      //         }}
+      //       >
+      //         {headingRow}
+      //         {rows}
+      //       </div>
+      //     </div>
+      //   )}
+      // </Motion>
+      <div className='pl-dropdown__menu-container'>
+        <div className='pl-dropdown__outside-overlay' onClick={this.onToggle} />
+        <motion.div
+          className='pl-dropdown__menu'
+          key="dropdown-menu" // Required for AnimatePresence to track the component
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.8, opacity: 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+        >
+          {headingRow}
+          {rows}
+        </motion.div>
+      </div>
     )
   }
 
@@ -126,7 +141,9 @@ export default class Dropdown extends Component {
     return (
       <div className={cls}>
         {this.renderSelected()}
-        {this.state.open && this.renderMenu()}
+        <AnimatePresence>
+          {this.state.open && this.renderMenu()}
+        </AnimatePresence>
       </div>
     )
   }
