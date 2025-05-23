@@ -1,16 +1,25 @@
 'use strict'
 
 import React, { Component } from 'react'
-import { Motion, spring } from 'react-motion'
+// import { Motion, spring } from 'react-motion' // Removed react-motion
+import { motion } from 'framer-motion' // Added framer-motion
 import debounce from 'lodash.debounce'
-import PureRenderMixin from 'react-addons-pure-render-mixin'
+import PureRenderMixin from 'react-addons-pure-render-mixin' // Still using old mixin
 
 import './InputWidget.scss'
 
-const springModel = {
-  stiffness: 300,
-  damping: 15
+// const springModel = { // No longer needed in this format for framer-motion
+//   stiffness: 300,
+//   damping: 15
+// }
+
+const sectionVariants = {
+  hidden: { scale: 0.8, opacity: 0 },
+  visible: { scale: 1, opacity: 1 },
 }
+
+const animatedTransition = { type: "spring", stiffness: 300, damping: 15 }
+const nonAnimatedTransition = { duration: 0 } // Effectively no transition
 
 export default class InputWidget extends Component {
   constructor (props) {
@@ -59,24 +68,15 @@ export default class InputWidget extends Component {
     )
   }
 
-  renderContent (scale, fade) {
-    let style = { }
-    // Apply style when both scale and fade are neither null nor undefined.
-    if (scale != null && fade != null) {
-      style = {
-        transform: `scale(${scale},${scale})`,
-        opacity: fade
-      }
-    }
-
-    const { items, selected, onSelect } = this.props
+  // renderContent no longer needs scale and fade parameters
+  renderContent () {
+    const { items, selected, onSelect, animate } = this.props // animate prop needed here
     const { page, max } = this.state
     const pages = Math.ceil(items.length / max)
 
     const rows = items
     .filter((x, i) => { // Only items on the current page
       const onPage = Math.ceil((i + 1) / max)
-      // console.log('onPage=', onPage, 'x.text=', x.text)
       return onPage === page
     })
     .map((x) => {
@@ -88,7 +88,14 @@ export default class InputWidget extends Component {
     })
 
     return (
-      <section className='pl-input-widget' style={style}>
+      <motion.section
+        className='pl-input-widget'
+        variants={sectionVariants}
+        initial={animate ? "hidden" : "visible"}
+        animate="visible"
+        transition={animate ? animatedTransition : nonAnimatedTransition}
+        // No explicit style for transform/opacity; framer-motion handles it.
+      >
         <div className='pl-input-widget__header'>
           {this.renderSearchBox()}
         </div>
@@ -104,26 +111,27 @@ export default class InputWidget extends Component {
             {page !== pages ? <i className='fa fa-angle-right' onClick={() => this.onNextPage(1)} /> : null}
           </div>
         </div>
-      </section>
+      </motion.section>
     )
   }
 
-  renderContentWithAnimation (content) {
-    return (
-      <Motion
-        defaultStyle={{ scale: 0.8, fade: 0 }}
-        style={{ scale: spring(1, springModel), fade: spring(1) }}
-      >
-        {({ scale, fade }) => this.renderContent(scale, fade)}
-      </Motion>
-    )
-  }
+  // renderContentWithAnimation is no longer needed
+  // renderContentWithAnimation (content) {
+  //   return (
+  //     <Motion
+  //       defaultStyle={{ scale: 0.8, fade: 0 }}
+  //       style={{ scale: spring(1, springModel), fade: spring(1) }}
+  //     >
+  //       {({ scale, fade }) => this.renderContent(scale, fade)}
+  //     </Motion>
+  //   )
+  // }
 
   render () {
-    const { animate } = this.props
-    if (animate) {
-      return this.renderContentWithAnimation()
-    }
+    // const { animate } = this.props // animate prop is now used inside renderContent
+    // if (animate) {
+    //   return this.renderContentWithAnimation()
+    // }
     return this.renderContent()
   }
 }

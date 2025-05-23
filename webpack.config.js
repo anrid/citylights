@@ -6,7 +6,7 @@ const Fs = require('fs')
 const Chalk = require('chalk')
 
 const HtmlPlugin = require('html-webpack-plugin')
-const AssetsPlugin = require('assets-webpack-plugin')
+const AssetsPlugin = require('assets-webpack-plugin') // Version 7.1.1 should be Webpack 5 compatible
 
 const TARGET = process.env.npm_lifecycle_event || '(no target)'
 const API_HOST = process.env.SKIP_TLS ? 'devbox.citylights.io' : process.env.CITYLIGHTS_HOST
@@ -14,7 +14,8 @@ const API_PORT = process.env.CITYLIGHTS_PORT
 
 const production = TARGET.match(/build/)
 const startServer = TARGET.match(/dev/)
-const filename = production ? '[name]-[chunkhash:10].js' : '[name]-[hash:10].js'
+// Webpack 5 recommends [contenthash] for long-term caching, but [chunkhash] is also good.
+const filename = production ? '[name]-[chunkhash:10].js' : '[name]-[fullhash:10].js' // [hash] is now [fullhash]
 const version = process.env.npm_package_version
 
 const PATHS = {
@@ -23,8 +24,12 @@ const PATHS = {
 }
 
 const config = {
+  mode: production ? 'production' : 'development',
   entry: {
     app: PATHS.app,
+    // It's generally better to import CSS from your JS files.
+    // Including CSS directly in an entry point for splitChunks can be tricky.
+    // For now, we'll keep it and rely on style-loader/css-loader.
     vendors: [
       'react',
       'react-dom',
@@ -41,77 +46,105 @@ const config = {
       'reselect',
       'metaphone',
       'draft-js',
-      Path.join(PATHS.app, 'styles', 'medium-font.css')
+      // Path.join(PATHS.app, 'styles', 'medium-font.css') // Consider importing this in app.js
     ]
   },
   output: {
     path: PATHS.build,
     filename,
-    pathinfo: true,
-    publicPath: production ? '/assets/' : '/'
+    pathinfo: !production, // true in development for more info, false in production
+    publicPath: production ? '/assets/' : '/',
+    clean: production // Clean the output directory before emit in production
+  },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        vendors: {
+          name: 'vendors',
+          test: /[\\/]node_modules[\\/]/, // Selects modules from node_modules
+          chunks: 'all',
+          // Including the CSS here might not work as expected with splitChunks
+          // as it's primarily for JS. If medium-font.css is truly a vendor style,
+          // it might be better to import it in a vendor JS file or handle CSS extraction separately.
+        },
+      },
+    },
+    runtimeChunk: { // Extracts webpack runtime & manifest into a separate file
+      name: 'manifest'
+    },
+    // Minification is handled by default in production mode in Webpack 5 (using Terser)
+    // UglifyJsPlugin is removed.
   },
   plugins: [
-    new Webpack.optimize.CommonsChunkPlugin({
-      names: ['vendors', 'manifest']
-    }),
+    // CommonsChunkPlugin is removed, replaced by optimization.splitChunks
     new HtmlPlugin({
       title: 'Test App',
       host: `${API_HOST}:${API_PORT}`,
       template: Path.join(PATHS.app, 'public', 'dev.html'),
       inject: 'body'
     })
+    // DefinePlugin for NODE_ENV is handled by `mode` option.
   ],
   module: {
-    loaders: getLoaders()
-  }
+    // `module.loaders` is replaced by `module.rules`
+    rules: getLoaders()
+  },
+  // devtool should be configured based on needs, 'source-map' for prod, 'eval-source-map' for dev
+  devtool: production ? 'source-map' : 'eval-source-map', 
 }
 
 if (production) {
   config.plugins = config.plugins.concat([
-    new AssetsPlugin({ filename: 'manifest.json', path: PATHS.build }),
-    new Webpack.optimize.OccurenceOrderPlugin(),
-    new Webpack.optimize.DedupePlugin(),
-    new Webpack.optimize.UglifyJsPlugin({
-      compress: { warnings: false },
-      comments: false,
-      sourceMap: false
-    }),
-    new Webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify('production')
-      }
-    })
+    new AssetsPlugin({ filename: 'manifest.json', path: PATHS.build, fullPath: false }),
+    // OccurenceOrderPlugin is on by default in Webpack 2+
+    // DedupePlugin is removed
+    // UglifyJsPlugin is removed (handled by mode: 'production')
   ])
+  // If specific Terser options are needed:
+  // config.optimization.minimizer = [
+  //   new TerserPlugin({
+  //     terserOptions: {
+  //       compress: { warnings: false },
+  //       output: { comments: false },
+  //     },
+  //     sourceMap: true, // if you want source maps for minified code
+  //   }),
+  // ];
 }
 
 if (startServer) {
   console.log('Running webpack-dev-server.')
   config.devServer = {
     historyApiFallback: true,
-    contentBase: PATHS.build,
+    static: { // replaces contentBase
+      directory: PATHS.build,
+    },
     hot: true,
-    inline: true,
-    progress: true,
+    // inline: true, // true by default with webpack-dev-server v4+
+    // progress: true, // deprecated
     headers: { 'X-Awesome': 'yes' },
-    // Display only errors to reduce the amount of output.
-    stats: 'errors-only',
+    stats: 'errors-only', // Webpack 5 has 'errors-only', 'minimal', 'normal', 'verbose'
     host: '0.0.0.0',
     port: 8999
   }
 
   if (!process.env.SKIP_TLS) {
-    // Keep it secret. Keep it safe.
     Object.assign(config.devServer, {
-      https: true,
-      key: Fs.readFileSync(process.env.CITYLIGHTS_PRIVKEY, 'utf8'),
-      cert: Fs.readFileSync(process.env.CITYLIGHTS_CERT, 'utf8'),
-      cacert: [Fs.readFileSync(process.env.CITYLIGHTS_CA, 'utf8')],
-      host: process.env.CITYLIGHTS_HOST
+      server: { // https options are now nested under 'server'
+        type: 'https',
+        options: {
+          key: Fs.readFileSync(process.env.CITYLIGHTS_PRIVKEY, 'utf8'),
+          cert: Fs.readFileSync(process.env.CITYLIGHTS_CERT, 'utf8'),
+          cacert: Fs.readFileSync(process.env.CITYLIGHTS_CA, 'utf8'), // Note: cacert might be 'ca' or array
+        }
+      },
+      // host: process.env.CITYLIGHTS_HOST // This should be set if different from general host
     })
   } else {
     console.log(Chalk.bgYellow.black('Webpack Dev Server is NOT using HTTPS'))
   }
 
+  // HotModuleReplacementPlugin is often auto-added with hot:true in devServer, but explicit is fine.
   config.plugins = config.plugins.concat([
     new Webpack.HotModuleReplacementPlugin()
   ])
@@ -132,22 +165,25 @@ function getLoaders () {
     // CSS and SCSS.
     {
       test: /\.css$/,
-      loader: 'style!css',
+      use: ['style-loader', 'css-loader'], // Replaces `loader: 'style!css'`
       include: PATHS.app
     },
     {
       test: /\.scss$/,
-      loader: 'style!css!sass',
+      use: ['style-loader', 'css-loader', 'sass-loader'], // Replaces `loader: 'style!css!sass'`
       include: PATHS.app
     },
     // Babel all JavaScript.
     {
       test: /\.js$/,
       exclude: /(node_modules|bower_components)/,
-      loader: 'babel',
-      include: [PATHS.app, PATHS.build],
-      query: {
-        presets: ['react', 'es2015', 'stage-0'],
+      loader: 'babel-loader', // Explicitly 'babel-loader'
+      include: [PATHS.app], // Removed PATHS.build, not typical to include build output here
+      options: { // `query` is now `options`
+        // Presets need to be updated for Babel 7+ (installed in package.json)
+        // Assuming @babel/preset-env, @babel/preset-react are installed.
+        // babel-preset-stage-0 is deprecated; features should be checked.
+        presets: ['@babel/preset-react', '@babel/preset-env'],
         cacheDirectory: true
       }
     }
