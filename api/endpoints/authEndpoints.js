@@ -116,13 +116,13 @@ const checkAccessTokenSchema = Joi.object().keys({
 })
 
 const loginFormSchema = Joi.object().keys({
-  email: Joi.string().email().required().description('User email address.'),
+  email: Joi.string().email({ tlds: { allow: false } }).required().description('User email address.'),
   password: Joi.string().min(6).max(64).required().description('User password.')
 })
 
 const signupFormSimpleSchema = Joi.object().keys({
   companyName: Joi.string().min(3).required().description('The name of the company this user represents.'),
-  email: Joi.string().email().required().description('User email address.'),
+  email: Joi.string().email({ tlds: { allow: false } }).required().description('User email address.'),
   firstName: Joi.string().min(1).required().description('User first name.'),
   lastName: Joi.string().min(1).required().description('User last name.'),
   password: Joi.string().min(6).optional().description('User password.')

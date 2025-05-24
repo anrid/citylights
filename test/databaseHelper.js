@@ -6,11 +6,15 @@ const Jwt = require('../api/lib/jwt')
 const Hoek = require('@hapi/hoek')
 
 console.log('[DB_HELPER_LOG] About to require and execute database.js');
+let connectionPromise;
 try {
-  require('../api/lib/database.js')();
-  console.log('[DB_HELPER_LOG] Finished requiring and executing database.js');
+  // Store the promise returned by the connect function
+  connectionPromise = require('../api/lib/database.js')();
+  console.log('[DB_HELPER_LOG] Finished requiring and executing database.js (connection initiated).');
 } catch (e) {
   console.error('[DB_HELPER_LOG] Error during require/execution of database.js:', e.message, e.stack);
+  // If connection initiation fails critically, we should probably not proceed.
+  connectionPromise = P.reject(e); // Ensure connectionPromise is a rejected promise
   throw e; 
 }
 
@@ -32,7 +36,14 @@ const MemberService = require('../api/services/memberService')
 const Shift = require('../api/services/shiftModel')
 
 module.exports = {
-  _chain: P.resolve(),
+  // Start the promise chain only after the connection promise resolves
+  _chain: P.resolve(connectionPromise).then(() => {
+    console.log('[DB_HELPER_LOG] Database connection promise resolved, starting test operations chain.');
+  }).catch(err => {
+    console.error('[DB_HELPER_LOG] Database connection failed before starting test chain:', err.message);
+    // Propagate the error to fail tests quickly if DB connection is an issue
+    throw err;
+  }),
   _context: { },
 
   // Enqueue expect a function as it’s first argument.

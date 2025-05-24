@@ -2,7 +2,7 @@
 
 const Code = require('@hapi/code')
 const Lab = require('@hapi/lab')
-const { describe, it, before, expect } = exports.lab = Lab.script()
+const { describe, it, before } = exports.lab = Lab.script() // Removed expect
 
 const Db = require('./databaseHelper.js')
 const Auth = require('../api/endpoints/authEndpoints.js')
@@ -30,11 +30,11 @@ describe('Auth Endpoints', () => {
       password: 'test123'
     })
     // console.log('result:', res)
-    expect(res.topic).to.equal('auth:successful')
-    expect(res.payload.identity.userId).to.exist()
-    expect(res.payload.identity.accessToken).to.exist()
-    expect(res.payload.info.workspaceId).to.exist()
-    expect(res.payload.info.email).to.exist()
+    Code.expect(res.topic).to.equal('auth:successful')
+    Code.expect(res.payload.identity.userId).to.exist()
+    Code.expect(res.payload.identity.accessToken).to.exist()
+    Code.expect(res.payload.info.workspaceId).to.exist()
+    Code.expect(res.payload.info.email).to.exist()
     ctx.user1 = res.payload
   })
 
@@ -44,20 +44,20 @@ describe('Auth Endpoints', () => {
       { userId: ctx.user1.identity.userId }
     )
     // console.log('result:', res)
-    expect(res.topic).to.equal('app:starter')
-    expect(res.payload.user._id.toString()).to.equal(ctx.user1.identity.userId)
-    expect(res.payload.userList[0]._id.toString()).to.equal(ctx.user1.identity.userId)
-    expect(res.payload.workspace.name).to.equal('company.x.test.test')
-    expect(res.payload.workspaceList[0].name).to.equal('company.x.test.test')
-    expect(res.payload.workspaceList[0].membersCount).to.equal(1)
+    Code.expect(res.topic).to.equal('app:starter')
+    Code.expect(res.payload.user._id.toString()).to.equal(ctx.user1.identity.userId)
+    Code.expect(res.payload.userList[0]._id.toString()).to.equal(ctx.user1.identity.userId)
+    Code.expect(res.payload.workspace.name).to.equal('company.x.test.test')
+    Code.expect(res.payload.workspaceList[0].name).to.equal('company.x.test.test')
+    Code.expect(res.payload.workspaceList[0].membersCount).to.equal(1)
   })
 
   it('user1 can login successfully', async () => {
     const res = await Auth.login({ email: 'massa@test.test', password: 'test123' })
     // console.log('result:', res)
-    expect(res.topic).to.equal('auth:successful')
-    expect(res.payload.identity.userId).to.equal(ctx.user1.identity.userId)
-    expect(res.payload.identity.accessToken).to.equal(ctx.user1.identity.accessToken)
+    Code.expect(res.topic).to.equal('auth:successful')
+    Code.expect(res.payload.identity.userId).to.equal(ctx.user1.identity.userId)
+    Code.expect(res.payload.identity.accessToken).to.equal(ctx.user1.identity.accessToken)
   })
 
   it('user1 has an access token that passes all checks', async () => {
@@ -66,15 +66,15 @@ describe('Auth Endpoints', () => {
       workspaceId: ctx.user1.info.workspaceId
     })
     // console.log('result:', res)
-    expect(res.topic).to.equal('auth:token:successful')
-    expect(res.payload.identity.userId).to.equal(ctx.user1.identity.userId)
-    expect(res.payload.identity.accessToken).to.not.exist()
-    expect(res.payload.info.email).to.equal(ctx.user1.info.email)
-    expect(res.payload.info.workspaceId).to.not.exist()
+    Code.expect(res.topic).to.equal('auth:token:successful')
+    Code.expect(res.payload.identity.userId).to.equal(ctx.user1.identity.userId)
+    Code.expect(res.payload.identity.accessToken).to.not.exist()
+    Code.expect(res.payload.info.email).to.equal(ctx.user1.info.email)
+    Code.expect(res.payload.info.workspaceId).to.not.exist()
   })
 
   it('ensures our sanity', () => {
-    expect(1 + 1).to.equal(2)
+    Code.expect(1 + 1).to.equal(2)
     // done callback is not needed for synchronous tests or tests returning a promise with @hapi/lab
   })
 })

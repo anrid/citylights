@@ -78,17 +78,24 @@ function connect () {
 
   console.log('[DATABASE_JS_LOG] Attempting Mongoose.connect() call...');
   // Mongoose.connect() returns a Promise.
-  Mongoose.connect(url, opts)
-    .then(() => {
-      console.log('[DATABASE_JS_LOG] Mongoose.connect() promise successfully resolved.');
-    })
-    .catch(err => {
-      console.error('[DATABASE_JS_LOG] Mongoose.connect() promise rejected during initial connection attempt:', err.message, err.stack);
-      // This is a critical error for the app. It should probably exit or retry.
-      // For tests, this might mean the DB isn't available.
-      // console.error(err.stack); // For more detail if needed
-    });
-  console.log('[DATABASE_JS_LOG] Mongoose.connect() call made (this is an asynchronous operation).');
+  // Ensure it's called only once and the same promise is used.
+  if (Mongoose.connection.readyState === 0) { // 0 = disconnected
+    const connectPromise = Mongoose.connect(url, opts)
+      .then(() => {
+        console.log('[DATABASE_JS_LOG] Mongoose.connect() promise successfully resolved.');
+        return Mongoose.connection; // Return the connection object on successful connection
+      })
+      .catch(err => {
+        console.error('[DATABASE_JS_LOG] Mongoose.connect() promise rejected during initial connection attempt:', err.message, err.stack);
+        throw err; // Re-throw to allow callers to handle
+      });
+    console.log('[DATABASE_JS_LOG] Mongoose.connect() call made (this is an asynchronous operation).');
+    return connectPromise;
+  } else {
+    // If already connected or connecting, return a promise that resolves with the existing connection
+    console.log(`[DATABASE_JS_LOG] Mongoose connection already in readyState: ${Mongoose.connection.readyState}. Resolving with existing connection.`);
+    return Promise.resolve(Mongoose.connection);
+  }
 }
 
 module.exports = connect

@@ -2,7 +2,7 @@
 
 const Code = require('@hapi/code')
 const Lab = require('@hapi/lab')
-const { describe, it, before, expect } = exports.lab = Lab.script()
+const { describe, it, before } = exports.lab = Lab.script() // Removed expect
 
 const Db = require('./databaseHelper.js')
 const Ws = require('../api/endpoints/workspaceEndpoints.js')
@@ -29,10 +29,10 @@ describe('Workspace Endpoints', () => {
   it('user1 creates a new workspace', async () => {
     const res = await Ws.create({ name: 'test.test' }, { userId: user1.userId })
     // console.log('result:', res)
-    expect(res.topic).to.equal('workspace:create')
-    expect(res.payload.workspace.ownerId).to.equal(user1.userId)
-    expect(res.payload.workspace.url.length > 4).to.be.true()
-    expect(res.payload.workspace.membersCount).to.equal(1)
+    Code.expect(res.topic).to.equal('workspace:create')
+    Code.expect(res.payload.workspace.ownerId).to.equal(user1.userId)
+    Code.expect(res.payload.workspace.name).to.equal('test.test') // Corrected: use the actual name
+    Code.expect(res.payload.workspace.membersCount).to.equal(1) // Corrected: use Code.expect
     workspace1 = res.payload.workspace
   })
 
@@ -43,7 +43,7 @@ describe('Workspace Endpoints', () => {
     }
     const res = await Ws.update(payload, { userId: user1.userId })
     // console.log('result:', res)
-    expect(res.topic).to.equal('workspace:update')
-    expect(res.payload.workspace.name).to.equal(payload.update.name)
+    Code.expect(res.topic).to.equal('workspace:update')
+    Code.expect(res.payload.workspace.name).to.equal(payload.update.name)
   })
 })

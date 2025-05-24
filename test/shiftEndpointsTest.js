@@ -2,7 +2,7 @@
 
 const Code = require('@hapi/code')
 const Lab = require('@hapi/lab')
-const { describe, it, before, expect } = exports.lab = Lab.script()
+const { describe, it, before } = exports.lab = Lab.script() // Removed expect
 
 const Moment = require('moment')
 
@@ -47,10 +47,10 @@ describe('Shift Endpoints', () => {
       endDate: '2016-01-01 18:00'
     }, user1)
     // console.log('result:', res)
-    expect(res.topic).to.equal('shift:create')
-    expect(res.payload.shift.ownerId).to.equal(user1.userId)
-    expect(res.payload.shift.projectId).to.equal(project1Id)
-    expect(res.payload.shift.title).to.equal('test.test')
+    Code.expect(res.topic).to.equal('shift:create')
+    Code.expect(res.payload.shift.ownerId).to.equal(user1.userId)
+    Code.expect(res.payload.shift.projectId).to.equal(project1Id)
+    Code.expect(res.payload.shift.title).to.equal('test.test')
     shift1 = res.payload.shift
   })
 
@@ -61,8 +61,8 @@ describe('Shift Endpoints', () => {
     }
     const res = await Shift.update(payload, user1)
     // console.log('result:', res)
-    expect(res.topic).to.equal('shift:update')
-    expect(res.payload.shift.title).to.equal(payload.update.title)
+    Code.expect(res.topic).to.equal('shift:update')
+    Code.expect(res.payload.shift.title).to.equal(payload.update.title)
   })
 
   it('user1 updates the shift start date in various ways', async () => {
@@ -72,20 +72,20 @@ describe('Shift Endpoints', () => {
     }
     let res = await Shift.update(payload, user1)
     // console.log('result:', res)
-    expect(res.payload.shift.startDate.toJSON()).to.include('2016-06-01')
+    Code.expect(res.payload.shift.startDate.toJSON()).to.include('2016-06-01')
 
     try {
       payload.update = { startDate: '16 May 2016' }
       await Shift.update(payload, user1)
       throw new Error('Expected validation error!')
     } catch (reason) {
-      expect(reason.output.payload.message).to.include('valid ISO 8601')
+      Code.expect(reason.output.payload.message).to.include('must be in ISO 8601 date format')
     }
 
     payload.update = { startDate: '2016-05-10T10:00:00.500Z' }
     res = await Shift.update(payload, user1)
     // console.log('result:', res)
-    expect(res.payload.shift.startDate.toJSON()).to.include('2016-05-10T10:00:00.500Z')
+    Code.expect(res.payload.shift.startDate.toJSON()).to.include('2016-05-10T10:00:00.500Z')
   })
 
   it('user1 assigns user2 to shift', async () => {
@@ -95,8 +95,8 @@ describe('Shift Endpoints', () => {
     }
     const res = await Shift.update(payload, user1)
     // console.log('result:', res.payload.shift)
-    expect(res.topic).to.equal('shift:update')
-    expect(res.payload.shift.assignee).to.equal(user2.userId)
+    Code.expect(res.topic).to.equal('shift:update')
+    Code.expect(res.payload.shift.assignee).to.equal(user2.userId)
   })
 
   it('user2 fails to update shift since he’s not a project admin nor the shift owner', async () => {
@@ -109,7 +109,7 @@ describe('Shift Endpoints', () => {
       throw new Error('Expected operation to throw!')
     } catch (reason) {
       // console.log('reason=', reason)
-      expect(reason.output.payload.message).to.include('Is not project owner or admin')
+      Code.expect(reason.output.payload.message).to.include('Is not project owner or admin')
     }
   })
 
@@ -119,14 +119,14 @@ describe('Shift Endpoints', () => {
       await Shift.remove(payload, user2)
       throw new Error('Expected operation to throw!')
     } catch (reason) {
-      expect(reason.output.payload.message).to.include('Is not project owner or admin')
+      Code.expect(reason.output.payload.message).to.include('Is not project owner or admin')
     }
   })
 
   it('user1 deletes shift', async () => {
     const payload = { shiftId: shift1._id.toString() }
     const res = await Shift.remove(payload, user1)
-    expect(res.topic).to.equal('shift:remove')
-    expect(res.payload.shiftId).to.equal(shift1._id.toString())
+    Code.expect(res.topic).to.equal('shift:remove')
+    Code.expect(res.payload.shiftId).to.equal(shift1._id.toString())
   })
 })

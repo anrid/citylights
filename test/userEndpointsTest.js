@@ -2,7 +2,7 @@
 
 const Code = require('@hapi/code')
 const Lab = require('@hapi/lab')
-const { describe, it, before, expect } = exports.lab = Lab.script()
+const { describe, it, before } = exports.lab = Lab.script() // Removed expect
 
 const Db = require('./databaseHelper.js')
 const UserEndpoints = require('../api/endpoints/userEndpoints.js')
@@ -42,21 +42,21 @@ describe('User Endpoints', () => {
     { userId: user1.userId })
     // console.log('res=', res.payload.user.profile)
     // console.log('res=', res.payload.profile)
-    expect(res.topic).to.equal('user:invite:successful')
-    expect(res.payload.user.email).to.equal('punx.phil@test.test')
-    expect(res.payload.workspace._id.toString()).to.equal(workspaceId)
-    expect(res.payload.workspace.membersCount).to.equal(2)
+    Code.expect(res.topic).to.equal('user:invite:successful')
+    Code.expect(res.payload.user.email).to.equal('punx.phil@test.test')
+    Code.expect(res.payload.workspace._id.toString()).to.equal(workspaceId)
+    Code.expect(res.payload.workspace.membersCount).to.equal(2)
 
-    expect(res.payload.user.profile.title).to.include('Prog')
-    expect(res.payload.profile.profile.title).to.include('Prog')
-    expect(res.payload.user.profile.photo).to.include('groundhog')
-    expect(res.payload.profile.profile.photo).to.include('groundhog')
+    Code.expect(res.payload.user.profile.title).to.include('Prog')
+    Code.expect(res.payload.profile.profile.title).to.include('Prog')
+    Code.expect(res.payload.user.profile.photo).to.include('groundhog')
+    Code.expect(res.payload.profile.profile.photo).to.include('groundhog')
 
     // Save for later !
     philId = res.payload.user._id.toString()
 
-    expect(res.payload.profile.userId).to.equal(philId)
-    expect(res.payload.profile.workspaceId).to.equal(workspaceId)
+    Code.expect(res.payload.profile.userId).to.equal(philId)
+    Code.expect(res.payload.profile.workspaceId).to.equal(workspaceId)
   })
 
   it('user1 sets his own first name to “Admin”', async () => {
@@ -67,9 +67,9 @@ describe('User Endpoints', () => {
     },
     { userId: user1.userId })
     // console.log('res=', res.payload)
-    expect(res.topic).to.equal('user:update')
-    expect(res.payload.user.firstName).to.equal('Admin')
-    expect(res.payload.user.lastName).to.not.exist()
+    Code.expect(res.topic).to.equal('user:update')
+    Code.expect(res.payload.user.firstName).to.equal('Admin')
+    Code.expect(res.payload.user.lastName).to.not.exist()
   })
 
   it('user1 fixes the glaring a typo Phil’s first name !', async () => {
@@ -80,9 +80,9 @@ describe('User Endpoints', () => {
     },
     { userId: user1.userId })
     // console.log('res=', res.payload)
-    expect(res.topic).to.equal('user:update')
-    expect(res.payload.user.firstName).to.equal('Punxsutawney')
-    expect(res.payload.user.lastName).to.equal('Phil')
+    Code.expect(res.topic).to.equal('user:update')
+    Code.expect(res.payload.user.firstName).to.equal('Punxsutawney')
+    Code.expect(res.payload.user.lastName).to.equal('Phil')
   })
 
   it('user1 updates the title in his work profile', async () => {
@@ -93,9 +93,9 @@ describe('User Endpoints', () => {
     },
     { userId: user1.userId })
     // console.log('res=', res.payload)
-    expect(res.topic).to.equal('user:updateWorkProfile')
-    expect(res.payload.profile.userId).to.equal(user1.userId)
-    expect(res.payload.profile.profile.title).to.equal('Yip Sifu')
+    Code.expect(res.topic).to.equal('user:updateWorkProfile')
+    Code.expect(res.payload.profile.userId).to.equal(user1.userId)
+    Code.expect(res.payload.profile.profile.title).to.equal('Yip Sifu')
   })
 
   it('user1 updates Phil’s title', async () => {
@@ -106,8 +106,8 @@ describe('User Endpoints', () => {
     },
     { userId: user1.userId })
     // console.log('res=', res.payload)
-    expect(res.topic).to.equal('user:updateWorkProfile')
-    expect(res.payload.profile.userId).to.equal(philId)
-    expect(res.payload.profile.profile.title).to.include('Prognosticators')
+    Code.expect(res.topic).to.equal('user:updateWorkProfile')
+    Code.expect(res.payload.profile.userId).to.equal(philId)
+    Code.expect(res.payload.profile.profile.title).to.include('Prognosticators')
   })
 })

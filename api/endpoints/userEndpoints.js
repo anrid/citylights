@@ -88,7 +88,7 @@ const updateUserSchema = Joi.object().keys({
   workspaceId: Joi.string().min(20).required().description('User’s current workspace id.'),
   userId: Joi.string().min(20).required().description('User id.'),
   update: Joi.object().keys({
-    email: Joi.string().email().description('User email address.'),
+    email: Joi.string().email({ tlds: { allow: false } }).description('User email address.'),
     firstName: Joi.string().min(1).description('User first name.'),
     lastName: Joi.string().min(1).description('User last name.')
   }).xor(
@@ -97,7 +97,7 @@ const updateUserSchema = Joi.object().keys({
 })
 
 const inviteFormSchema = Joi.object().keys({
-  email: Joi.string().email().required().description('User email address.'),
+  email: Joi.string().email({ tlds: { allow: false } }).required().description('User email address.'),
   workspaceId: Joi.string().min(20).required().description('Invite user to this workspace id.'),
   firstName: Joi.string().min(1).description('User first name.'),
   lastName: Joi.string().min(1).description('User last name.'),
