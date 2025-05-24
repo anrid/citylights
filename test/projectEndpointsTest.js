@@ -1,8 +1,8 @@
 'use strict'
 
-const Code = require('@hapi/code')
+const Code = require('@hapi/code') // Use Code directly
 const Lab = require('@hapi/lab')
-const { describe, it, before, expect } = exports.lab = Lab.script()
+const { describe, it, before } = exports.lab = Lab.script() // Removed expect
 
 const Db = require('./databaseHelper.js')
 const Project = require('../api/endpoints/projectEndpoints.js')
@@ -38,10 +38,10 @@ describe('Project Endpoints', () => {
       workspaceId: workspace1Id
     }, user1)
     // console.log('result:', res)
-    expect(res.topic).to.equal('project:create')
-    expect(res.payload.project.ownerId).to.equal(user1.userId)
-    expect(res.payload.project.admins[0]).to.equal(user1.userId)
-    expect(res.payload.project.title).to.equal('test.test')
+    Code.expect(res.topic).to.equal('project:create')
+    Code.expect(res.payload.project.ownerId).to.equal(user1.userId)
+    Code.expect(res.payload.project.admins[0]).to.equal(user1.userId)
+    Code.expect(res.payload.project.title).to.equal('test.test')
     project1 = res.payload.project
   })
 
@@ -52,8 +52,8 @@ describe('Project Endpoints', () => {
     }
     const res = await Project.update(payload, user1)
     // console.log('result:', res)
-    expect(res.topic).to.equal('project:update')
-    expect(res.payload.project.title).to.equal(payload.update.title)
+    Code.expect(res.topic).to.equal('project:update')
+    Code.expect(res.payload.project.title).to.equal(payload.update.title)
   })
 
   it('user1 updates the project start date in various ways', async () => {
@@ -63,20 +63,20 @@ describe('Project Endpoints', () => {
     }
     let res = await Project.update(payload, user1)
     // console.log('result:', res)
-    expect(res.payload.project.startDate.toJSON()).to.include('2016-06-01')
+    Code.expect(res.payload.project.startDate.toJSON()).to.include('2016-06-01')
 
     try {
       payload.update = { startDate: '16 May 2016' }
       await Project.update(payload, user1)
       throw new Error('Expected validation error!') // Replaces Code.fail
     } catch (reason) {
-      expect(reason.output.payload.message).to.include('valid ISO 8601')
+      Code.expect(reason.output.payload.message).to.include('must be in ISO 8601 date format')
     }
 
     payload.update = { startDate: '2016-05-10T10:00:00.500Z' }
     res = await Project.update(payload, user1)
     // console.log('result:', res)
-    expect(res.payload.project.startDate.toJSON()).to.include('2016-05-10T10:00:00.500Z')
+    Code.expect(res.payload.project.startDate.toJSON()).to.include('2016-05-10T10:00:00.500Z')
   })
 
   it('user1 adds user2 as a project member', async () => {
@@ -86,9 +86,9 @@ describe('Project Endpoints', () => {
     }
     const res = await Project.addMember(payload, user1)
     // console.log('result:', res.payload.project)
-    expect(res.topic).to.equal('project:update')
-    expect(res.payload.project.members.length).to.equal(1)
-    expect(res.payload.project.members[0]).to.equal(user2.userId)
+    Code.expect(res.topic).to.equal('project:update')
+    Code.expect(res.payload.project.members.length).to.equal(1)
+    Code.expect(res.payload.project.members[0]).to.equal(user2.userId)
   })
 
   it('user2 updates the project title as a newly added project member', async () => {
@@ -98,8 +98,8 @@ describe('Project Endpoints', () => {
     }
     const res = await Project.update(payload, user2)
     // console.log('result:', res)
-    expect(res.topic).to.equal('project:update')
-    expect(res.payload.project.title).to.equal(payload.update.title)
+    Code.expect(res.topic).to.equal('project:update')
+    Code.expect(res.payload.project.title).to.equal(payload.update.title)
   })
 
   it('user2 fails to delete project since he’s not a project admin', async () => {
@@ -108,7 +108,7 @@ describe('Project Endpoints', () => {
       await Project.remove(payload, user2)
       throw new Error('Expected operation to throw!') // Replaces Code.fail
     } catch (reason) {
-      expect(reason.output.payload.message).to.include('Cannot delete project')
+      Code.expect(reason.output.payload.message).to.include('Cannot delete project')
     }
   })
 
@@ -119,9 +119,9 @@ describe('Project Endpoints', () => {
     }
     const res = await Project.removeMember(payload, user1)
     // console.log('result:', res.payload.project)
-    expect(res.topic).to.equal('project:update')
-    expect(res.payload.project.members.length).to.equal(0)
-    expect(res.payload.project.admins[0]).to.equal(user1.userId)
+    Code.expect(res.topic).to.equal('project:update')
+    Code.expect(res.payload.project.members.length).to.equal(0)
+    Code.expect(res.payload.project.admins[0]).to.equal(user1.userId)
   })
 
   it('user2 fails to update project title since he’s no longer a member', async () => {
@@ -134,15 +134,15 @@ describe('Project Endpoints', () => {
       throw new Error('Expected operation to throw!') // Replaces Code.fail
     } catch (reason) {
       // console.log('result:', reason)
-      expect(reason.output.payload.message).to.include('Cannot find a valid project')
+      Code.expect(reason.output.payload.message).to.include('Cannot find a valid project')
     }
   })
 
   it('user1 deletes project', async () => {
     const payload = { projectId: project1._id.toString() }
     const res = await Project.remove(payload, user1)
-    expect(res.topic).to.equal('project:remove')
-    expect(res.payload.projectId).to.equal(project1._id.toString())
+    Code.expect(res.topic).to.equal('project:remove')
+    Code.expect(res.payload.projectId).to.equal(project1._id.toString())
   })
 
   it('user1 fails to update deleted project', async () => {
@@ -155,7 +155,7 @@ describe('Project Endpoints', () => {
       throw new Error('Expected operation to throw!') // Replaces Code.fail
     } catch (reason) {
       // console.log('result:', reason)
-      expect(reason.output.payload.message).to.include('Cannot find a valid project')
+      Code.expect(reason.output.payload.message).to.include('Cannot find a valid project')
     }
   })
 })
