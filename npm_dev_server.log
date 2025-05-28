@@ -1,0 +1,11 @@
+
+> citylights@0.6.8 dev
+> vite
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+Port 8999 is in use, trying another one...
+
+  VITE v6.3.5  ready in 611 ms
+
+  ➜  Local:   http://localhost:9000/
+  ➜  Network: http://192.168.0.2:9000/

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>CityLights</title>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://fina.io/img/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+      .pl-app-loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #ccc;
+        width: 100vw;
+        height: 100vh;
+      }
+      .pl-app-loader .fa-spin {
+        position: relative;
+        top: 50%;
+        left: 50%;
+        margin-top: -80px;
+        margin-left: -80px;
+        width: auto;
+        height: auto;
+        font-size: 10em;
+      }
+    </style>
+
+    <script>
+      // Configuration for the application, e.g., API URL
+      // This might need to be replaced by environment variables or a different configuration strategy with Vite
+      // For now, keeping a similar structure but removing Webpack specific parts.
+      // The actual API_URL might be injected via Vite's env variables (import.meta.env.VITE_API_URL)
+      // or handled by the proxy settings in vite.config.js
+      window.Config = {
+        // API_URL will be handled by the proxy in Vite.
+        // If specific client-side knowledge of the API base is needed,
+        // it could be set via Vite's environment variables, e.g., import.meta.env.VITE_API_BASE_URL
+      };
+    </script>
+
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css"
+      rel="stylesheet" type="text/css" />
+
+  </head>
+<body>
+
+  <div id="pl-app">
+    <!-- The React application will be mounted here -->
+  </div>
+
+  <div class="pl-app-loader">
+    <i class="fa fa-circle-o-notch fa-spin pl-app-loader"></i>
+  </div>
+
+  <!--
+    The Socket.IO script might need to be adjusted.
+    If the socket server is on the same domain as the frontend after proxying,
+    this might work as is. Otherwise, it may need a full URL
+    or be configured through the application.
+  -->
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script type="module" src="/app/index.js"></script>
+</body>
+</html>
