@@ -10,13 +10,12 @@ import { Router, Route, hashHistory } from 'react-router'
 import { syncHistoryWithStore } from 'react-router-redux'
 
 import * as apiClient from '../lib/apiClient'
+import { SOCKET_IO_URL } from '../config'; // Import the SOCKET_IO_URL
 import * as settingsActions from '../actions/settingsActions'
 import { receiveBackendEvent } from '../actions/backendActions'
 
-// Check app config.
-if (!window.Config) {
-  console.error('Missing app config, remember to set `window.Config` !')
-}
+// window.Config is no longer used for API_URL
+// The configuration is now handled by import.meta.env and app/config.js
 
 // Create an empty store, or one with fixtures depending on the
 // mode we’re in.
@@ -36,7 +35,7 @@ const identity = store.getState().settings.identity
 
 // Connect to our backend.
 apiClient.connect({
-  url: window.Config.API_URL,
+  url: SOCKET_IO_URL, // Use the imported SOCKET_IO_URL
   accessToken: identity && identity.accessToken
 })
 

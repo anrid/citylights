@@ -31,19 +31,32 @@ function createNewRelease (_manifestFile) {
 
     const assetsDir = Path.dirname(manifestFile)
     const version = process.env.npm_package_version
-    const assets = JSON.parse(Fs.readFileSync(manifestFile))
-    const files = Object.keys(assets).map((x) => (
-      Path.join(assetsDir, Path.basename(assets[x].js))
-    ))
-    Hoek.assert(files && files.length, 'No files found!')
+    const assets = JSON.parse(Fs.readFileSync(manifestFile)); // Keep this line
+    const filesToUpload = []; // Use a new variable name
+    for (const key in assets) { // Iterate over Vite manifest entries
+        const assetInfo = assets[key];
+        if (assetInfo.file) { // Vite stores the output file path in the 'file' property
+            // assetInfo.file is relative to the build output directory (assetsDir)
+            // e.g., "assets/index.abcdef.js"
+            const fullFilePath = Path.join(assetsDir, assetInfo.file);
+            if (Fs.existsSync(fullFilePath)) { // Check if the file actually exists
+                filesToUpload.push(fullFilePath);
+            } else {
+                console.warn(`Manifest lists file ${fullFilePath} but it does not exist. Skipping.`);
+            }
+        }
+    }
+    // Update the assertion to use the new variable and potentially a more specific message
+    Hoek.assert(filesToUpload && filesToUpload.length, 'No asset files found in Vite manifest to upload!');
 
     console.log(`
     Creating new release.
     Version: ${version}
-    Files:   ${files.length}
+    Files:   ${filesToUpload.length}
     `)
 
-    const items = createItems(files)
+    // Ensure the 'createItems' function is called with the new list
+    const items = createItems(filesToUpload);
     items.push(createReleaseManifest(version, items, assets))
 
     // Check if items are already on our CDN.
