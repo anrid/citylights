@@ -1,10 +1,22 @@
 'use strict'
 
 import React, { Component } from 'react'
+import PropTypes from 'prop-types' // Import PropTypes
 import { connect } from 'react-redux'
-import { Motion, spring } from 'react-motion'
+// import { Motion, spring } from 'react-motion'
 
-const springModel = {
+// const springModel = {
+//   stiffness: 40,
+//   damping: 1,
+//   precision: 0.001
+// }
+
+// const fadeModel = {
+//   stiffness: 40,
+//   damping: 20
+// }
+
+const springModel = { // Placeholder
   stiffness: 40,
   damping: 1,
   precision: 0.001
@@ -25,19 +37,19 @@ class Loader extends Component {
     if (!isAppLoaded) {
       return (
         <div className='pl-loading'>
-          <Motion
+          {/* <Motion
             defaultStyle={{ scale: 0.8, fade: 0 }}
             style={{ scale: spring(1, springModel), fade: spring(1, fadeModel) }}
           >
-            {({ scale, fade }) => (
-              <div className='pl-loading__text' style={{
+            {({ scale, fade }) => ( */}
+          <div className='pl-loading__text' /* style={{
                 transform: `scale(${scale},${scale})`,
                 opacity: fade
-              }}>
-                Loading..
-              </div>
-            )}
-          </Motion>
+              }} */>
+            Loading..
+          </div>
+          {/* )}
+          </Motion> */}
         </div>
       )
     }
@@ -50,7 +62,7 @@ class Loader extends Component {
 }
 
 Loader.propTypes = {
-  page: React.PropTypes.any.isRequired
+  page: PropTypes.any.isRequired // Use PropTypes.any
 }
 
 function mapStateToProps (state, props) {
