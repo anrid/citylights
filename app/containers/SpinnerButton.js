@@ -1,6 +1,7 @@
 'use strict'
 
 import React, { Component } from 'react'
+import PropTypes from 'prop-types' // Import PropTypes
 import { connect } from 'react-redux'
 
 import './SpinnerButton.scss'
@@ -31,7 +32,7 @@ class SpinnerButton extends Component {
 }
 
 SpinnerButton.propTypes = {
-  onClick: React.PropTypes.func.isRequired
+  onClick: PropTypes.func.isRequired // Use PropTypes.func
 }
 
 function mapStateToProps (state) {

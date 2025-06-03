@@ -1,6 +1,7 @@
 'use strict'
 
 import React, { Component } from 'react'
+import PropTypes from 'prop-types' // Import PropTypes
 import classnames from 'classnames'
 
 import './Button.scss'
@@ -25,5 +26,5 @@ export default class Button extends Component {
 }
 
 Button.propTypes = {
-  kind: React.PropTypes.oneOf(['primary', 'warning'])
+  kind: PropTypes.oneOf(['primary', 'warning']) // Use PropTypes.oneOf
 }

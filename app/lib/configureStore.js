@@ -1,7 +1,7 @@
 'use strict'
 
 import { createStore, applyMiddleware, combineReducers } from 'redux'
-import thunk from 'redux-thunk'
+import { thunk } from 'redux-thunk' // Corrected import
 import reducers from '../reducers'
 import { hashHistory } from 'react-router'
 import { routerMiddleware } from 'react-router-redux'

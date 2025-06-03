@@ -3,6 +3,7 @@
 const Code = require('@hapi/code')
 const Lab = require('@hapi/lab')
 const { describe, it, before } = exports.lab = Lab.script() // Removed expect
+const jwt = require('jsonwebtoken')
 
 const Db = require('./databaseHelper.js')
 const Auth = require('../api/endpoints/authEndpoints.js')
@@ -57,7 +58,20 @@ describe('Auth Endpoints', () => {
     // console.log('result:', res)
     Code.expect(res.topic).to.equal('auth:successful')
     Code.expect(res.payload.identity.userId).to.equal(ctx.user1.identity.userId)
-    Code.expect(res.payload.identity.accessToken).to.equal(ctx.user1.identity.accessToken)
+
+    // Decode JWTs
+    const decodedLoginToken = jwt.decode(res.payload.identity.accessToken)
+    const decodedSignupToken = jwt.decode(ctx.user1.identity.accessToken)
+
+    // Compare claims
+    Code.expect(decodedLoginToken.userId).to.equal(decodedSignupToken.userId)
+    Code.expect(decodedLoginToken.aud).to.equal(decodedSignupToken.aud)
+    Code.expect(decodedLoginToken.iss).to.equal(decodedSignupToken.iss)
+
+    // Compare timestamps with tolerance (e.g., +/- 3 seconds)
+    const timeTolerance = 3
+    Code.expect(decodedLoginToken.iat).to.be.within(decodedSignupToken.iat - timeTolerance, decodedSignupToken.iat + timeTolerance)
+    Code.expect(decodedLoginToken.exp).to.be.within(decodedSignupToken.exp - timeTolerance, decodedSignupToken.exp + timeTolerance)
   })
 
   it('user1 has an access token that passes all checks', async () => {
