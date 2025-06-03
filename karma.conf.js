@@ -65,7 +65,7 @@ module.exports = function (config) {
           "assert": require.resolve("assert/"),
           "process/browser": require.resolve("process/browser"), // Ensure this specific path can be resolved if needed
           "url": false,
-          "util": false,
+          "util": false, 
           "zlib": false,
           "crypto": false,
           "tty": false,
