@@ -2,31 +2,32 @@
 
 import React from 'react'
 import { Provider } from 'react-redux'
-import TestUtils from 'react-addons-test-utils'
+import { render as rtlRender, fireEvent } from '@testing-library/react'
 import * as apiClient from './apiClient'
-
 import configureStore from './configureStore'
 
-export function withStore (component, initialState) {
-  const store = configureStore({ initialState })
-  return (
-    <Provider store={store}>
-      {component}
-    </Provider>
-  )
+// Helper function to render with Redux store
+function renderWithProviders (
+  ui,
+  { initialState, store = configureStore({ initialState }), ...renderOptions } = {}
+) {
+  function Wrapper ({ children }) {
+    return <Provider store={store}>{children}</Provider>
+  }
+  const rendered = rtlRender(ui, { wrapper: Wrapper, ...renderOptions })
+  return {
+    ...rendered,
+    store // Return the store instance
+  }
 }
 
+// Re-export render function, which can now also serve for renderAndReturnStore
 export function render (component, initialState) {
-  return TestUtils.renderIntoDocument(withStore(component, initialState))
+  return renderWithProviders(component, { initialState })
 }
 
 export function renderAndReturnStore (component, initialState) {
-  const store = configureStore({ initialState })
-  const root = TestUtils.renderIntoDocument(withStore(component, initialState))
-  return {
-    root,
-    store
-  }
+  return renderWithProviders(component, { initialState })
 }
 
 export function resetApi () {
@@ -37,22 +38,32 @@ export function getOutgoingApiMessage () {
   return apiClient.getMessageBuffer().first()
 }
 
-export function findAll (tree, className) {
-  return TestUtils.scryRenderedDOMComponentsWithClass(tree, className)
+// Replaces TestUtils.scryRenderedDOMComponentsWithClass
+export function findAllByClassName (container, className) {
+  return container.getElementsByClassName(className)
 }
 
-export function click (node) {
-  return TestUtils.Simulate.click(node)
+// Replaces TestUtils.Simulate.click
+export function click (element) {
+  return fireEvent.click(element)
 }
 
-export function change (node) {
-  return TestUtils.Simulate.change(node)
+// Replaces TestUtils.Simulate.change
+// Note: For input elements, you might need to provide event properties like { target: { value: '...' } }
+export function change (element, eventProperties) {
+  return fireEvent.change(element, eventProperties)
 }
 
-export function matchOne (tree, className, pattern) {
+export function matchOne (container, className, pattern) {
   const re = new RegExp(pattern)
-  const res = findAll(tree, className)
-  .map((x) => x.outerHTML)
-  .filter((x) => x.match(re))
-  return res.length > 0
+  const elements = findAllByClassName(container, className)
+  for (let i = 0; i < elements.length; i++) {
+    if (re.test(elements[i].outerHTML) || re.test(elements[i].textContent)) {
+      return true
+    }
+  }
+  return false
 }
+
+// Export other utilities from @testing-library/react if needed directly in tests
+export { fireEvent }
