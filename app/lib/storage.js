@@ -14,7 +14,7 @@ function _get (key) {
   if (data) {
     return JSON.parse(data)
   }
-  return { }
+  return null
 }
 
 function _set (key, value) {

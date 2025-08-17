@@ -11,7 +11,15 @@ async function getById(workspaceId) {
 
 async function getList(userId) {
   T.String(userId)
-  return MemberService.getWorkspaces(userId)
+  const workspaceIds = await MemberService.getWorkspaces(userId)
+  
+  // Get the actual workspace objects
+  const workspaces = await Promise.all(
+    workspaceIds.map(id => Workspace.findOne({ _id: id, isEnabled: true, isDeleted: false }))
+  )
+  
+  // Filter out any null results
+  return workspaces.filter(workspace => workspace !== null)
 }
 
 async function create(name, ownerId) {

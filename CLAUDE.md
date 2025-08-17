@@ -97,3 +97,4 @@ Railway handles TLS termination automatically - no TLS configuration needed.
 - **State Management**: Use useSelector/useDispatch instead of connect()
 - **Error Handling**: Add defensive programming (null checks, fallbacks)
 - **File Structure**: Keep .jsx extension for React components
+- Don't commit and push all the time, ask me before you do it

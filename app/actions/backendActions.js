@@ -2,6 +2,7 @@
 import * as userActions from './userActions'
 import * as settingsActions from './settingsActions'
 import { setServerStatus, setAppLoadingStatus, setIdentity } from '../store/settingsSlice'
+import { receiveUser, receiveUserList } from '../store/usersSlice'
 import * as workspaceActions from './workspaceActions'
 import * as projectActions from './projectActions'
 import * as shiftActions from './shiftActions'
@@ -61,7 +62,7 @@ export function receiveBackendEvent (event) {
         return dispatch(settingsActions.clearIdentity())
 
       case 'user:invite:successful':
-        dispatch(userActions.receiveUser(event.payload.user))
+        dispatch(receiveUser({ user: event.payload.user }))
         dispatch(workspaceActions.receiveWorkspace(event.payload.workspace))
         return
 
@@ -77,8 +78,8 @@ export function receiveBackendEvent (event) {
 
 function onAppStarter (payload) {
   return (dispatch, getState) => {
-    dispatch(userActions.receiveUser(payload.user))
-    dispatch(userActions.receiveUserList(payload.userList))
+    dispatch(receiveUser({ user: payload.user }))
+    dispatch(receiveUserList({ userList: payload.userList }))
 
     dispatch(workspaceActions.receiveWorkspaceList(payload.workspaceList))
     dispatch(workspaceActions.receiveWorkspace(payload.workspace))

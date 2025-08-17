@@ -1,6 +1,6 @@
 'use strict'
 
-import React, { Component } from 'react'
+import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import Moment from 'moment'
 
@@ -11,67 +11,56 @@ import ConsultantCard from '../../containers/ConsultantCard'
 import Button from '../../planner/Button'
 import ColorPicker from '../widgets/ColorPicker'
 
-export default class ShiftPropertiesForm extends Component {
-  constructor (props) {
-    super(props)
-    this.onDelete = this.onDelete.bind(this)
-    this.onValueChange = this.onValueChange.bind(this)
-    this.onAssignConsultant = this.onAssignConsultant.bind(this)
-    this.onSave = this.onSave.bind(this)
-    this.onSaveColor = this.onSaveColor.bind(this)
-    this.state = {
-      showConsultantsWidget: false,
-      errors: null,
-      shift: null
-    }
-  }
+function ShiftPropertiesForm(props) {
+  const [showConsultantsWidget, setShowConsultantsWidget] = useState(false)
+  const [errors, setErrors] = useState(null)
+  const [shift, setShift] = useState(null)
 
-  onDelete () {
-    const { shift, actions } = this.props
+  const onDelete = useCallback(() => {
+    const { shift: originalShift, actions } = props
     actions.setPropertiesPanelOpen(false)
-    actions.removeShift(shift._id)
-  }
+    actions.removeShift(originalShift._id)
+  }, [props])
 
-  onSaveColor (color) {
-    const { shift, actions } = this.props
+  const onSaveColor = useCallback((color) => {
+    const { shift: originalShift, actions } = props
     console.log('saving color:', color)
-    actions.updateShift(shift._id, 'color', color)
-  }
+    actions.updateShift(originalShift._id, 'color', color)
+  }, [props])
 
-  onAssignConsultant (userId) {
+  const onAssignConsultant = useCallback((userId) => {
     console.log('onAssignConsultant, userId=', userId)
-    const { shift, actions } = this.props
-    actions.assignConsultant(shift._id, userId)
-  }
+    const { shift: originalShift, actions } = props
+    actions.assignConsultant(originalShift._id, userId)
+  }, [props])
 
-  onValueChange (section, fieldName) {
+  const onValueChange = useCallback((section, fieldName) => {
     return (event) => {
-      const shift = Object.assign(
-        this.state[section] || { },
-        { [fieldName]: event.target.value }
-      )
-      this.setState({ shift })
-    }
-  }
-
-  onSave () {
-    const newShift = this.state.shift
-    const { shift, actions } = this.props
-    Object.keys(newShift).forEach((x) => {
-      if (shift[x] !== newShift[x]) {
-        console.log('Saving', x, newShift[x])
-        actions.updateShift(shift._id, x, newShift[x])
+      const updatedShift = {
+        ...shift,
+        [fieldName]: event.target.value
       }
-    })
-  }
+      setShift(updatedShift)
+    }
+  }, [shift])
 
-  hasError (name) {
-    const { errors } = this.state
+  const onSave = useCallback(() => {
+    const { shift: originalShift, actions } = props
+    if (shift) {
+      Object.keys(shift).forEach((x) => {
+        if (originalShift[x] !== shift[x]) {
+          console.log('Saving', x, shift[x])
+          actions.updateShift(originalShift._id, x, shift[x])
+        }
+      })
+    }
+  }, [shift, props])
+
+  const hasError = useCallback((name) => {
     return errors && errors[name]
-  }
+  }, [errors])
 
-  renderError (name) {
-    const { errors } = this.state
+  const renderError = useCallback((name) => {
     if (!errors || !errors[name]) {
       return null
     }
@@ -80,21 +69,18 @@ export default class ShiftPropertiesForm extends Component {
         {errors[name]}
       </div>
     )
-  }
+  }, [errors])
 
-  renderAssigeesSection () {
-    const { showConsultantsWidget } = this.state
-    const { shift } = this.props
+  const renderAssigeesSection = useCallback(() => {
+    const { shift: originalShift } = props
 
     const toggle = () => {
-      this.setState({
-        showConsultantsWidget: !this.state.showConsultantsWidget
-      })
+      setShowConsultantsWidget(!showConsultantsWidget)
     }
 
     return (
       <div className='pl-form__section'>
-        <div className={'pl-form__row' + (this.hasError('title') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('title') ? '--error' : '')}>
           <div className='pl-form__section-label'>Assignees</div>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Consultants</div>
@@ -104,28 +90,28 @@ export default class ShiftPropertiesForm extends Component {
             <div className='pl-shift-properties-form__consultants-widget'>
               {showConsultantsWidget && (
                 <ConsultantsWidget
-                  selected={[shift.assignee]}
-                  onSelect={this.onAssignConsultant}
+                  selected={[originalShift.assignee]}
+                  onSelect={onAssignConsultant}
                   onClose={toggle}
                 />
               )}
             </div>
             <div className='pl-shift-properties-form__assignees'>
-              <ConsultantCard userId={shift.assignee} />
+              <ConsultantCard userId={originalShift.assignee} />
             </div>
           </div>
         </div>
       </div>
     )
-  }
+  }, [showConsultantsWidget, hasError, onAssignConsultant, props])
 
-  renderMiscSection () {
+  const renderMiscSection = useCallback(() => {
     return (
       <div className='pl-form__section'>
         <div className='pl-form__row'>
           <div className='pl-form__section-label'>Delete Shift</div>
           <div className='pl-form__input'>
-            <Button onClick={this.onDelete}>
+            <Button onClick={onDelete}>
               <i className='fa fa-fw fa-plus' />Delete Shift
             </Button>
             <div className='pl-form__help-text'>
@@ -138,55 +124,55 @@ export default class ShiftPropertiesForm extends Component {
         </div>
       </div>
     )
-  }
+  }, [onDelete])
 
-  renderShiftInformationSection () {
-    const { shift } = this.props
+  const renderShiftInformationSection = useCallback(() => {
+    const { shift: originalShift } = props
     return (
       <div className='pl-form__section'>
-        <div className={'pl-form__row' + (this.hasError('title') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('title') ? '--error' : '')}>
           <div className='pl-form__section-label'>Shift information</div>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Title</div>
             <input type='text'
-              defaultValue={shift.title}
-              onChange={this.onValueChange('shift', 'title')}
-              onBlur={this.onSave}
+              defaultValue={originalShift.title}
+              onChange={onValueChange('shift', 'title')}
+              onBlur={onSave}
             />
-          {this.renderError('title')}
+          {renderError('title')}
           </div>
         </div>
 
-        <div className={'pl-form__row' + (this.hasError('startDate') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('startDate') ? '--error' : '')}>
           <div className='pl-form__section-label'/>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Start Date</div>
             <input type='text'
               placeholder='e.g. 2016-05-01 10:00'
-              defaultValue={Moment(shift.startDate).format('YYYY-MM-DD HH:mm')}
-              onChange={this.onValueChange('shift', 'startDate')}
-              onBlur={this.onSave}
+              defaultValue={Moment(originalShift.startDate).format('YYYY-MM-DD HH:mm')}
+              onChange={onValueChange('shift', 'startDate')}
+              onBlur={onSave}
             />
             <div className='pl-form__help-text'>
               Date and time formats are flexible,
               e.g. both 5/1/2016 10:00am and 2016-05-01 10:00:00
               represent the May 1st 2016 at 10:00 am.
             </div>
-          {this.renderError('startDate')}
+          {renderError('startDate')}
           </div>
         </div>
 
-        <div className={'pl-form__row' + (this.hasError('endDate') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('endDate') ? '--error' : '')}>
           <div className='pl-form__section-label'/>
           <div className='pl-form__input'>
             <div className='pl-form__label'>End Date</div>
             <input type='text'
               placeholder='e.g. 2016-05-01 18:00'
-              defaultValue={Moment(shift.endDate).format('YYYY-MM-DD HH:mm')}
-              onChange={this.onValueChange('shift', 'endDate')}
-              onBlur={this.onSave}
+              defaultValue={Moment(originalShift.endDate).format('YYYY-MM-DD HH:mm')}
+              onChange={onValueChange('shift', 'endDate')}
+              onBlur={onSave}
             />
-          {this.renderError('endDate')}
+          {renderError('endDate')}
           </div>
         </div>
 
@@ -194,43 +180,43 @@ export default class ShiftPropertiesForm extends Component {
           <div className='pl-form__section-label'/>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Color</div>
-            <ColorPicker selected={shift.color} onSelect={this.onSaveColor} />
+            <ColorPicker selected={originalShift.color} onSelect={onSaveColor} />
           </div>
         </div>
 
-        <div className={'pl-form__row' + (this.hasError('rateHour') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('rateHour') ? '--error' : '')}>
           <div className='pl-form__section-label'/>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Hourly Rate (US dollars)</div>
             <input type='text'
               placeholder='e.g. 29.95'
-              defaultValue={shift.rateHour}
-              onChange={this.onValueChange('shift', 'rateHour')}
-              onBlur={this.onSave}
+              defaultValue={originalShift.rateHour}
+              onChange={onValueChange('shift', 'rateHour')}
+              onBlur={onSave}
             />
             <div className='pl-form__help-text'>
               The hourly rate in USD.
             </div>
-          {this.renderError('rateHour')}
+          {renderError('rateHour')}
           </div>
         </div>
 
       </div>
     )
-  }
+  }, [hasError, renderError, onValueChange, onSave, onSaveColor, props])
 
-  render () {
-    return (
-      <section className='pl-shift-properties-form'>
-        {this.renderShiftInformationSection()}
-        {this.renderAssigeesSection()}
-        {this.renderMiscSection()}
-      </section>
-    )
-  }
+  return (
+    <section className='pl-shift-properties-form'>
+      {renderShiftInformationSection()}
+      {renderAssigeesSection()}
+      {renderMiscSection()}
+    </section>
+  )
 }
 
 ShiftPropertiesForm.propTypes = {
   shift: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired
 }
+
+export default ShiftPropertiesForm

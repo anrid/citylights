@@ -4,6 +4,7 @@ import T from 'tcomb'
 import AccessService from './accessService.js'
 import MemberService from './memberService.js'
 import WorkspaceProfileService from './workspaceProfileService.js'
+import WorkspaceService from './workspaceService.js'
 
 import User from './userModel.js'
 import UserPassword from './userPasswordModel.js'
@@ -122,13 +123,20 @@ async function invite(opts, actorId) {
     await UserPassword.createRandomPassword(user)
   }
 
-  const response = await MemberService.addUserToWorkspace(
+  await MemberService.addUserToWorkspace(
     user._id.toString(),
     opts.workspaceId,
     { profile }
   )
 
-  return response
+  // Get the workspace information
+  const workspace = await WorkspaceService.getById(opts.workspaceId)
+
+  return {
+    user,
+    workspace,
+    profile
+  }
 }
 
 async function logout(accessToken) {

@@ -18,9 +18,18 @@ async function getStarter(workspaceId, userId) {
     const workspace = await Workspace.findOne({ _id: workspaceId })
     const workspaceList = await Workspace.find({ ownerId: userId })
     
+    // Get all users in the workspace
+    console.log('StarterService: Getting users for workspace:', workspaceId)
+    const userList = await UserService.getByWorkspaceId(workspaceId)
+    console.log('StarterService: Found users:', userList.length, userList.map(u => `${u.firstName} ${u.lastName} (${u.email})`))
+    
+    // Debug: Check workspace members
+    const memberIds = await MemberService.getAllMembers(workspaceId)
+    console.log('StarterService: Member IDs for workspace:', memberIds)
+    
     return {
       user,
-      userList: [user], // Just include the current user for now
+      userList,
       workspace,
       workspaceList,
       projectList: [],

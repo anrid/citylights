@@ -1,9 +1,8 @@
 'use strict'
 
-import React, { Component } from 'react'
+import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
 import * as settingsActions from '../actions/settingsActions'
 import * as projectActions from '../actions/projectActions'
@@ -20,63 +19,78 @@ import Button from './Button'
 import ConsultantsWidget from '../containers/ConsultantsWidget'
 import ShiftHours from './ShiftHours'
 
-class ProjectRow extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      showMembersWidget: false,
-      open: false
-    }
-    this.onToggleOpen = this.onToggleOpen.bind(this)
-    this.onToggleMember = this.onToggleMember.bind(this)
-    this.onToggleMembersWidget = this.onToggleMembersWidget.bind(this)
-    this.onShowProperties = this.onShowProperties.bind(this)
-    this.onActionMenuClick = this.onActionMenuClick.bind(this)
+function ProjectRow({ projectId, pivotDate, showHours }) {
+  const dispatch = useDispatch()
+  
+  // Get data from Redux store
+  const project = useSelector(state => state.projects.data[projectId])
+  const usersData = useSelector(state => state.users.data)
+  const members = project.members.map((x) => usersData[x])
+  const shifts = useSelector(state => projectsToShiftsMapSelector(state)[project._id] || [])
+  
+  const userId = useSelector(state => state.settings.identity.userId)
+  const isOwner = project.ownerId === userId
+  const isAdmin = project.admins.find((x) => x === userId)
+  const isOwnerOrAdmin = isOwner || isAdmin
+
+  const [showMembersWidget, setShowMembersWidget] = useState(false)
+  const [open, setOpen] = useState(false)
+
+  // Create actions object
+  const actions = {
+    ...Object.keys(settingsActions).reduce((acc, key) => {
+      acc[key] = (...args) => dispatch(settingsActions[key](...args))
+      return acc
+    }, {}),
+    ...Object.keys(projectActions).reduce((acc, key) => {
+      acc[key] = (...args) => dispatch(projectActions[key](...args))
+      return acc
+    }, {}),
+    ...Object.keys(shiftActions).reduce((acc, key) => {
+      acc[key] = (...args) => dispatch(shiftActions[key](...args))
+      return acc
+    }, {})
   }
 
-  onActionMenuClick (item) {
+  const onActionMenuClick = useCallback((item) => {
     console.log('onActionMenuClick, item=', item)
-    const { project, actions } = this.props
     if (item._id === 'REMOVE_PROJECT') {
       actions.removeProject(project._id)
     }
-  }
+  }, [actions, project])
 
-  onShowProperties () {
-    const { project, actions } = this.props
+  const onShowProperties = useCallback(() => {
     actions.showProjectProperties(project._id)
-  }
+  }, [actions, project])
 
-  onToggleOpen () {
-    this.setState({ open: !this.state.open })
-  }
+  const onToggleOpen = useCallback(() => {
+    setOpen(prevOpen => !prevOpen)
+  }, [])
 
-  onToggleMember (userId) {
+  const onToggleMember = useCallback((userId) => {
     console.log('onToggleMember, userId=', userId)
-    const { project, actions } = this.props
     actions.toggleProjectMember(project._id, userId)
-  }
+  }, [actions, project])
 
-  onToggleMembersWidget () {
-    this.setState({
-      showMembersWidget: !this.state.showMembersWidget
-    })
-  }
+  const onToggleMembersWidget = useCallback(() => {
+    setShowMembersWidget(prevShow => !prevShow)
+  }, [])
 
-  renderInnerRow () {
-    const { open, showMembersWidget } = this.state
+  const renderProjectLabel = useCallback(() => {
+    const colors = ['gray', 'amber', 'green', 'red', 'teal', 'blue', 'purple', 'brown']
+    const color = colors[project.color]
+    return (
+      <div className={
+        'pl-time-planner-project-row__label ' +
+        'pl-time-planner-project-row__' + color
+      } />
+    )
+  }, [project])
+
+  const renderInnerRow = useCallback(() => {
     if (!open) {
       return null
     }
-    const {
-      project,
-      shifts,
-      members,
-      pivotDate,
-      actions,
-      isOwnerOrAdmin,
-      showHours
-    } = this.props
 
     const actionMenu = []
     if (isOwnerOrAdmin) {
@@ -85,7 +99,7 @@ class ProjectRow extends Component {
 
     return (
       <div className='pl-time-planner-project-row__inner'>
-        {this.renderProjectLabel()}
+        {renderProjectLabel()}
         <div className='pl-time-planner-project-row__inner__members'>
           {members.map((x) => {
             const memberShifts = shifts.filter((y) => y.assignee === x._id)
@@ -107,41 +121,28 @@ class ProjectRow extends Component {
             textOnly
             selected='Actions ..'
             items={actionMenu}
-            onSelect={this.onActionMenuClick}
+            onSelect={onActionMenuClick}
             closeOnSelect
           />
           <div className='pl-time-planner-project-row__assign'
-            onClick={this.onToggleMembersWidget}>
+            onClick={onToggleMembersWidget}>
             <Button>
               <i className='fa fa-fw fa-plus' /> Assign Person
             </Button>
             {showMembersWidget && (
               <ConsultantsWidget
                 selected={members.map((x) => x._id)}
-                onSelect={this.onToggleMember}
-                onClose={this.onToggleMembersWidget}
+                onSelect={onToggleMember}
+                onClose={onToggleMembersWidget}
               />
             )}
           </div>
         </div>
       </div>
     )
-  }
+  }, [open, isOwnerOrAdmin, members, shifts, project, pivotDate, actions, showHours, showMembersWidget, onActionMenuClick, onToggleMembersWidget, onToggleMember, renderProjectLabel])
 
-  renderProjectLabel () {
-    const { project } = this.props
-    const colors = ['gray', 'amber', 'green', 'red', 'teal', 'blue', 'purple', 'brown']
-    const color = colors[project.color]
-    return (
-      <div className={
-        'pl-time-planner-project-row__label ' +
-        'pl-time-planner-project-row__' + color
-      } />
-    )
-  }
-
-  getStats () {
-    const { project, members, shifts } = this.props
+  const getStats = useCallback(() => {
     let _stats = []
     if (!project.noMembers && members.length) {
       _stats.push(members.length + ' ' + (members.length !== 1 ? 'members' : 'member'))
@@ -150,87 +151,49 @@ class ProjectRow extends Component {
       _stats.push(shifts.length + ' ' + (shifts.length !== 1 ? 'shifts' : 'shift'))
     }
     return _stats.length ? _stats.join('. ') + '.' : null
+  }, [project, members, shifts])
+
+  let rowCls = 'pl-time-planner-project-row-wrapper '
+  let angleCls = 'fa fa-angle-down'
+  if (open) {
+    rowCls += 'pl-time-planner-project-row-wrapper--open'
+    angleCls = 'fa fa-angle-up'
   }
 
-  render () {
-    const { project, showHours } = this.props
-    const { open } = this.state
-
-    let rowCls = 'pl-time-planner-project-row-wrapper '
-    let angleCls = 'fa fa-angle-down'
-    if (open) {
-      rowCls += 'pl-time-planner-project-row-wrapper--open'
-      angleCls = 'fa fa-angle-up'
-    }
-
-    return (
-      <section className={rowCls}>
-        <section className='pl-time-planner-project-row'>
-          <div className='pl-time-planner-project-row__left'>
-            <div className='pl-time-planner-project-row__info'>
-              {this.renderProjectLabel()}
-              <div className='pl-time-planner-project-row__title'>
-                <div className='pl-time-planner-project-row__title-text'>
-                  {project.title}
-                </div>
-                <div className='pl-time-planner-project-row__edit-project' onClick={this.onShowProperties}>
-                  edit
-                </div>
+  return (
+    <section className={rowCls}>
+      <section className='pl-time-planner-project-row'>
+        <div className='pl-time-planner-project-row__left'>
+          <div className='pl-time-planner-project-row__info'>
+            {renderProjectLabel()}
+            <div className='pl-time-planner-project-row__title'>
+              <div className='pl-time-planner-project-row__title-text'>
+                {project.title}
               </div>
-              <div className='pl-time-planner-project-row__stats'>
-                {this.getStats()}
+              <div className='pl-time-planner-project-row__edit-project' onClick={onShowProperties}>
+                edit
               </div>
             </div>
-            <i className={angleCls} onClick={this.onToggleOpen} />
+            <div className='pl-time-planner-project-row__stats'>
+              {getStats()}
+            </div>
           </div>
-          <div className='pl-time-planner-project-row__right'>
-            {showHours && <ShiftHours {...this.props} />}
-            <ShiftsRow {...this.props} preview />
-          </div>
-        </section>
-        {this.renderInnerRow()}
+          <i className={angleCls} onClick={onToggleOpen} />
+        </div>
+        <div className='pl-time-planner-project-row__right'>
+          {showHours && <ShiftHours project={project} members={members} shifts={shifts} pivotDate={pivotDate} actions={actions} showHours={showHours} />}
+          <ShiftsRow project={project} members={members} shifts={shifts} pivotDate={pivotDate} actions={actions} preview />
+        </div>
       </section>
-    )
-  }
+      {renderInnerRow()}
+    </section>
+  )
 }
 
 ProjectRow.propTypes = {
-  project: PropTypes.object.isRequired,
-  members: PropTypes.array.isRequired,
-  shifts: PropTypes.array.isRequired,
+  projectId: PropTypes.string.isRequired,
   pivotDate: PropTypes.any.isRequired,
   showHours: PropTypes.bool
 }
 
-function mapStateToProps (state, { projectId }) {
-  const project = state.projects.data[projectId]
-  let members = project.members.map((x) => state.users.data[x])
-  const shifts = projectsToShiftsMapSelector(state)[project._id] || []
-
-  const userId = state.settings.identity.userId
-  const isOwner = project.ownerId === userId
-  const isAdmin = project.admins.find((x) => x === userId)
-
-  return {
-    project,
-    members,
-    shifts,
-    usersMap: state.users.data,
-    isOwnerOrAdmin: isOwner || isAdmin
-  }
-}
-
-function mapDispatchToProps (dispatch) {
-  return {
-    actions: bindActionCreators({
-      ...settingsActions,
-      ...projectActions,
-      ...shiftActions
-    }, dispatch)
-  }
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ProjectRow)
+export default ProjectRow

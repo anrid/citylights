@@ -1,7 +1,7 @@
 'use strict'
 
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
+import React, { useState, useCallback } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import Moment from 'moment'
 
 import { request } from '../lib/apiClient'
@@ -13,66 +13,57 @@ import './ConsultantForm.scss'
 import SpinnerButton from './SpinnerButton.jsx'
 import Button from '../planner/Button'
 
-class ConsultantForm extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      consultant: {
-        email: '',
-        firstName: '',
-        lastName: '',
-        phoneWork: '',
-        title: '',
-        photo: null
-      },
-      errors: null
-    }
-    this.onValueChange = this.onValueChange.bind(this)
-    this.onSaveConsultantForm = this.onSaveConsultantForm.bind(this)
-    this.onReturn = this.onReturn.bind(this)
-  }
+function ConsultantForm() {
+  const dispatch = useDispatch()
+  const workspaceId = useSelector(state => state.settings.saved.workspaceId)
+  const userId = useSelector(state => state.settings.identity.userId)
+  
+  const [consultant, setConsultant] = useState({
+    email: '',
+    firstName: '',
+    lastName: '',
+    phoneWork: '',
+    title: '',
+    photo: null
+  })
+  const [errors, setErrors] = useState(null)
 
-  onValueChange (fieldName) {
+  const onValueChange = useCallback((fieldName) => {
     return (event) => {
-      const consultant = Object.assign(
-        this.state.consultant,
-        { [fieldName]: event.target.value }
-      )
-      this.setState({ consultant })
+      setConsultant(prevConsultant => ({
+        ...prevConsultant,
+        [fieldName]: event.target.value
+      }))
     }
-  }
+  }, [])
 
-  onSaveConsultantForm () {
-    const { workspaceId } = this.props
+  const onReturn = useCallback(() => {
+    dispatch(settingsActions.routeTo('/consultants'))
+  }, [dispatch])
+
+  const onSaveConsultantForm = useCallback(() => {
     const data = {
-      ...this.state.consultant,
+      ...consultant,
       workspaceId
     }
 
     // Reset form errors on submit.
-    // this.setState({ errors: null })
+    // setErrors(null)
 
     request('user:invite', data)
-    .then(this.onReturn)
+    .then(onReturn)
     .catch((reason) => {
       if (reason.info && reason.info.error) {
-        this.setState({ errors: reason.info.error.details })
+        setErrors(reason.info.error.details)
       }
     })
-  }
+  }, [consultant, workspaceId, onReturn])
 
-  onReturn () {
-    const { dispatch } = this.props
-    dispatch(settingsActions.routeTo('/consultants'))
-  }
-
-  hasError (name) {
-    const { errors } = this.state
+  const hasError = useCallback((name) => {
     return errors && errors[name]
-  }
+  }, [errors])
 
-  renderError (name) {
-    const { errors } = this.state
+  const renderError = useCallback((name) => {
     if (!errors || !errors[name]) {
       return null
     }
@@ -81,14 +72,12 @@ class ConsultantForm extends Component {
         {errors[name]}
       </div>
     )
-  }
+  }, [errors])
 
-  renderUserGenerator () {
-    const generate = () => (
-      this.setState({
-        consultant: names.generateTestConsultantFormData(this.props.userId)
-      })
-    )
+  const renderUserGenerator = useCallback(() => {
+    const generate = () => {
+      setConsultant(names.generateTestConsultantFormData(userId))
+    }
 
     return (
       <div className='pl-form__row'>
@@ -104,127 +93,111 @@ class ConsultantForm extends Component {
         </div>
       </div>
     )
-  }
+  }, [userId])
 
-  renderBasicInfoSection () {
-    const { consultant } = this.state
+  const renderBasicInfoSection = useCallback(() => {
     return (
       <div className='pl-form__section'>
-        <div className={'pl-form__row' + (this.hasError('email') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('email') ? '--error' : '')}>
           <div className='pl-form__section-label'>Basic information</div>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Email</div>
             <input type='email'
               placeholder='e.g. ace@base.se'
               value={consultant.email}
-              onChange={this.onValueChange('email')}
+              onChange={onValueChange('email')}
             />
-            {this.renderError('email')}
+            {renderError('email')}
           </div>
         </div>
-        <div className={'pl-form__row' + (this.hasError('firstName') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('firstName') ? '--error' : '')}>
           <div className='pl-form__section-label'/>
           <div className='pl-form__input'>
             <div className='pl-form__label'>First name</div>
             <input type='text' className='karma-first-name'
               value={consultant.firstName}
-              onChange={this.onValueChange('firstName')}
+              onChange={onValueChange('firstName')}
             />
-            {this.renderError('firstName')}
+            {renderError('firstName')}
           </div>
         </div>
-        <div className={'pl-form__row' + (this.hasError('lastName') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('lastName') ? '--error' : '')}>
           <div className='pl-form__section-label'/>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Last name</div>
             <input type='text'
               value={consultant.lastName}
-              onChange={this.onValueChange('lastName')}
+              onChange={onValueChange('lastName')}
             />
-            {this.renderError('lastName')}
+            {renderError('lastName')}
           </div>
         </div>
       </div>
     )
-  }
+  }, [consultant, hasError, onValueChange, renderError])
 
-  renderWorkProfileSection () {
-    const { consultant } = this.state
+  const renderWorkProfileSection = useCallback(() => {
     return (
       <div className='pl-form__section'>
-        <div className={'pl-form__row' + (this.hasError('phoneWork') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('phoneWork') ? '--error' : '')}>
           <div className='pl-form__section-label'>Work Profile</div>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Phone Number (Work)</div>
             <input type='text'
               placeholder='e.g +46 18 469548'
               value={consultant.phoneWork}
-              onChange={this.onValueChange('phoneWork')}
+              onChange={onValueChange('phoneWork')}
             />
-            {this.renderError('phoneWork')}
+            {renderError('phoneWork')}
             <div className='pl-form__help-text'>
               Primary contact number for work related matters.
             </div>
           </div>
         </div>
-        <div className={'pl-form__row' + (this.hasError('title') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('title') ? '--error' : '')}>
           <div className='pl-form__section-label' />
           <div className='pl-form__input'>
             <div className='pl-form__label'>Title</div>
             <input type='text'
               placeholder='e.g Project Manager'
               value={consultant.title}
-              onChange={this.onValueChange('title')}
+              onChange={onValueChange('title')}
             />
-            {this.renderError('title')}
+            {renderError('title')}
             <div className='pl-form__help-text'>
               The consultants title or role.
             </div>
           </div>
         </div>
-        {this.renderUserGenerator()}
+        {renderUserGenerator()}
       </div>
     )
-  }
+  }, [consultant, hasError, onValueChange, renderError, renderUserGenerator])
 
-  render () {
-    return (
-      <section className='pl-form pl-consultant-form'>
-        <div className='pl-form__header'>
-          <div>Register a new Consultant</div>
-        </div>
+  return (
+    <section className='pl-form pl-consultant-form'>
+      <div className='pl-form__header'>
+        <div>Register a new Consultant</div>
+      </div>
 
-        <div className='pl-form__content'>
-          {this.renderBasicInfoSection()}
-          {this.renderWorkProfileSection()}
-        </div>
+      <div className='pl-form__content'>
+        {renderBasicInfoSection()}
+        {renderWorkProfileSection()}
+      </div>
 
-        <div className='pl-form__footer'>
-          <button
-            className='pl-cancel-button'
-            onClick={this.onReturn}
-          >
-            Back
-          </button>
-          <SpinnerButton onClick={this.onSaveConsultantForm}>
-            Create
-          </SpinnerButton>
-        </div>
-      </section>
-    )
-  }
+      <div className='pl-form__footer'>
+        <button
+          className='pl-cancel-button'
+          onClick={onReturn}
+        >
+          Back
+        </button>
+        <SpinnerButton onClick={onSaveConsultantForm}>
+          Create
+        </SpinnerButton>
+      </div>
+    </section>
+  )
 }
 
-function mapStateToProps (state) {
-  // Currently active workspaceId.
-  const { workspaceId } = state.settings.saved
-  const { userId } = state.settings.identity
-  return {
-    workspaceId,
-    userId
-  }
-}
-
-const ConnectedConsultantForm = connect(mapStateToProps, null)(ConsultantForm)
-
-export default ConnectedConsultantForm
+export default ConsultantForm

@@ -1,6 +1,6 @@
 'use strict'
 
-import React, { Component } from 'react'
+import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
 
 import './ShiftsRow.scss'
@@ -8,15 +8,8 @@ import './ShiftsRow.scss'
 import DateGrid from './DateGrid'
 import TimeItem from './TimeItem'
 
-export default class ShiftsRow extends Component {
-  renderShifts () {
-    const {
-      shifts,
-      actions,
-      pivotDate,
-      preview
-    } = this.props
-
+function ShiftsRow({ shifts, actions, pivotDate, preview, onCreateShift }) {
+  const renderShifts = useCallback(() => {
     if (preview) {
       return null
     }
@@ -33,28 +26,28 @@ export default class ShiftsRow extends Component {
         skipWeekends
       />
     ))
-  }
+  }, [shifts, actions, pivotDate, preview])
 
-  render () {
-    const { pivotDate, preview, onCreateShift } = this.props
-    return (
-      <section className='pl-time-planner-shifts-row'>
-        <DateGrid
-          size={50}
-          preview={preview}
-          skipWeekends
-          pivotDate={pivotDate}
-          onClickDate={onCreateShift}
-        />
-        {this.renderShifts()}
-      </section>
-    )
-  }
+  return (
+    <section className='pl-time-planner-shifts-row'>
+      <DateGrid
+        size={50}
+        preview={preview}
+        skipWeekends
+        pivotDate={pivotDate}
+        onClickDate={onCreateShift}
+      />
+      {renderShifts()}
+    </section>
+  )
 }
 
 ShiftsRow.propTypes = {
   shifts: PropTypes.array.isRequired,
   pivotDate: PropTypes.any.isRequired,
   actions: PropTypes.object.isRequired,
-  onCreateShift: PropTypes.func
+  onCreateShift: PropTypes.func,
+  preview: PropTypes.bool
 }
+
+export default ShiftsRow

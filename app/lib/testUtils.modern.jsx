@@ -5,12 +5,12 @@ import { BrowserRouter } from 'react-router-dom'
 import { configureStore } from '@reduxjs/toolkit'
 
 // Import all the Redux slices
-import counterSlice from '../store/counterSlice'
-import settingsSlice from '../store/settingsSlice'
-import workspacesSlice from '../store/workspacesSlice'
-import usersSlice from '../store/usersSlice'
-import projectsSlice from '../store/projectsSlice'
-import shiftsSlice from '../store/shiftsSlice'
+import counterSlice from '../store/counterSlice.js'
+import settingsSlice from '../store/settingsSlice.js'
+import workspacesSlice from '../store/workspacesSlice.js'
+import usersSlice from '../store/usersSlice.js'
+import projectsSlice from '../store/projectsSlice.js'
+import shiftsSlice from '../store/shiftsSlice.js'
 
 // Create a test store with all slices
 function createTestStore(preloadedState = {}) {
@@ -62,25 +62,24 @@ export function render(ui, options = {}) {
 
   const store = createTestStore(initialState)
 
-  function Wrapper({ children }) {
-    if (withRouter) {
-      return (
-        <Provider store={store}>
-          <BrowserRouter>
-            {children}
-          </BrowserRouter>
-        </Provider>
-      )
-    }
-    
+  const AllTheProviders = ({ children }) => {
+    const content = withRouter ? (
+      <BrowserRouter>
+        {children}
+      </BrowserRouter>
+    ) : children
+
     return (
       <Provider store={store}>
-        {children}
+        {content}
       </Provider>
     )
   }
 
-  return rtlRender(ui, { wrapper: Wrapper, ...renderOptions })
+  return {
+    store,
+    ...rtlRender(ui, { wrapper: AllTheProviders, ...renderOptions })
+  }
 }
 
 // Helper to render with store access for testing Redux interactions

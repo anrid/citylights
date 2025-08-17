@@ -1,10 +1,9 @@
 'use strict'
 
-import React, { Component } from 'react'
+import React, { useState, useCallback, useMemo, memo } from 'react'
 import PropTypes from 'prop-types'
 import { Motion, spring } from 'react-motion'
 import debounce from 'lodash.debounce'
-import PureRenderMixin from 'react-addons-pure-render-mixin'
 
 import './InputWidget.scss'
 
@@ -13,23 +12,17 @@ const springModel = {
   damping: 15
 }
 
-export default class InputWidget extends Component {
-  constructor (props) {
-    super(props)
-    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this)
-    this.onSearch = this.onSearch.bind(this)
-    this._doSearch = debounce(this.props.onSearch, 350)
-    this.state = {
-      page: 1,
-      max: 6
-    }
-    this.onNextPage = this.onNextPage.bind(this)
-  }
+const InputWidget = memo(function InputWidget({ items, onSearch, onSelect, selected, animate }) {
+  const [page, setPage] = useState(1)
+  const [max] = useState(6)
 
-  onNextPage (direction) {
-    const { items } = this.props
-    const { page, max } = this.state
+  // Create debounced search function with useMemo to avoid recreating
+  const debouncedSearch = useMemo(() => 
+    debounce(onSearch, 350), 
+    [onSearch]
+  )
 
+  const onNextPage = useCallback((direction) => {
     const pages = Math.ceil(items.length / max)
     let next = page + direction
 
@@ -39,28 +32,28 @@ export default class InputWidget extends Component {
       next = pages
     }
 
-    this.setState({ page: next })
-  }
+    setPage(next)
+  }, [items.length, max, page])
 
-  onSearch (e) {
+  const handleSearch = useCallback((e) => {
     const query = e.target.value
-    this.setState({ page: 1 })
-    this._doSearch(query)
-  }
+    setPage(1)
+    debouncedSearch(query)
+  }, [debouncedSearch])
 
-  renderSearchBox () {
+  const renderSearchBox = useCallback(() => {
     return (
       <div className='pl-form__input--with-icon'>
         <i className='fa fa-fw fa-search' />
         <input type='text'
           placeholder='Search for a Consultant'
-          onChange={this.onSearch}
+          onChange={handleSearch}
         />
       </div>
     )
-  }
+  }, [handleSearch])
 
-  renderContent (scale, fade) {
+  const renderContent = useCallback((scale, fade) => {
     let style = { }
     // Apply style when both scale and fade are neither null nor undefined.
     if (scale != null && fade != null) {
@@ -70,8 +63,6 @@ export default class InputWidget extends Component {
       }
     }
 
-    const { items, selected, onSelect } = this.props
-    const { page, max } = this.state
     const pages = Math.ceil(items.length / max)
 
     const rows = items
@@ -91,7 +82,7 @@ export default class InputWidget extends Component {
     return (
       <section className='pl-input-widget' style={style}>
         <div className='pl-input-widget__header'>
-          {this.renderSearchBox()}
+          {renderSearchBox()}
         </div>
         <div className='pl-input-widget__items'>
           {rows}
@@ -101,33 +92,30 @@ export default class InputWidget extends Component {
             Found {items.length} items. Page {page} of {pages}.
           </div>
           <div className='pl-input-widget__footer__info'>
-            {page > 1 ? <i className='fa fa-angle-left' onClick={() => this.onNextPage(-1)} /> : null}
-            {page !== pages ? <i className='fa fa-angle-right' onClick={() => this.onNextPage(1)} /> : null}
+            {page > 1 ? <i className='fa fa-angle-left' onClick={() => onNextPage(-1)} /> : null}
+            {page !== pages ? <i className='fa fa-angle-right' onClick={() => onNextPage(1)} /> : null}
           </div>
         </div>
       </section>
     )
-  }
+  }, [items, selected, onSelect, page, max, renderSearchBox, onNextPage])
 
-  renderContentWithAnimation (content) {
+  const renderContentWithAnimation = useCallback(() => {
     return (
       <Motion
         defaultStyle={{ scale: 0.8, fade: 0 }}
         style={{ scale: spring(1, springModel), fade: spring(1) }}
       >
-        {({ scale, fade }) => this.renderContent(scale, fade)}
+        {({ scale, fade }) => renderContent(scale, fade)}
       </Motion>
     )
-  }
+  }, [renderContent])
 
-  render () {
-    const { animate } = this.props
-    if (animate) {
-      return this.renderContentWithAnimation()
-    }
-    return this.renderContent()
+  if (animate) {
+    return renderContentWithAnimation()
   }
-}
+  return renderContent()
+})
 
 const InputWidgetItemWithPhoto = ({ item, onSelect, selected }) => (
   <div className='pl-input-widget-item' onClick={() => onSelect(item._id, item.type)}>
@@ -151,5 +139,8 @@ InputWidget.propTypes = {
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
   onSearch: PropTypes.func.isRequired,
   onSelect: PropTypes.func.isRequired,
+  selected: PropTypes.array,
   animate: PropTypes.bool
 }
+
+export default InputWidget

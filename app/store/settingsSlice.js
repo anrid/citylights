@@ -1,6 +1,7 @@
 'use strict'
 
 import { createSlice } from '@reduxjs/toolkit'
+import * as Storage from '../lib/storage'
 
 const initialState = {
   isConnectedToServer: false,
@@ -97,13 +98,13 @@ const settingsSlice = createSlice({
   }
 })
 
-// Export actions
+// Export basic actions (excluding setIdentity and clearIdentity which we'll create as thunks)
 export const {
   setSetting,
   setRoute,
   incSetting,
-  setIdentity,
-  clearIdentity,
+  setIdentity: setIdentityReducer,
+  clearIdentity: clearIdentityReducer,
   setServerStatus,
   setRequestStatus,
   setAppLoadingStatus,
@@ -114,6 +115,22 @@ export const {
   setServerError,
   clearServerError
 } = settingsSlice.actions
+
+// Thunk action for setIdentity that also saves to localStorage
+export const setIdentity = (identity) => (dispatch) => {
+  // Save to localStorage
+  Storage.setIdentity(identity)
+  // Update Redux state
+  dispatch(setIdentityReducer(identity))
+}
+
+// Thunk action for clearIdentity that also removes from localStorage
+export const clearIdentity = () => (dispatch) => {
+  // Remove from localStorage
+  Storage.removeIdentity()
+  // Update Redux state
+  dispatch(clearIdentityReducer())
+}
 
 // Export reducer
 export default settingsSlice.reducer

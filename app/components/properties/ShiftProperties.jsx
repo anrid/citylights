@@ -1,6 +1,6 @@
 'use strict'
 
-import React, { Component } from 'react'
+import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
 
 import './ShiftProperties.scss'
@@ -8,17 +8,14 @@ import './ShiftProperties.scss'
 import Dropdown from '../widgets/Dropdown'
 import ShiftPropertiesForm from './ShiftPropertiesForm'
 
-export default class ShiftProperties extends Component {
-  constructor (props) {
-    super(props)
-    this.onDropdownSelect = this.onDropdownSelect.bind(this)
-  }
+function ShiftProperties(props) {
+  const { shift } = props
 
-  onDropdownSelect (command) {
+  const onDropdownSelect = useCallback((command) => {
     console.log('TODO: Perform some dropdown action, command=', command)
-  }
+  }, [])
 
-  renderDropdown () {
+  const renderDropdown = useCallback(() => {
     const menuItems = [
       { _id: 1, text: 'Action #1' },
       { _id: 2, text: 'Action #2' }
@@ -29,31 +26,30 @@ export default class ShiftProperties extends Component {
         closeOnSelect
         items={menuItems}
         caretOnly
-        onSelect={this.onDropdownSelect}
+        onSelect={onDropdownSelect}
       />
     )
-  }
+  }, [onDropdownSelect])
 
-  render () {
-    const { shift } = this.props
-    return (
-      <section className='pl-box pl-shift-properties'>
-        <div className='pl-box__header'>
-          <div>Shift: {shift.title || 'Untitled'}</div>
-          {this.renderDropdown()}
-        </div>
-        <div className='pl-box__content pl-box__content--with-footer pl-box__content--no-padding'>
-          <ShiftPropertiesForm {...this.props} />
-        </div>
-        <div className='pl-box__footer'>
-          <div>Status: Planned.</div>
-        </div>
-      </section>
-    )
-  }
+  return (
+    <section className='pl-box pl-shift-properties'>
+      <div className='pl-box__header'>
+        <div>Shift: {shift.title || 'Untitled'}</div>
+        {renderDropdown()}
+      </div>
+      <div className='pl-box__content pl-box__content--with-footer pl-box__content--no-padding'>
+        <ShiftPropertiesForm {...props} />
+      </div>
+      <div className='pl-box__footer'>
+        <div>Status: Planned.</div>
+      </div>
+    </section>
+  )
 }
 
 ShiftProperties.propTypes = {
   shift: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired
 }
+
+export default ShiftProperties

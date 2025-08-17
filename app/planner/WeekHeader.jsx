@@ -1,14 +1,14 @@
 'use strict'
 
-import React, { Component } from 'react'
+import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
 import Moment from 'moment'
 import classnames from 'classnames'
 
 import './WeekHeader.scss'
 
-export default class WeekHeader extends Component {
-  getDateRange (date) {
+function WeekHeader({ pivotDate, active }) {
+  const getDateRange = useCallback((date) => {
     const start = date.clone().startOf('isoWeek')
     const end = date.clone().endOf('isoWeek')
     let fromFormat = 'D MMM'
@@ -28,39 +28,39 @@ export default class WeekHeader extends Component {
       active: Moment().isBetween(start, end),
       today: Moment().date()
     }
-  }
+  }, [])
 
-  render () {
-    const date = Moment(this.props.pivotDate)
-    const range = this.getDateRange(date)
+  const date = Moment(pivotDate)
+  const range = getDateRange(date)
 
-    return (
-      <div className='pl-time-planner-week-header'>
-        {range.active && <div className='pl-time-planner-week-header__active-bar' />}
-        <div className='pl-time-planner-week-header__week-of-year'>{date.week()}</div>
-        <div className={classnames({
-          'pl-time-planner-week-header__title': true,
-          'pl-time-planner-week-header__active': range.active
-        })}>
-          {range.title}
-        </div>
-        <div className='pl-time-planner-week-header__days'>
-          {range.days.map((x, i) => (
-            <div key={i} className={classnames({
-              'pl-time-planner-week-header__day': true,
-              'pl-time-planner-week-header__last-day': (i === range.days.length - 1),
-              'pl-time-planner-week-header__today': range.active && range.today === x
-            })}>
-              {x}
-            </div>
-          ))}
-        </div>
+  return (
+    <div className='pl-time-planner-week-header'>
+      {range.active && <div className='pl-time-planner-week-header__active-bar' />}
+      <div className='pl-time-planner-week-header__week-of-year'>{date.week()}</div>
+      <div className={classnames({
+        'pl-time-planner-week-header__title': true,
+        'pl-time-planner-week-header__active': range.active
+      })}>
+        {range.title}
       </div>
-    )
-  }
+      <div className='pl-time-planner-week-header__days'>
+        {range.days.map((x, i) => (
+          <div key={i} className={classnames({
+            'pl-time-planner-week-header__day': true,
+            'pl-time-planner-week-header__last-day': (i === range.days.length - 1),
+            'pl-time-planner-week-header__today': range.active && range.today === x
+          })}>
+            {x}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 WeekHeader.propTypes = {
   pivotDate: PropTypes.any.isRequired,
   active: PropTypes.bool
 }
+
+export default WeekHeader

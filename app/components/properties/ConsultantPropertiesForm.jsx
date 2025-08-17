@@ -1,71 +1,59 @@
 'use strict'
 
-import React, { Component } from 'react'
+import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 
 import './ConsultantPropertiesForm.scss'
 
-export default class ConsultantPropertiesForm extends Component {
-  constructor (props) {
-    super(props)
+function ConsultantPropertiesForm(props) {
+  const c = props.consultant || { }
+  const [errors, setErrors] = useState(null)
+  const [consultant, setConsultant] = useState({
+    email: c.email,
+    firstName: c.firstName,
+    lastName: c.lastName
+  })
+  const [workProfile, setWorkProfile] = useState({
+    title: c.profile.title,
+    phoneWork: c.profile.phoneWork
+  })
 
-    const c = props.consultant || { }
-    this.state = {
-      errors: null,
-      consultant: {
-        email: c.email,
-        firstName: c.firstName,
-        lastName: c.lastName
-      },
-      workProfile: {
-        title: c.profile.title,
-        phoneWork: c.profile.phoneWork
-      }
-    }
-    this.onValueChange = this.onValueChange.bind(this)
-    this.onSave = this.onSave.bind(this)
-    this.onSaveWorkProfile = this.onSaveWorkProfile.bind(this)
-  }
-
-  onValueChange (section, fieldName) {
+  const onValueChange = useCallback((section, fieldName) => {
     return (event) => {
-      const updated = Object.assign(
-        this.state[section] || { },
-        { [fieldName]: event.target.value }
-      )
-      this.setState({ [section]: updated })
+      const value = event.target.value
+      if (section === 'consultant') {
+        setConsultant(prev => ({ ...prev, [fieldName]: value }))
+      } else if (section === 'workProfile') {
+        setWorkProfile(prev => ({ ...prev, [fieldName]: value }))
+      }
     }
-  }
+  }, [])
 
-  onSave () {
-    const newInfo = this.state.consultant
-    const { consultant, actions } = this.props
-    Object.keys(newInfo).forEach((x) => {
-      if (consultant[x] !== newInfo[x]) {
-        console.log('Saving', x, newInfo[x])
-        actions.updateUser(consultant._id, x, newInfo[x])
+  const onSave = useCallback(() => {
+    const { consultant: originalConsultant, actions } = props
+    Object.keys(consultant).forEach((x) => {
+      if (originalConsultant[x] !== consultant[x]) {
+        console.log('Saving', x, consultant[x])
+        actions.updateUser(originalConsultant._id, x, consultant[x])
       }
     })
-  }
+  }, [consultant, props])
 
-  onSaveWorkProfile () {
-    const { workProfile } = this.state
-    const { consultant, actions } = this.props
+  const onSaveWorkProfile = useCallback(() => {
+    const { consultant: originalConsultant, actions } = props
     Object.keys(workProfile).forEach((x) => {
-      if (consultant.profile[x] !== workProfile[x]) {
+      if (originalConsultant.profile[x] !== workProfile[x]) {
         console.log('Saving', x, workProfile[x])
-        actions.updateWorkProfile(consultant._id, x, workProfile[x])
+        actions.updateWorkProfile(originalConsultant._id, x, workProfile[x])
       }
     })
-  }
+  }, [workProfile, props])
 
-  hasError (name) {
-    const { errors } = this.state
+  const hasError = useCallback((name) => {
     return errors && errors[name]
-  }
+  }, [errors])
 
-  renderError (name) {
-    const { errors } = this.state
+  const renderError = useCallback((name) => {
     if (!errors || !errors[name]) {
       return null
     }
@@ -74,100 +62,98 @@ export default class ConsultantPropertiesForm extends Component {
         {errors[name]}
       </div>
     )
-  }
+  }, [errors])
 
-  renderPersonalInformationFormSection () {
-    const { consultant } = this.state
+  const renderPersonalInformationFormSection = useCallback(() => {
     return (
       <div className='pl-form__section'>
-        <div className={'pl-form__row' + (this.hasError('email') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('email') ? '--error' : '')}>
           <div className='pl-form__section-label'>Personal information</div>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Email</div>
             <input type='text'
               value={consultant.email}
-              onChange={this.onValueChange('consultant', 'email')}
-              onBlur={this.onSave}
+              onChange={onValueChange('consultant', 'email')}
+              onBlur={onSave}
             />
-            {this.renderError('email')}
+            {renderError('email')}
           </div>
         </div>
 
-        <div className={'pl-form__row' + (this.hasError('firstName') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('firstName') ? '--error' : '')}>
           <div className='pl-form__section-label'/>
           <div className='pl-form__input'>
             <div className='pl-form__label'>First name</div>
             <input type='text'
               value={consultant.firstName}
-              onChange={this.onValueChange('consultant', 'firstName')}
-              onBlur={this.onSave}
+              onChange={onValueChange('consultant', 'firstName')}
+              onBlur={onSave}
             />
-            {this.renderError('firstName')}
+            {renderError('firstName')}
           </div>
         </div>
 
-        <div className={'pl-form__row' + (this.hasError('lastName') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('lastName') ? '--error' : '')}>
           <div className='pl-form__section-label'/>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Last name</div>
             <input type='text'
               value={consultant.lastName}
-              onChange={this.onValueChange('consultant', 'lastName')}
-              onBlur={this.onSave}
+              onChange={onValueChange('consultant', 'lastName')}
+              onBlur={onSave}
             />
-          {this.renderError('lastName')}
+          {renderError('lastName')}
           </div>
         </div>
       </div>
     )
-  }
+  }, [consultant, hasError, renderError, onValueChange, onSave])
 
-  renderWorkProfileFormSection () {
-    const { workProfile } = this.state
+  const renderWorkProfileFormSection = useCallback(() => {
     return (
       <div className='pl-form__section'>
-        <div className={'pl-form__row' + (this.hasError('firstName') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('firstName') ? '--error' : '')}>
           <div className='pl-form__section-label'>Work Profile</div>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Title</div>
             <input type='text'
               placeholder='e.g. Sales Representative'
               value={workProfile.title}
-              onChange={this.onValueChange('workProfile', 'title')}
-              onBlur={this.onSaveWorkProfile}
+              onChange={onValueChange('workProfile', 'title')}
+              onBlur={onSaveWorkProfile}
             />
-            {this.renderError('title')}
+            {renderError('title')}
           </div>
         </div>
 
-        <div className={'pl-form__row' + (this.hasError('phoneWork') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('phoneWork') ? '--error' : '')}>
           <div className='pl-form__section-label'/>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Phone (Work)</div>
             <input type='text'
               placeholder='e.g. +46 18 469548'
               value={workProfile.phoneWork}
-              onChange={this.onValueChange('workProfile', 'phoneWork')}
-              onBlur={this.onSaveWorkProfile}
+              onChange={onValueChange('workProfile', 'phoneWork')}
+              onBlur={onSaveWorkProfile}
             />
-          {this.renderError('phoneWork')}
+          {renderError('phoneWork')}
           </div>
         </div>
       </div>
     )
-  }
+  }, [workProfile, hasError, renderError, onValueChange, onSaveWorkProfile])
 
-  render () {
-    return (
-      <section className='pl-consultant-properties-form'>
-        {this.renderPersonalInformationFormSection()}
-        {this.renderWorkProfileFormSection()}
-      </section>
-    )
-  }
+  return (
+    <section className='pl-consultant-properties-form'>
+      {renderPersonalInformationFormSection()}
+      {renderWorkProfileFormSection()}
+    </section>
+  )
 }
 
 ConsultantPropertiesForm.propTypes = {
   consultant: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired
 }
+
+export default ConsultantPropertiesForm

@@ -18,7 +18,21 @@ function Settings() {
   
   // Redux state
   const workspaceId = useSelector(state => state.settings.saved.workspaceId)
-  const workspace = useSelector(state => state.workspaces.data[workspaceId])
+  const workspacesData = useSelector(state => state.workspaces.data)
+  
+  // If the stored workspaceId doesn't match available workspaces, use the first available one
+  const availableWorkspaceIds = Object.keys(workspacesData || {})
+  const actualWorkspaceId = workspacesData[workspaceId] ? workspaceId : availableWorkspaceIds[0]
+  const workspace = workspacesData[actualWorkspaceId]
+  
+  // Debug logging
+  console.log('Settings Debug:', {
+    storedWorkspaceId: workspaceId,
+    actualWorkspaceId,
+    workspace,
+    availableWorkspaceIds,
+    workspacesData
+  })
   
   // Local state
   const [workspaceName, setWorkspaceName] = useState(workspace?.name || '')
@@ -36,7 +50,7 @@ function Settings() {
   }
 
   if (!workspace) {
-    return <div>Loading workspace...</div>
+    return <div>Loading workspace... (stored: {workspaceId}, actual: {actualWorkspaceId}, available: {availableWorkspaceIds.join(', ')})</div>
   }
 
   return (

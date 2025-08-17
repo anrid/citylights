@@ -1,5 +1,5 @@
 
-import React, { Component } from 'react'
+import React from 'react'
 import { Provider } from 'react-redux'
 
 import configureStore from '../lib/configureStore'
@@ -47,25 +47,25 @@ const App = (props) => (
 
 const Overview = () => <div>Overview.</div>
 
-export default class AppRoot extends Component {
-  render () {
-    return (
-      <Provider store={store}>
-        <Router history={hashHistory}>
-          <Route path='/' component={WebSite}>
-            <IndexRoute component={FrontPage} />
-            <Route path='about' component={AboutPage} />
-            <Route path='login' component={Login} />
-            <Route path='signup' component={Signup} />
-          </Route>
-          <Route path='/:workspaceUrl' component={App}>
-            <IndexRoute component={Overview} />
-            <Route path='account' component={Account} />
-            <Route path='logout' component={Logout} />
-          </Route>
-          <Route path='*' component={NoMatch} />
-        </Router>
-      </Provider>
-    )
-  }
+function AppRoot() {
+  return (
+    <Provider store={store}>
+      <Router history={hashHistory}>
+        <Route path='/' component={WebSite}>
+          <IndexRoute component={FrontPage} />
+          <Route path='about' component={AboutPage} />
+          <Route path='login' component={Login} />
+          <Route path='signup' component={Signup} />
+        </Route>
+        <Route path='/:workspaceUrl' component={App}>
+          <IndexRoute component={Overview} />
+          <Route path='account' component={Account} />
+          <Route path='logout' component={Logout} />
+        </Route>
+        <Route path='*' component={NoMatch} />
+      </Router>
+    </Provider>
+  )
 }
+
+export default AppRoot

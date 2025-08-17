@@ -1,6 +1,6 @@
 'use strict'
 
-import React, { Component } from 'react'
+import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 
 import './ConsultantProperties.scss'
@@ -8,20 +8,15 @@ import './ConsultantProperties.scss'
 import Dropdown from '../widgets/Dropdown'
 import ConsultantPropertiesForm from './ConsultantPropertiesForm'
 
-export default class ConsultantProperties extends Component {
-  constructor (props) {
-    super(props)
-    this.onDropdownSelect = this.onDropdownSelect.bind(this)
-    this.state = {
-      editMode: false
-    }
-  }
+function ConsultantProperties(props) {
+  const { consultant } = props
+  const [editMode, setEditMode] = useState(false)
 
-  onDropdownSelect (command) {
+  const onDropdownSelect = useCallback((command) => {
     console.log('TODO: Perform some dropdown action, command=', command)
-  }
+  }, [])
 
-  renderDropdown () {
+  const renderDropdown = useCallback(() => {
     const menuItems = [
       { _id: 1, text: 'Action #1' },
       { _id: 2, text: 'Action #2' }
@@ -32,13 +27,12 @@ export default class ConsultantProperties extends Component {
         closeOnSelect
         items={menuItems}
         caretOnly
-        onSelect={this.onDropdownSelect}
+        onSelect={onDropdownSelect}
       />
     )
-  }
+  }, [onDropdownSelect])
 
-  renderProfile () {
-    const { consultant } = this.props
+  const renderProfile = useCallback(() => {
     if (!consultant) {
       return (
         <div className='pl-box__content-empty'>
@@ -123,36 +117,34 @@ export default class ConsultantProperties extends Component {
         </div>
       </div>
     )
-  }
+  }, [consultant])
 
-  render () {
-    const { consultant } = this.props
-    const { editMode } = this.state
-    return (
-      <section className='pl-box pl-consultant-properties'>
-        <div className='pl-box__header'>
-          <div>Consultant: {consultant.firstName} {consultant.lastName}</div>
-          {this.renderDropdown()}
-        </div>
-        <div className='pl-box__content pl-box__content--with-footer pl-box__content--no-padding'>
-          {editMode
-            ? <ConsultantPropertiesForm {...this.props} />
-            : this.renderProfile()
-          }
-        </div>
-        <div className='pl-box__footer'>
-          <div>Status: Logged in.</div>
-          {editMode
-            ? <div className='pl-link' onClick={() => this.setState({ editMode: false })}>back</div>
-            : <div className='pl-link' onClick={() => this.setState({ editMode: true })}>edit</div>
-          }
-        </div>
-      </section>
-    )
-  }
+  return (
+    <section className='pl-box pl-consultant-properties'>
+      <div className='pl-box__header'>
+        <div>Consultant: {consultant.firstName} {consultant.lastName}</div>
+        {renderDropdown()}
+      </div>
+      <div className='pl-box__content pl-box__content--with-footer pl-box__content--no-padding'>
+        {editMode
+          ? <ConsultantPropertiesForm {...props} />
+          : renderProfile()
+        }
+      </div>
+      <div className='pl-box__footer'>
+        <div>Status: Logged in.</div>
+        {editMode
+          ? <div className='pl-link' onClick={() => setEditMode(false)}>back</div>
+          : <div className='pl-link' onClick={() => setEditMode(true)}>edit</div>
+        }
+      </div>
+    </section>
+  )
 }
 
 ConsultantProperties.propTypes = {
   consultant: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired
 }
+
+export default ConsultantProperties

@@ -1,14 +1,15 @@
 'use strict'
 
-import React, { Component } from 'react'
-import ReactDOM from 'react-dom'
+import React, { useRef, useCallback, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
 import './WidgetPopup.scss'
 
-export default class WidgetPopup extends Component {
-  adjustPosition () {
-    const node = ReactDOM.findDOMNode(this.refs.popup)
+function WidgetPopup({ children, onClose }) {
+  const popupRef = useRef(null)
+
+  const adjustPosition = useCallback(() => {
+    const node = popupRef.current
     if (node) {
       const rect = node.getBoundingClientRect()
       const wx = window.innerWidth
@@ -28,30 +29,29 @@ export default class WidgetPopup extends Component {
         console.log('Widget left position adjusted:', popupLeft)
       }
     }
-  }
+  }, [])
 
-  componentDidMount () {
-    this.adjustPosition()
-  }
+  useEffect(() => {
+    adjustPosition()
+  }, [adjustPosition])
 
-  componentDidUpdate () {
-    this.adjustPosition()
-  }
+  useEffect(() => {
+    adjustPosition()
+  })
 
-  render () {
-    const { children, onClose } = this.props
-    return (
-      <section className='pl-widget-popup' ref='popup'>
-        <div className='pl-widget-popup__outside-layer' onClick={onClose} />
-        <div className='pl-widget-popup__inside' onClick={(e) => e.stopPropagation()}>
-          {children}
-        </div>
-      </section>
-    )
-  }
+  return (
+    <section className='pl-widget-popup' ref={popupRef}>
+      <div className='pl-widget-popup__outside-layer' onClick={onClose} />
+      <div className='pl-widget-popup__inside' onClick={(e) => e.stopPropagation()}>
+        {children}
+      </div>
+    </section>
+  )
 }
 
 WidgetPopup.propTypes = {
   children: PropTypes.any.isRequired,
   onClose: PropTypes.func.isRequired
 }
+
+export default WidgetPopup

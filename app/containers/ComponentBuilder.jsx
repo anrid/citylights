@@ -4,9 +4,8 @@
  * to simplify development.
  */
 
-import React, { Component } from 'react'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
+import React, { useState, useCallback, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 
 import './ComponentBuilder.scss'
 
@@ -19,43 +18,39 @@ import BasicLayout from './BasicLayout'
 import InputWidget from '../components/widgets/InputWidget'
 import Loader from './Loader'
 
-class ComponentBuilder extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      isReloading: false,
-      inputWidget: {
-        usersSelected: []
-      }
-    }
-  }
+function ComponentBuilder() {
+  const [isReloading, setIsReloading] = useState(false)
+  const [inputWidget, setInputWidget] = useState({
+    usersSelected: []
+  })
+  
+  const dispatch = useDispatch()
+  const consultantItems = useSelector(state => consultantItemsSelector(state))
+  const settings = useSelector(state => state.settings)
 
-  componentDidUpdate () {
-    if (this.state.isReloading) {
+  useEffect(() => {
+    if (isReloading) {
       console.log('Reloading in 250 ms.')
       setTimeout(() => {
         console.log('Updated !')
-        this.setState({ isReloading: false })
+        setIsReloading(false)
       }, 250)
     }
-  }
+  }, [isReloading])
 
-  renderComponents () {
-    const { isReloading } = this.state
+  const renderComponents = useCallback(() => {
     if (isReloading) {
       return <Comment>Reloading all the things ..</Comment>
     }
 
     return (
       <div className='pl-component-builder__components'>
-        {this.renderInputWidget()}
+        {renderInputWidget()}
       </div>
     )
-  }
+  }, [isReloading])
 
-  renderInputWidget () {
-    const { actions } = this.props
-
+  const renderInputWidget = useCallback(() => {
     // Render all the things !
     const inputWidgetItems = [
       { _id: 1, text: 'Ace', photo: null },
@@ -65,7 +60,7 @@ class ComponentBuilder extends Component {
     const selected = [3]
 
     const onSearch = (query) => {
-      actions.setSearchQuery({ consultantsInputWidget: query })
+      dispatch(settingsActions.setSearchQuery({ consultantsInputWidget: query }))
     }
 
     const onSelectDoNothing = (id, type) => {
@@ -74,15 +69,13 @@ class ComponentBuilder extends Component {
 
     const onSelectUser = (id, type) => {
       console.log('onSelectUser, id=', id, 'type=', type)
-      const { inputWidget } = this.state
       let selected = (inputWidget.usersSelected || [])
       if (selected.find((x) => x === id)) {
         selected = selected.filter((x) => x !== id)
       } else {
         selected = selected.concat(id)
       }
-      const updated = Object.assign({ }, inputWidget, { usersSelected: selected })
-      this.setState({ inputWidget: updated })
+      setInputWidget({ usersSelected: selected })
     }
 
     return (
@@ -93,28 +86,25 @@ class ComponentBuilder extends Component {
 
         <Comment>Standard input widget with opening animation, showing all consultants.</Comment>
         <InputWidget
-          items={this.props.consultantItems}
-          selected={this.state.inputWidget.usersSelected}
+          items={consultantItems}
+          selected={inputWidget.usersSelected}
           animate
           onSearch={onSearch}
           onSelect={onSelectUser}
         />
       </div>
     )
-  }
+  }, [dispatch, consultantItems, inputWidget.usersSelected])
 
-  render () {
-    const { isReloading } = this.state
-    return (
-      <BasicLayout className='pl-component-builder'>
-        <Comment>Developer Panel:</Comment>
-        <button onClick={() => this.setState({ isReloading: true })}>
-          {isReloading ? <i className='fa fa-cog fa-spin' /> : 'Refresh All'}
-        </button>
-        {this.renderComponents()}
-      </BasicLayout>
-    )
-  }
+  return (
+    <BasicLayout className='pl-component-builder'>
+      <Comment>Developer Panel:</Comment>
+      <button onClick={() => setIsReloading(true)}>
+        {isReloading ? <i className='fa fa-cog fa-spin' /> : 'Refresh All'}
+      </button>
+      {renderComponents()}
+    </BasicLayout>
+  )
 }
 
 const Comment = ({ children }) => (
@@ -123,28 +113,8 @@ const Comment = ({ children }) => (
   </div>
 )
 
-function mapStateToProps (state) {
-  return {
-    consultantItems: consultantItemsSelector(state),
-    settings: state.settings
-  }
-}
-
-function mapDispatchToProps (dispatch) {
-  return {
-    actions: bindActionCreators({
-      ...settingsActions
-    }, dispatch)
-  }
-}
-
-const ConnectedComponentBuilder = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ComponentBuilder)
-
 const ComponentBuilderPage = () => (
-  <Loader page={ConnectedComponentBuilder} />
+  <Loader page={ComponentBuilder} />
 )
 
 export default ComponentBuilderPage

@@ -1,12 +1,10 @@
 'use strict'
 
-import React, { Component } from 'react'
+import React, { useState, useCallback, useRef, memo } from 'react'
 import PropTypes from 'prop-types'
-import ReactDOM from 'react-dom'
 import Moment from 'moment'
 import Draggable from 'react-draggable'
 import { ResizableBox } from 'react-resizable'
-import PureRenderMixin from 'react-addons-pure-render-mixin'
 import classnames from 'classnames'
 
 import './TimeItem.scss'
@@ -17,99 +15,27 @@ import {
   getDateAsOffsetFromDate
 } from './dateUtils'
 
-export default class TimeItem extends Component {
-  constructor (props) {
-    super(props)
-    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this)
-    this.onDragStart = this.onDragStart.bind(this)
-    this.onDragging = this.onDragging.bind(this)
-    this.onDragStop = this.onDragStop.bind(this)
-    this.onResizeStart = this.onResizeStart.bind(this)
-    this.onResizing = this.onResizing.bind(this)
-    this.onResizeStop = this.onResizeStop.bind(this)
-    this.state = {
-      dateRangeOverlay: null
-    }
-  }
+const TimeItem = memo(function TimeItem({
+  shift,
+  pivotDate,
+  width,
+  onClick,
+  updateShiftAction,
+  skipWeekends,
+  unit
+}) {
+  const [dateRangeOverlay, setDateRangeOverlay] = useState(null)
+  const shiftSizeRef = useRef(null)
 
-  onDragStart (e, data) {
-    // console.log('onDragStart, data=', data)
-  }
-
-  onDragging (e, data) {
-    const range = this.calcShiftDateRange(data.x) // Use the current x value
-    this.setState({ dateRangeOverlay: range })
-  }
-
-  onDragStop (e, data) {
-    // console.log('onDragStop, data=', data)
-
-    this.setState({ dateRangeOverlay: null })
-    const { shift, updateShiftAction } = this.props
-
-    const node = ReactDOM.findDOMNode(this.refs.shiftSize)
-    const shiftWidth = node.getBoundingClientRect().width
-    const range = this.calcShiftDateRange(data.lastX, shiftWidth)
-
-    console.log('old date range:', range.start.format(), '-', range.end.format())
-    console.log('new date range:', range.newStart.format(), '-', range.newEnd.format())
-    updateShiftAction(shift._id, 'startDate', range.newStart.format())
-    updateShiftAction(shift._id, 'endDate', range.newEnd.format())
-  }
-
-  onResizeStart (e, data) {
-    // console.log('onResizeStart, data=', data)
-  }
-
-  onResizing (e, data) {
-    const { shift } = this.props
-
-    const node = ReactDOM.findDOMNode(this.refs.shiftSize)
-    const shiftWidth = node.getBoundingClientRect().width
-    const newEnd = this.calcShiftEndDate(shift.startDate, shiftWidth)
-    const range = {
-      newStart: Moment(shift.startDate),
-      newEnd
-    }
-
-    this.setState({ dateRangeOverlay: range })
-  }
-
-  onResizeStop (e, data) {
-    // console.log('onResizeStop, data=', data)
-    this.setState({ dateRangeOverlay: null })
-    const { updateShiftAction, shift } = this.props
-
-    const node = ReactDOM.findDOMNode(this.refs.shiftSize)
-    const shiftWidth = node.getBoundingClientRect().width
-    const oldEnd = Moment(shift.endDate)
-    const newEnd = this.calcShiftEndDate(shift.startDate, shiftWidth)
-    newEnd.hours(oldEnd.hours())
-    newEnd.minutes(oldEnd.minutes())
-
-    console.log('old end date:', Moment(shift.endDate).format())
-    console.log('new end date:', newEnd.format())
-    updateShiftAction(shift._id, 'endDate', newEnd.format())
-  }
-
-  calcShiftEndDate (startDate, shiftWidth) {
-    const { width, unit, skipWeekends } = this.props
+  const calcShiftEndDate = useCallback((startDate, shiftWidth) => {
     let units = Math.floor(shiftWidth / width)
     if (units < 1) {
       units = 1
     }
     return getDateAsOffsetFromDate(startDate, units - 1, unit, skipWeekends)
-  }
+  }, [width, unit, skipWeekends])
 
-  calcShiftDateRange (offsetOnGridX, shiftWidth) {
-    const {
-      pivotDate,
-      shift,
-      width,
-      unit,
-      skipWeekends
-    } = this.props
-
+  const calcShiftDateRange = useCallback((offsetOnGridX, shiftWidth) => {
     let units = Math.floor(offsetOnGridX / width)
     if (units < 0) {
       units = 0
@@ -124,7 +50,7 @@ export default class TimeItem extends Component {
     }
     newStart.add(start.minutes(), 'minutes')
 
-    const newEnd = this.calcShiftEndDate(newStart, shiftWidth)
+    const newEnd = calcShiftEndDate(newStart, shiftWidth)
     newEnd.hours(end.hours())
     newEnd.minutes(end.minutes())
 
@@ -134,11 +60,65 @@ export default class TimeItem extends Component {
       newStart,
       newEnd
     }
-  }
+  }, [shift, pivotDate, width, unit, skipWeekends, calcShiftEndDate])
 
-  renderDateRange () {
-    const { shift } = this.props
-    const { dateRangeOverlay } = this.state
+  const onDragStart = useCallback((e, data) => {
+    // console.log('onDragStart, data=', data)
+  }, [])
+
+  const onDragging = useCallback((e, data) => {
+    const range = calcShiftDateRange(data.x) // Use the current x value
+    setDateRangeOverlay(range)
+  }, [calcShiftDateRange])
+
+  const onDragStop = useCallback((e, data) => {
+    // console.log('onDragStop, data=', data)
+
+    setDateRangeOverlay(null)
+
+    const node = shiftSizeRef.current
+    const shiftWidth = node.getBoundingClientRect().width
+    const range = calcShiftDateRange(data.lastX, shiftWidth)
+
+    console.log('old date range:', range.start.format(), '-', range.end.format())
+    console.log('new date range:', range.newStart.format(), '-', range.newEnd.format())
+    updateShiftAction(shift._id, 'startDate', range.newStart.format())
+    updateShiftAction(shift._id, 'endDate', range.newEnd.format())
+  }, [shift, updateShiftAction, calcShiftDateRange])
+
+  const onResizeStart = useCallback((e, data) => {
+    // console.log('onResizeStart, data=', data)
+  }, [])
+
+  const onResizing = useCallback((e, data) => {
+    const node = shiftSizeRef.current
+    const shiftWidth = node.getBoundingClientRect().width
+    const newEnd = calcShiftEndDate(shift.startDate, shiftWidth)
+    const range = {
+      newStart: Moment(shift.startDate),
+      newEnd
+    }
+
+    setDateRangeOverlay(range)
+  }, [shift, calcShiftEndDate])
+
+  const onResizeStop = useCallback((e, data) => {
+    // console.log('onResizeStop, data=', data)
+    setDateRangeOverlay(null)
+
+    const node = shiftSizeRef.current
+    const shiftWidth = node.getBoundingClientRect().width
+    const oldEnd = Moment(shift.endDate)
+    const newEnd = calcShiftEndDate(shift.startDate, shiftWidth)
+    newEnd.hours(oldEnd.hours())
+    newEnd.minutes(oldEnd.minutes())
+
+    console.log('old end date:', Moment(shift.endDate).format())
+    console.log('new end date:', newEnd.format())
+    updateShiftAction(shift._id, 'endDate', newEnd.format())
+  }, [shift, updateShiftAction, calcShiftEndDate])
+
+  const renderDateRange = useCallback(() => {
     if (dateRangeOverlay) {
       return (
         <div className='pl-time-planner-time-item__date-range-active'>
@@ -151,81 +131,71 @@ export default class TimeItem extends Component {
         {getDateRangeString(shift.startDate, shift.endDate)}
       </div>
     )
+  }, [shift, dateRangeOverlay])
+
+  // console.log('Rendering time item, shift=', shift._id)
+
+  const start = shift.startDate
+  const end = shift.endDate
+  const pivot = Moment(pivotDate).startOf('isoWeek')
+
+  if (Moment(start).isBefore(pivot)) {
+    // Do not render shifts that start before the pivot date.
+    // TODO: handle this properly later !
+    return null
   }
 
-  render () {
-    const {
-      shift,
-      pivotDate,
-      width,
-      onClick,
-      unit,
-      skipWeekends
-    } = this.props
-    // console.log('Rendering time item, shift=', shift._id)
+  const unitsFromPivot = getDiff(pivot, start, unit, skipWeekends)
+  let shiftUnits = getDiff(start, end, unit, skipWeekends)
+  if (shiftUnits < 0) {
+    shiftUnits = 0
+  }
 
-    const start = shift.startDate
-    const end = shift.endDate
-    const pivot = Moment(pivotDate).startOf('isoWeek')
+  // console.log('Shift: unitsFromPivot=', unitsFromPivot, 'shiftUnits=', shiftUnits)
 
-    if (Moment(start).isBefore(pivot)) {
-      // Do not render shifts that start before the pivot date.
-      // TODO: handle this properly later !
-      return null
-    }
+  const offsetOnGridX = width * unitsFromPivot
+  const style = {
+    width: width + (width * shiftUnits)
+  }
 
-    const unitsFromPivot = getDiff(pivot, start, unit, skipWeekends)
-    let shiftUnits = getDiff(start, end, unit, skipWeekends)
-    if (shiftUnits < 0) {
-      shiftUnits = 0
-    }
+  const colors = ['gray', 'amber', 'green', 'red', 'teal', 'blue', 'purple', 'brown']
+  const color = colors[shift.color]
+  const cls = classnames({
+    ['pl-time-planner-time-item--' + color]: true,
+    'pl-time-planner-time-item': true
+  })
 
-    // console.log('Shift: unitsFromPivot=', unitsFromPivot, 'shiftUnits=', shiftUnits)
-
-    const offsetOnGridX = width * unitsFromPivot
-    const style = {
-      width: width + (width * shiftUnits)
-    }
-
-    const colors = ['gray', 'amber', 'green', 'red', 'teal', 'blue', 'purple', 'brown']
-    const color = colors[shift.color]
-    const cls = classnames({
-      ['pl-time-planner-time-item--' + color]: true,
-      'pl-time-planner-time-item': true
-    })
-
-    return (
-      <Draggable
-        axis='x'
-        handle='.pl-time-planner-time-item__drag-handle'
-        grid={[width, width]}
-        onStart={this.onDragStart}
-        onDrag={this.onDragging}
-        onStop={this.onDragStop}
-        cancel='.react-resizable-handle'
-        position={{ x: offsetOnGridX, y: 0 }}
-      >
-        <div className={cls} style={style} onDoubleClick={onClick}>
-          <ResizableBox
-            onResizeStart={this.onResizeStart}
-            onResizeStop={this.onResizeStop}
-            onResize={this.onResizing}
-            width={style.width} height={width}
-            minConstraints={[width, width]} maxConstraints={[2000, width]}
-            draggableOpts={{ axis: 'x', grid: [width, width] }}
-          >
-            <div className='pl-time-planner-time-item__inner' ref='shiftSize'>
-              <div className='pl-time-planner-time-item__title-box'>
-                {this.renderDateRange()}
-              </div>
+  return (
+    <Draggable
+      axis='x'
+      handle='.pl-time-planner-time-item__drag-handle'
+      grid={[width, width]}
+      onStart={onDragStart}
+      onDrag={onDragging}
+      onStop={onDragStop}
+      cancel='.react-resizable-handle'
+      position={{ x: offsetOnGridX, y: 0 }}
+    >
+      <div className={cls} style={style} onDoubleClick={onClick}>
+        <ResizableBox
+          onResizeStart={onResizeStart}
+          onResizeStop={onResizeStop}
+          onResize={onResizing}
+          width={style.width} height={width}
+          minConstraints={[width, width]} maxConstraints={[2000, width]}
+          draggableOpts={{ axis: 'x', grid: [width, width] }}
+        >
+          <div className='pl-time-planner-time-item__inner' ref={shiftSizeRef}>
+            <div className='pl-time-planner-time-item__title-box'>
+              {renderDateRange()}
             </div>
-          </ResizableBox>
-          <div className='pl-time-planner-time-item__drag-handle' onClick={(e) => e.stopPropagation()}></div>
-        </div>
-      </Draggable>
-    )
-  }
-}
+          </div>
+        </ResizableBox>
+        <div className='pl-time-planner-time-item__drag-handle' onClick={(e) => e.stopPropagation()}></div>
+      </div>
+    </Draggable>
+  )
+})
 
 TimeItem.propTypes = {
   shift: PropTypes.object.isRequired,
@@ -236,3 +206,5 @@ TimeItem.propTypes = {
   skipWeekends: PropTypes.bool,
   unit: PropTypes.string.isRequired
 }
+
+export default TimeItem

@@ -1,11 +1,8 @@
 'use strict'
 
-import React, { Component } from 'react'
-
+import React from 'react'
 import Moment from 'moment'
-
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
 import './Grid.scss'
 
@@ -15,14 +12,26 @@ import * as shiftActions from '../../actions/shiftActions'
 import BasicLayout from '../BasicLayout'
 import Loader from '../Loader'
 
-class Grid extends Component {
-  render () {
-    return (
-      <BasicLayout className='pl-grid'>
-        <GridBox {...this.props} />
-      </BasicLayout>
-    )
+function Grid() {
+  const dispatch = useDispatch()
+  const users = useSelector(state => state.users.data)
+
+  const actions = {
+    ...Object.keys(shiftActions).reduce((acc, key) => {
+      acc[key] = (...args) => dispatch(shiftActions[key](...args))
+      return acc
+    }, {}),
+    ...Object.keys(settingsActions).reduce((acc, key) => {
+      acc[key] = (...args) => dispatch(settingsActions[key](...args))
+      return acc
+    }, {})
   }
+
+  return (
+    <BasicLayout className='pl-grid'>
+      <GridBox users={users} actions={actions} />
+    </BasicLayout>
+  )
 }
 
 const GridBox = (props) => (
@@ -97,30 +106,8 @@ const GridData = (props) => {
   )
 }
 
-function mapStateToProps (state) {
-  // console.log('Grid, state=', state)
-  // const shifts = state.shifts.order.map((x) => state.shifts.data[x])
-  return {
-    users: state.users.data
-  }
-}
-
-function mapDispatchToProps (dispatch) {
-  return {
-    actions: bindActionCreators({
-      ...shiftActions,
-      ...settingsActions
-    }, dispatch)
-  }
-}
-
-const ConnectedGrid = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Grid)
-
 const GridPage = () => (
-  <Loader page={ConnectedGrid} />
+  <Loader page={Grid} />
 )
 
 export default GridPage

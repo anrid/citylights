@@ -1,8 +1,7 @@
 'use strict'
 
-import React, { Component } from 'react'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
+import React, { useCallback } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 
 import './PropertiesPanel.scss'
 
@@ -19,62 +18,39 @@ import ConsultantProperties from '../components/properties/ConsultantProperties'
 import ShiftProperties from '../components/properties/ShiftProperties'
 import ProjectProperties from '../components/properties/ProjectProperties'
 
-class PropertiesPanel extends Component {
-  renderMessage (message) {
-    return (
-      <div className='pl-modal-popup__message'>
-        {message}
-      </div>
-    )
+function PropertiesPanel() {
+  const dispatch = useDispatch()
+  
+  // Get panel state from Redux
+  const settings = useSelector(state => state.settings)
+  const propertiesPanelData = useSelector(state => state.settings.propertiesPanelData)
+  
+  // Create actions object
+  const actions = {
+    ...Object.keys(settingsActions).reduce((acc, key) => {
+      acc[key] = (...args) => dispatch(settingsActions[key](...args))
+      return acc
+    }, {}),
+    ...Object.keys(projectActions).reduce((acc, key) => {
+      acc[key] = (...args) => dispatch(projectActions[key](...args))
+      return acc
+    }, {}),
+    ...Object.keys(shiftActions).reduce((acc, key) => {
+      acc[key] = (...args) => dispatch(shiftActions[key](...args))
+      return acc
+    }, {}),
+    ...Object.keys(userActions).reduce((acc, key) => {
+      acc[key] = (...args) => dispatch(userActions[key](...args))
+      return acc
+    }, {})
   }
-
-  renderContent () {
-    const {
-      panelType,
-      panelData,
-      isLoadingData,
-      actions
-    } = this.props
-
-    if (!panelData) {
-      return this.renderMessage('Hmm.. that’s odd. No data was set for this panel.')
-    }
-    if (isLoadingData) {
-      return this.renderMessage('Loading ..')
-    }
-
-    switch (panelType) {
-      case 'consultant':
-        return <ConsultantProperties consultant={panelData} actions={actions} />
-      case 'project':
-        return <ProjectProperties project={panelData} actions={actions} />
-      case 'shift':
-        return <ShiftProperties shift={panelData} actions={actions} />
-
-      default:
-        return this.renderMessage(`Woh.. can’t handle the ${panelType} panel type yet.`)
-    }
-  }
-
-  render () {
-    const { settings, actions } = this.props
-    if (!settings.isPropertiesPanelOpen) {
-      return null
-    }
-
-    return (
-      <ModalPopup onClose={() => actions.setPropertiesPanelOpen(false)}>
-        {this.renderContent()}
-      </ModalPopup>
-    )
-  }
-}
-
-function mapStateToProps (state) {
-  // console.log('PropertiesPanel, state=', state)
+  
+  // Determine panel type and data
+  const state = useSelector(state => state)
   let panelType = null
   let panelData = null
-  const data = state.settings.propertiesPanelData
+  const data = propertiesPanelData
+  
   if (data && data.type) {
     panelType = data.type
     switch (panelType) {
@@ -92,29 +68,41 @@ function mapStateToProps (state) {
     }
   }
 
-  return {
-    panelType,
-    panelData,
-    isLoadingData: false,
-    settings: state.settings,
-    route: getRoute(state.routing)
+  const renderMessage = useCallback((message) => {
+    return (
+      <div className='pl-modal-popup__message'>
+        {message}
+      </div>
+    )
+  }, [])
+
+  const renderContent = useCallback(() => {
+    if (!panelData) {
+      return renderMessage('Hmm.. that\'s odd. No data was set for this panel.')
+    }
+
+    switch (panelType) {
+      case 'consultant':
+        return <ConsultantProperties consultant={panelData} actions={actions} />
+      case 'project':
+        return <ProjectProperties project={panelData} actions={actions} />
+      case 'shift':
+        return <ShiftProperties shift={panelData} actions={actions} />
+
+      default:
+        return renderMessage(`Woh.. can't handle the ${panelType} panel type yet.`)
+    }
+  }, [panelType, panelData, actions, renderMessage])
+
+  if (!settings.isPropertiesPanelOpen) {
+    return null
   }
+
+  return (
+    <ModalPopup onClose={() => actions.closePropertiesPanel()}>
+      {renderContent()}
+    </ModalPopup>
+  )
 }
 
-function mapDispatchToProps (dispatch) {
-  return {
-    actions: bindActionCreators({
-      ...settingsActions,
-      ...shiftActions,
-      ...projectActions,
-      ...userActions
-    }, dispatch)
-  }
-}
-
-const ConnectedPropertiesPanel = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(PropertiesPanel)
-
-export default ConnectedPropertiesPanel
+export default PropertiesPanel

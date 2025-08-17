@@ -1,6 +1,6 @@
 'use strict'
 
-import React, { Component } from 'react'
+import React, { useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 
 import './ProjectPropertiesForm.scss'
@@ -11,72 +11,56 @@ import Button from '../../planner/Button'
 import TextEditor from '../misc/TextEditor.jsx'
 import ColorPicker from '../widgets/ColorPicker'
 
-export default class ProjectPropertiesForm extends Component {
-  constructor (props) {
-    super(props)
+function ProjectPropertiesForm(props) {
+  const [showConsultantsWidget, setShowConsultantsWidget] = useState(false)
+  const [errors, setErrors] = useState(null)
+  const [project, setProject] = useState(null)
 
-    this.onValueChange = this.onValueChange.bind(this)
-    this.onToggleProjectMember = this.onToggleProjectMember.bind(this)
-
-    this.onSave = this.onSave.bind(this)
-    this.onSaveDesc = this.onSaveDesc.bind(this)
-    this.onSaveColor = this.onSaveColor.bind(this)
-
-    this.state = {
-      showConsultantsWidget: false,
-      errors: null,
-      project: null
-    }
-  }
-
-  onToggleProjectMember (userId) {
+  const onToggleProjectMember = useCallback((userId) => {
     console.log('onToggleProjectMember, userId=', userId)
-    const { project, actions } = this.props
-    actions.toggleProjectMember(project._id, userId)
-  }
+    const { project: originalProject, actions } = props
+    actions.toggleProjectMember(originalProject._id, userId)
+  }, [props])
 
-  onValueChange (section, fieldName) {
+  const onValueChange = useCallback((section, fieldName) => {
     return (event) => {
-      const project = Object.assign(
-        this.state[section] || { },
-        { [fieldName]: event.target.value }
-      )
-      this.setState({ project })
+      const updatedProject = {
+        ...project,
+        [fieldName]: event.target.value
+      }
+      setProject(updatedProject)
     }
-  }
+  }, [project])
 
-  onSave () {
-    const newProject = this.state.project
-    const { project, actions } = this.props
-    if (newProject) {
-      Object.keys(newProject).forEach((x) => {
-        if (project[x] !== newProject[x]) {
-          console.log('Saving', x, newProject[x])
-          actions.updateProject(project._id, x, newProject[x])
+  const onSave = useCallback(() => {
+    const { project: originalProject, actions } = props
+    if (project) {
+      Object.keys(project).forEach((x) => {
+        if (originalProject[x] !== project[x]) {
+          console.log('Saving', x, project[x])
+          actions.updateProject(originalProject._id, x, project[x])
         }
       })
     }
-  }
+  }, [project, props])
 
-  onSaveColor (color) {
-    const { project, actions } = this.props
+  const onSaveColor = useCallback((color) => {
+    const { project: originalProject, actions } = props
     console.log('saving color:', color)
-    actions.updateProject(project._id, 'color', color)
-  }
+    actions.updateProject(originalProject._id, 'color', color)
+  }, [props])
 
-  onSaveDesc (jsonString) {
-    const { project, actions } = this.props
+  const onSaveDesc = useCallback((jsonString) => {
+    const { project: originalProject, actions } = props
     console.log('Saving Description.')
-    actions.updateProject(project._id, 'desc', jsonString)
-  }
+    actions.updateProject(originalProject._id, 'desc', jsonString)
+  }, [props])
 
-  hasError (name) {
-    const { errors } = this.state
+  const hasError = useCallback((name) => {
     return errors && errors[name]
-  }
+  }, [errors])
 
-  renderError (name) {
-    const { errors } = this.state
+  const renderError = useCallback((name) => {
     if (!errors || !errors[name]) {
       return null
     }
@@ -85,21 +69,18 @@ export default class ProjectPropertiesForm extends Component {
         {errors[name]}
       </div>
     )
-  }
+  }, [errors])
 
-  renderAssigeesSection () {
-    const { showConsultantsWidget } = this.state
-    const { project } = this.props
+  const renderAssigeesSection = useCallback(() => {
+    const { project: originalProject } = props
 
     const toggle = () => {
-      this.setState({
-        showConsultantsWidget: !this.state.showConsultantsWidget
-      })
+      setShowConsultantsWidget(!showConsultantsWidget)
     }
 
     return (
       <div className='pl-form__section'>
-        <div className={'pl-form__row' + (this.hasError('title') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('title') ? '--error' : '')}>
           <div className='pl-form__section-label'>Project Members</div>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Consultants</div>
@@ -111,81 +92,81 @@ export default class ProjectPropertiesForm extends Component {
             <div className='pl-project-properties-form__consultants-widget'>
               {showConsultantsWidget && (
                 <ConsultantsWidget
-                  selected={project.members}
-                  onSelect={this.onToggleProjectMember}
+                  selected={originalProject.members}
+                  onSelect={onToggleProjectMember}
                   onClose={toggle}
                 />
               )}
             </div>
 
             <div className='pl-project-properties-form__members'>
-              {project.members.map((x) => <ConsultantCard key={x} userId={x} />)}
+              {originalProject.members.map((x) => <ConsultantCard key={x} userId={x} />)}
             </div>
           </div>
         </div>
       </div>
     )
-  }
+  }, [showConsultantsWidget, hasError, onToggleProjectMember, props])
 
-  renderProjectInformationSection () {
-    const { project } = this.props
+  const renderProjectInformationSection = useCallback(() => {
+    const { project: originalProject } = props
     return (
       <div className='pl-form__section'>
-        <div className={'pl-form__row' + (this.hasError('title') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('title') ? '--error' : '')}>
           <div className='pl-form__section-label'>Project information</div>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Title</div>
             <input type='text'
-              defaultValue={project.title}
-              onChange={this.onValueChange('project', 'title')}
-              onBlur={this.onSave}
+              defaultValue={originalProject.title}
+              onChange={onValueChange('project', 'title')}
+              onBlur={onSave}
             />
-          {this.renderError('title')}
+          {renderError('title')}
           </div>
         </div>
 
-        <div className={'pl-form__row' + (this.hasError('desc') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('desc') ? '--error' : '')}>
           <div className='pl-form__section-label'/>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Description</div>
             <TextEditor
-              defaultValue={project.desc}
-              onSave={this.onSaveDesc}
+              defaultValue={originalProject.desc}
+              onSave={onSaveDesc}
             />
             <div className='pl-form__help-text'>
-              The why’s and wherefore’s. Do this, not that, etc.
+              The why's and wherefore's. Do this, not that, etc.
             </div>
           </div>
         </div>
 
-        <div className={'pl-form__row' + (this.hasError('startDate') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('startDate') ? '--error' : '')}>
           <div className='pl-form__section-label'/>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Start Date</div>
             <input type='text'
               placeholder='e.g. 2016-05-01 10:00'
-              defaultValue={project.startDate}
-              onChange={this.onValueChange('project', 'startDate')}
-              onBlur={this.onSave}
+              defaultValue={originalProject.startDate}
+              onChange={onValueChange('project', 'startDate')}
+              onBlur={onSave}
             />
             <div className='pl-form__help-text'>
               E.g. 5/1/2016 10:00am or 2016-05-01 10:00
             </div>
-          {this.renderError('startDate')}
+          {renderError('startDate')}
           </div>
         </div>
 
-        <div className={'pl-form__row' + (this.hasError('dueDate') ? '--error' : '')}>
+        <div className={'pl-form__row' + (hasError('dueDate') ? '--error' : '')}>
           <div className='pl-form__section-label'/>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Due Date</div>
             <input type='text'
               placeholder='e.g. 2016-05-01 18:00'
-              defaultValue={project.dueDate}
-              onChange={this.onValueChange('project', 'dueDate')}
-              onBlur={this.onSave}
+              defaultValue={originalProject.dueDate}
+              onChange={onValueChange('project', 'dueDate')}
+              onBlur={onSave}
             />
-          {this.renderError('dueDate')}
+          {renderError('dueDate')}
           </div>
         </div>
 
@@ -193,24 +174,24 @@ export default class ProjectPropertiesForm extends Component {
           <div className='pl-form__section-label'/>
           <div className='pl-form__input'>
             <div className='pl-form__label'>Color</div>
-            <ColorPicker selected={project.color} onSelect={this.onSaveColor} />
+            <ColorPicker selected={originalProject.color} onSelect={onSaveColor} />
           </div>
         </div>
       </div>
     )
-  }
+  }, [hasError, renderError, onValueChange, onSave, onSaveDesc, onSaveColor, props])
 
-  render () {
-    return (
-      <section className='pl-project-properties-form'>
-        {this.renderProjectInformationSection()}
-        {this.renderAssigeesSection()}
-      </section>
-    )
-  }
+  return (
+    <section className='pl-project-properties-form'>
+      {renderProjectInformationSection()}
+      {renderAssigeesSection()}
+    </section>
+  )
 }
 
 ProjectPropertiesForm.propTypes = {
   project: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired
 }
+
+export default ProjectPropertiesForm

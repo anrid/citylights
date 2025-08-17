@@ -6,6 +6,7 @@
 import * as types from './actionTypes'
 import { apiRequest } from './backendActions'
 import { request } from '../lib/apiClient'
+import { setSavedSetting } from '../store/settingsSlice'
 
 import * as Storage from '../lib/storage'
 import { setSetting, setIdentity as setIdentityAction, clearIdentity as clearIdentityAction, setAppLoadingStatus } from '../store/settingsSlice'
@@ -32,8 +33,11 @@ export function initApp () {
   return (dispatch, getState) => {
     console.log('Initializing app.')
     const { identity } = getState().settings
+    console.log('Identity from state:', identity)
+    console.log('Identity check - has identity:', !!identity, 'has userId:', !!(identity && identity.userId), 'has accessToken:', !!(identity && identity.accessToken))
     const hasValidIdentity = identity && identity.userId && identity.accessToken
     if (!hasValidIdentity) {
+      console.log('Identity validation failed, clearing identity')
       dispatch(clearIdentity())
       return
     }
@@ -44,11 +48,10 @@ export function initApp () {
 export function saveSettings (settings = { }) {
   return (dispatch, getState) => {
     const saved = Object.assign({ }, getState().settings.saved, settings)
-    dispatch({
-      type: types.SET_SETTING,
-      payload: { saved }
-    })
+    console.log('saveSettings: merging', settings, 'with existing', getState().settings.saved, 'result:', saved)
+    dispatch(setSavedSetting(settings))
     Storage.setSavedSettings(saved)
+    console.log('saveSettings: saved to localStorage')
   }
 }
 

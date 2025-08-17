@@ -1,9 +1,8 @@
 'use strict'
 
-import React, { Component } from 'react'
+import React from 'react'
 import Moment from 'moment'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
 import './Planning.scss'
 
@@ -14,14 +13,29 @@ import BasicLayout from '../BasicLayout'
 import Loader from '../Loader'
 import PlanningShift from '../../components/PlanningShift'
 
-class Planning extends Component {
-  render () {
-    return (
-      <BasicLayout className='pl-planning'>
-        <PlanningBox {...this.props} />
-      </BasicLayout>
-    )
+function Planning() {
+  const dispatch = useDispatch()
+  const users = useSelector(state => state.users.data)
+  const shifts = useSelector(state => 
+    state.shifts.order.map((x) => state.shifts.data[x])
+  )
+
+  const actions = {
+    ...Object.keys(shiftActions).reduce((acc, key) => {
+      acc[key] = (...args) => dispatch(shiftActions[key](...args))
+      return acc
+    }, {}),
+    ...Object.keys(settingsActions).reduce((acc, key) => {
+      acc[key] = (...args) => dispatch(settingsActions[key](...args))
+      return acc
+    }, {})
   }
+
+  return (
+    <BasicLayout className='pl-planning'>
+      <PlanningBox users={users} shifts={shifts} actions={actions} />
+    </BasicLayout>
+  )
 }
 
 const PlanningBox = (props) => (
@@ -144,31 +158,8 @@ const PlanningMainArea = (props) => {
   )
 }
 
-function mapStateToProps (state) {
-  // console.log('Planning, state=', state)
-  const shifts = state.shifts.order.map((x) => state.shifts.data[x])
-  return {
-    users: state.users.data,
-    shifts
-  }
-}
-
-function mapDispatchToProps (dispatch) {
-  return {
-    actions: bindActionCreators({
-      ...shiftActions,
-      ...settingsActions
-    }, dispatch)
-  }
-}
-
-const ConnectedPlanning = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Planning)
-
 const PlanningPage = () => (
-  <Loader page={ConnectedPlanning} />
+  <Loader page={Planning} />
 )
 
 export default PlanningPage
