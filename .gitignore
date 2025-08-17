@@ -32,6 +32,15 @@ local.properties
 #
 node_modules/
 npm-debug.log
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Development tools
+.playwright-mcp/
+*.log
 
 # BUCK
 buck-out/
