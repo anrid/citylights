@@ -1,6 +1,6 @@
 
-const Mongoose = require('mongoose')
-const Schema = Mongoose.Schema
+import mongoose from 'mongoose'
+const Schema = mongoose.Schema
 
 const schema = new Schema({
   title: { type: String, required: true },
@@ -23,4 +23,4 @@ const schema = new Schema({
   admins: { type: Array, default: [], index: true }
 })
 
-module.exports = Mongoose.model('project', schema)
+export default mongoose.model('project', schema)

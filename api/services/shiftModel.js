@@ -1,6 +1,6 @@
 
-const Mongoose = require('mongoose')
-const Schema = Mongoose.Schema
+import mongoose from 'mongoose'
+const Schema = mongoose.Schema
 
 const schema = new Schema({
   title: { type: String, required: true },
@@ -22,4 +22,4 @@ const schema = new Schema({
   assignee: { type: String, index: true }
 })
 
-module.exports = Mongoose.model('shift', schema)
+export default mongoose.model('shift', schema)

@@ -1,18 +1,15 @@
-'use strict'
+import Joi from '@hapi/joi'
 
-const P = require('bluebird')
-const Joi = require('joi')
+import UserService from '../services/userService.js'
+import WorkspaceProfileService from '../services/workspaceProfileService.js'
+import Schemas from './schemas.js'
+import Broadcast from './broadcastHelper.js'
 
-const UserService = require('../services/userService')
-const WorkspaceProfileService = require('../services/workspaceProfileService')
-const Schemas = require('./schemas')
-const Broadcast = require('./broadcastHelper')
-
-const invite = P.coroutine(function * (payload, context) {
+const invite = async (payload, context) => {
   const valid = Schemas.validateOrThrow(payload, inviteFormSchema)
 
   // Invite user and broadcast invite.
-  const result = yield UserService.invite(valid, context.userId)
+  const result = await UserService.invite(valid, context.userId)
   const user = result.user
   const workspace = result.workspace
   const profile = result.profile
@@ -38,38 +35,42 @@ const invite = P.coroutine(function * (payload, context) {
     // Broadcast to interested parties.
     broadcast
   }
-})
-
-function update (payload, context) {
-  return P.try(() => {
-    const valid = Schemas.validateOrThrow(payload, updateUserSchema)
-    return UserService.update(valid.workspaceId, valid.userId, valid.update, context.userId)
-    .then((user) => {
-      const userId = user._id.toString()
-      return {
-        skipSender: true,
-        topic: 'user:update',
-        payload: {
-          userId,
-          user
-        }
-      }
-    })
-  })
 }
 
-function updateWorkProfile (payload, context) {
-  return P.try(() => {
-    const valid = Schemas.validateOrThrow(payload, updateWorkProfileSchema)
-    return WorkspaceProfileService.updateWorkProfile(valid.workspaceId, valid.userId, valid.update, context.userId)
-    .then((profile) => {
-      return {
-        skipSender: true,
-        topic: 'user:updateWorkProfile',
-        payload: { profile }
+async function update(payload, context) {
+  try {
+    const valid = Schemas.validateOrThrow(payload, updateUserSchema)
+    const user = await UserService.update(valid.workspaceId, valid.userId, valid.update, context.userId)
+    const userId = user._id.toString()
+    
+    return {
+      skipSender: true,
+      topic: 'user:update',
+      payload: {
+        userId,
+        user
       }
-    })
-  })
+    }
+  } catch (error) {
+    console.error('Update user failed:', error)
+    throw error
+  }
+}
+
+async function updateWorkProfile(payload, context) {
+  try {
+    const valid = Schemas.validateOrThrow(payload, updateWorkProfileSchema)
+    const profile = await WorkspaceProfileService.updateWorkProfile(valid.workspaceId, valid.userId, valid.update, context.userId)
+    
+    return {
+      skipSender: true,
+      topic: 'user:updateWorkProfile',
+      payload: { profile }
+    }
+  } catch (error) {
+    console.error('Update work profile failed:', error)
+    throw error
+  }
 }
 
 const updateWorkProfileSchema = Joi.object().keys({
@@ -106,7 +107,7 @@ const inviteFormSchema = Joi.object().keys({
   photo: Joi.string().uri({ scheme: [ /https?/ ] }).description('User photo url, starting with http(s)://')
 })
 
-module.exports = {
+export {
   invite,
   update,
   updateWorkProfile

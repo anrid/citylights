@@ -1,10 +1,8 @@
-'use strict'
-
-const Auth = require('./authEndpoints')
-const User = require('./userEndpoints')
-const Workspace = require('./workspaceEndpoints')
-const Project = require('./projectEndpoints')
-const Shift = require('./shiftEndpoints')
+import * as Auth from './authEndpoints.js'
+import * as User from './userEndpoints.js'
+import * as Workspace from './workspaceEndpoints.js'
+import * as Project from './projectEndpoints.js'
+import * as Shift from './shiftEndpoints.js'
 
 function echo (payload) {
   return {
@@ -45,4 +43,4 @@ const socketEndpoints = {
   'user:updateWorkProfile': { func: User.updateWorkProfile, auth: true }
 }
 
-module.exports = socketEndpoints
+export default socketEndpoints

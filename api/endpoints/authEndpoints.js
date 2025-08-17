@@ -1,24 +1,21 @@
-'use strict'
+import Joi from '@hapi/joi'
 
-const P = require('bluebird')
-const Joi = require('joi')
+import Jwt from '../lib/jwt.js'
+import UserService from '../services/userService.js'
+import StarterService from '../services/starterService.js'
+import WorkspaceService from '../services/workspaceService.js'
+import AccessService from '../services/accessService.js'
+import Schemas from './schemas.js'
 
-const Jwt = require('../lib/jwt')
-const UserService = require('../services/userService')
-const StarterService = require('../services/starterService')
-const WorkspaceService = require('../services/workspaceService')
-const AccessService = require('../services/accessService')
-const Schemas = require('./schemas')
-
-const checkAccessToken = P.coroutine(function * (payload) {
+const checkAccessToken = async (payload) => {
   try {
     const valid = Schemas.validateOrThrow(payload, checkAccessTokenSchema)
 
     const decoded = Jwt.verifyToken(valid.accessToken)
     const userId = decoded.userId
 
-    // Get user or throw if the account has been disabled, deleted, or doesn’t exist !
-    const user = yield AccessService.requireUser(userId)
+    // Get user or throw if the account has been disabled, deleted, or doesn't exist !
+    const user = await AccessService.requireUser(userId)
 
     return {
       topic: 'auth:token:successful',
@@ -34,21 +31,21 @@ const checkAccessToken = P.coroutine(function * (payload) {
       payload: { error: 'Blow all the tanks ! Blow everything !' }
     }
   }
-})
+}
 
-const login = P.coroutine(function * (payload) {
+const login = async (payload) => {
   const valid = Schemas.validateOrThrow(payload, loginFormSchema)
 
-  const user = yield UserService.login(valid.email, valid.password)
+  const user = await UserService.login(valid.email, valid.password)
   const userId = user._id.toString()
 
   let workspaceId = user.lastWorkspaceId
   if (!workspaceId) {
-    let workspaceList = yield WorkspaceService.getList(userId)
-    // Make sure we’ve got at least one workspace.
+    let workspaceList = await WorkspaceService.getList(userId)
+    // Make sure we've got at least one workspace.
     if (!workspaceList.length) {
       // No workspaces found for user, create a new one on-the-fly.
-      const workspace = yield WorkspaceService.create('My Workspace', userId)
+      const workspace = await WorkspaceService.create('My Workspace', userId)
       workspaceList = [ workspace ]
     }
     workspaceId = workspaceList[0]._id.toString()
@@ -68,14 +65,14 @@ const login = P.coroutine(function * (payload) {
       }
     }
   }
-})
+}
 
-const signup = P.coroutine(function * (payload) {
+const signup = async (payload) => {
   const valid = Schemas.validateOrThrow(payload, signupFormSimpleSchema)
 
-  const user = yield UserService.signup(valid)
+  const user = await UserService.signup(valid)
   const userId = user._id.toString()
-  const workspace = yield WorkspaceService.create(valid.companyName, userId)
+  const workspace = await WorkspaceService.create(valid.companyName, userId)
 
   return {
     topic: 'auth:successful',
@@ -91,25 +88,31 @@ const signup = P.coroutine(function * (payload) {
       }
     }
   }
-})
+}
 
-const logout = P.coroutine(function * (payload) {
+const logout = async (payload) => {
   const valid = Schemas.validateOrThrow(payload, logoutSchema)
-  yield UserService.logout(valid.accessToken)
+  await UserService.logout(valid.accessToken)
   return {
     topic: 'logout:successful',
     payload: { ok: 1 }
   }
-})
+}
 
-const appStarter = P.coroutine(function * (payload, context) {
+const appStarter = async (payload, context) => {
+  console.log('appStarter called with:', { payload, context })
   const valid = Schemas.validateOrThrow(payload, appStarterSchema)
-  const starter = yield StarterService.getStarter(valid.workspaceId, context.userId)
+  console.log('appStarter validated payload:', valid)
+  
+  console.log('Calling StarterService.getStarter...')
+  const starter = await StarterService.getStarter(valid.workspaceId, context.userId)
+  console.log('StarterService.getStarter returned:', starter)
+  
   return {
     topic: 'app:starter',
     payload: starter
   }
-})
+}
 
 const checkAccessTokenSchema = Joi.object().keys({
   accessToken: Joi.string().min(30).required().description('User access token.')
@@ -136,7 +139,7 @@ const appStarterSchema = Joi.object().keys({
   workspaceId: Joi.string().min(20).required().description('Current workspace id.')
 })
 
-module.exports = {
+export {
   login,
   logout,
   signup,

@@ -1,95 +1,102 @@
-'use strict'
+import Joi from '@hapi/joi'
 
-const P = require('bluebird')
-const Joi = require('joi')
+import ProjectService from '../services/projectService.js'
+import Schemas from './schemas.js'
 
-const ProjectService = require('../services/projectService')
-const Schemas = require('./schemas')
-
-function create (payload, context) {
-  return P.try(() => {
+async function create(payload, context) {
+  try {
     const valid = Schemas.validateOrThrow(payload, createProjectSchema)
-    return ProjectService.create(valid, context.userId)
-    .then((project) => {
-      const projectId = project._id.toString()
-      return {
-        topic: 'project:create',
-        payload: {
-          projectId,
-          project
-        }
+    const project = await ProjectService.create(valid, context.userId)
+    const projectId = project._id.toString()
+    
+    return {
+      topic: 'project:create',
+      payload: {
+        projectId,
+        project
       }
-    })
-  })
+    }
+  } catch (error) {
+    console.error('Create project failed:', error)
+    throw error
+  }
 }
 
-function update (payload, context) {
-  return P.try(() => {
+async function update(payload, context) {
+  try {
     const valid = Schemas.validateOrThrow(payload, updateProjectSchema)
-    return ProjectService.update(valid.projectId, valid.update, context.userId)
-    .then((project) => {
-      const projectId = project._id.toString()
-      return {
-        skipSender: true,
-        topic: 'project:update',
-        payload: {
-          projectId,
-          project
-        }
+    const project = await ProjectService.update(valid.projectId, valid.update, context.userId)
+    const projectId = project._id.toString()
+    
+    return {
+      skipSender: true,
+      topic: 'project:update',
+      payload: {
+        projectId,
+        project
       }
-    })
-  })
+    }
+  } catch (error) {
+    console.error('Update project failed:', error)
+    throw error
+  }
 }
 
-function addMember (payload, context) {
-  return P.try(() => {
+async function addMember(payload, context) {
+  try {
     const valid = Schemas.validateOrThrow(payload, addOrRemoveMemberSchema)
-    return ProjectService.addMember(valid.memberId, valid.projectId, context.userId)
-    .then((project) => {
-      const projectId = project._id.toString()
-      return {
-        skipSender: true,
-        topic: 'project:update',
-        payload: {
-          projectId,
-          project
-        }
+    const project = await ProjectService.addMember(valid.memberId, valid.projectId, context.userId)
+    const projectId = project._id.toString()
+    
+    return {
+      skipSender: true,
+      topic: 'project:update',
+      payload: {
+        projectId,
+        project
       }
-    })
-  })
+    }
+  } catch (error) {
+    console.error('Add project member failed:', error)
+    throw error
+  }
 }
 
-function removeMember (payload, context) {
-  return P.try(() => {
+async function removeMember(payload, context) {
+  try {
     const valid = Schemas.validateOrThrow(payload, addOrRemoveMemberSchema)
-    return ProjectService.removeMember(valid.memberId, valid.projectId, context.userId)
-    .then((project) => {
-      const projectId = project._id.toString()
-      return {
-        skipSender: true,
-        topic: 'project:update',
-        payload: {
-          projectId,
-          project
-        }
+    const project = await ProjectService.removeMember(valid.memberId, valid.projectId, context.userId)
+    const projectId = project._id.toString()
+    
+    return {
+      skipSender: true,
+      topic: 'project:update',
+      payload: {
+        projectId,
+        project
       }
-    })
-  })
+    }
+  } catch (error) {
+    console.error('Remove project member failed:', error)
+    throw error
+  }
 }
 
-function remove (payload, context) {
-  return P.try(() => {
+async function remove(payload, context) {
+  try {
     const valid = Schemas.validateOrThrow(payload, removeProjectSchema)
-    return ProjectService.remove(valid.projectId, context.userId)
-    .then((project) => {
-      const projectId = project._id.toString()
-      return {
-        skipSender: true,
-        topic: 'project:remove',
-        payload: { projectId }
-      }
-    })
-  })
+    const project = await ProjectService.remove(valid.projectId, context.userId)
+    const projectId = project._id.toString()
+    
+    return {
+      skipSender: true,
+      topic: 'project:remove',
+      payload: { projectId }
+    }
+  } catch (error) {
+    console.error('Remove project failed:', error)
+    throw error
+  }
 }
 
 const removeProjectSchema = Joi.object().keys({
@@ -129,7 +136,7 @@ const updateProjectSchema = Joi.object().keys({
   )
 })
 
-module.exports = {
+export {
   create,
   update,
   addMember,

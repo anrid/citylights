@@ -1,6 +1,6 @@
 
-const Mongoose = require('mongoose')
-const Schema = Mongoose.Schema
+import mongoose from 'mongoose'
+const Schema = mongoose.Schema
 
 const schema = new Schema({
   name: { type: String, required: true },
@@ -27,4 +27,4 @@ const schema = new Schema({
   }
 })
 
-module.exports = Mongoose.model('workspace', schema)
+export default mongoose.model('workspace', schema)

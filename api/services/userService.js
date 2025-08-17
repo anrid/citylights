@@ -1,74 +1,62 @@
-'use strict'
+import Boom from '@hapi/boom'
+import T from 'tcomb'
 
-const P = require('bluebird')
-const Boom = require('boom')
-const T = require('tcomb')
+import AccessService from './accessService.js'
+import MemberService from './memberService.js'
+import WorkspaceProfileService from './workspaceProfileService.js'
 
-const AccessService = require('./accessService')
-const MemberService = require('./memberService')
-const WorkspaceProfileService = require('./workspaceProfileService')
+import User from './userModel.js'
+import UserPassword from './userPasswordModel.js'
 
-const User = require('./userModel')
-const UserPassword = require('./userPasswordModel')
-
-function getById (userId) {
-  return P.try(() => {
-    T.String(userId)
-    return User.findOne({ _id: userId })
-  })
+async function getById(userId) {
+  T.String(userId)
+  return User.findOne({ _id: userId })
 }
 
-function getByEmail (email) {
-  return P.try(() => {
-    T.String(email)
-    return User.findOne({ email })
-  })
+async function getByEmail(email) {
+  T.String(email)
+  return User.findOne({ email })
 }
 
-function getByWorkspaceId (workspaceId) {
-  return P.try(() => {
-    T.String(workspaceId)
-    return MemberService.getAllMembers(workspaceId)
-    .then((all) => User.find({ _id: { $in: all } }).lean(true).exec())
-  })
+async function getByWorkspaceId(workspaceId) {
+  T.String(workspaceId)
+  const all = await MemberService.getAllMembers(workspaceId)
+  return User.find({ _id: { $in: all } }).lean(true).exec()
 }
 
-function getWorkspaceMembersWithProfiles (workspaceId) {
-  return P.try(() => {
-    T.String(workspaceId)
-    return MemberService.getAllMembers(workspaceId)
-    .then((userIds) => {
-      const p1 = User.find({ _id: { $in: userIds } }).lean(true).exec()
-      const p2 = WorkspaceProfileService.getWorkspaceProfiles({ userIds, workspaceId })
-      return P.all([p1, p2])
-    })
-    .spread((userList, workspaceProfilesList) => {
-      const profilesMap = workspaceProfilesList.reduce((acc, x) => {
-        acc[x.userId] = x.toObject().profile
-        return acc
-      }, { })
+async function getWorkspaceMembersWithProfiles(workspaceId) {
+  T.String(workspaceId)
+  const userIds = await MemberService.getAllMembers(workspaceId)
+  
+  const [userList, workspaceProfilesList] = await Promise.all([
+    User.find({ _id: { $in: userIds } }).lean(true).exec(),
+    WorkspaceProfileService.getWorkspaceProfiles({ userIds, workspaceId })
+  ])
+  
+  const profilesMap = workspaceProfilesList.reduce((acc, x) => {
+    acc[x.userId] = x.toObject().profile
+    return acc
+  }, {})
 
-      userList.forEach((user) => {
-        const id = user._id.toString()
-        const profile = profilesMap[id]
-        if (profile) {
-          // Overwrite non-null found in the user’s workspace profile.
-          Object.keys(profile).forEach((x) => {
-            if (profile[x] != null || user.profile[x] == null) {
-              user.profile[x] = profile[x]
-            }
-          })
+  userList.forEach((user) => {
+    const id = user._id.toString()
+    const profile = profilesMap[id]
+    if (profile) {
+      // Overwrite non-null found in the user's workspace profile.
+      Object.keys(profile).forEach((x) => {
+        if (profile[x] != null || user.profile[x] == null) {
+          user.profile[x] = profile[x]
         }
       })
-      return userList
-    })
+    }
   })
+  return userList
 }
 
-const login = P.coroutine(function * (email, password) {
+async function login(email, password) {
   T.String(email)
   T.String(password)
-  const user = yield User.findOne({ email })
+  const user = await User.findOne({ email })
   if (!user) {
     throw Boom.badRequest('Invalid email or password.')
   }
@@ -81,84 +69,80 @@ const login = P.coroutine(function * (email, password) {
     return user
   }
 
-  yield UserPassword.verifyPassword(password, user)
+  await UserPassword.verifyPassword(password, user)
   return user
-})
+}
 
-const signup = P.coroutine(function * (opts) {
+async function signup(opts) {
   T.String(opts.email)
 
-  const user = yield User.findOne({ email: opts.email })
+  const user = await User.findOne({ email: opts.email })
   if (user) {
     throw Boom.badRequest('Email address already registered.')
   }
 
-  const newUser = yield User.create({
+  const newUser = await User.create({
     email: opts.email,
     firstName: opts.firstName,
     lastName: opts.lastName
   })
 
   if (!opts.password) {
-    yield UserPassword.createRandomPassword(newUser)
+    await UserPassword.createRandomPassword(newUser)
   } else {
-    yield UserPassword.createPassword(opts.password, newUser)
+    await UserPassword.createPassword(opts.password, newUser)
   }
 
   return newUser
-})
+}
 
-const invite = P.coroutine(function * (opts, actorId) {
+async function invite(opts, actorId) {
   T.String(opts.email)
   T.String(opts.workspaceId)
   T.String(actorId)
 
-  yield AccessService.requireWorkspace(opts.workspaceId, actorId)
+  await AccessService.requireWorkspace(opts.workspaceId, actorId)
 
-  let user = yield User.findOne({ email: opts.email })
+  let user = await User.findOne({ email: opts.email })
   const profile = {
     phoneWork: opts.phoneWork,
     title: opts.title,
     photo: opts.photo
   }
 
-  // Sign-up user on-the-fly if they’re not our system.
+  // Sign-up user on-the-fly if they're not our system.
   if (!user) {
-    user = yield User.create({
+    user = await User.create({
       email: opts.email,
       firstName: opts.firstName,
       lastName: opts.lastName,
       profile // Create a default user profile.
     })
     // Create a temporary password.
-    UserPassword.createRandomPassword(user)
+    await UserPassword.createRandomPassword(user)
   }
 
-  const response = yield MemberService.addUserToWorkspace(
+  const response = await MemberService.addUserToWorkspace(
     user._id.toString(),
     opts.workspaceId,
     { profile }
   )
 
   return response
-})
-
-function logout (accessToken) {
-  return P.try(() => {
-    T.String(accessToken)
-    return true
-  })
 }
 
-function setLastWorkspace (userId, workspaceId) {
-  return P.try(() => {
-    T.String(userId)
-    T.String(workspaceId)
-    return P.resolve(User.findOneAndUpdate(
-      { _id: userId },
-      { $set: { lastWorkspaceId: workspaceId } }
-    ))
-  })
+async function logout(accessToken) {
+  T.String(accessToken)
+  return true
+}
+
+async function setLastWorkspace(userId, workspaceId) {
+  T.String(userId)
+  T.String(workspaceId)
+  return User.findOneAndUpdate(
+    { _id: userId },
+    { $set: { lastWorkspaceId: workspaceId } }
+  )
 }
 
 function isValid (user) {
@@ -168,29 +152,29 @@ function isValid (user) {
   throw Boom.unauthorized('User account is suspended or deleted.')
 }
 
-const update = P.coroutine(function * (workspaceId, userId, update, actorId) {
+async function update(workspaceId, userId, updateData, actorId) {
   T.String(workspaceId)
   T.String(userId)
-  T.Object(update)
+  T.Object(updateData)
   T.String(actorId)
 
   if (userId === actorId) {
     // Allow users to change their own personal data.
-    yield AccessService.requireWorkspace(workspaceId, actorId)
+    await AccessService.requireWorkspace(workspaceId, actorId)
   } else {
-    // Allow admins to change any user’s personal data.
-    yield AccessService.requireWorkspaceAsAdmin(workspaceId, actorId)
+    // Allow admins to change any user's personal data.
+    await AccessService.requireWorkspaceAsAdmin(workspaceId, actorId)
   }
 
-  const updated = yield User.findOneAndUpdate(
+  const updated = await User.findOneAndUpdate(
     { _id: userId },
-    { $set: update },
+    { $set: updateData },
     { new: true }
   )
   return updated
-})
+}
 
-module.exports = {
+export default {
   login,
   signup,
   invite,

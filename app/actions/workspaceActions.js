@@ -28,14 +28,18 @@ export function receiveWorkspace (workspace) {
   return (dispatch) => {
     // NOTE: Receiving a single workspace makes it the active workspace.
     // The `app:starter` payload must contain the currently active workspace as a single entry.
-    dispatch({
-      type: types.SET_SETTING,
-      payload: { workspaceId: workspace._id }
-    })
-    dispatch({
-      type: types.RECEIVE_WORKSPACE,
-      payload: { workspace }
-    })
+    if (workspace && workspace._id) {
+      dispatch({
+        type: types.SET_SETTING,
+        payload: { workspaceId: workspace._id }
+      })
+      dispatch({
+        type: types.RECEIVE_WORKSPACE,
+        payload: { workspace }
+      })
+    } else {
+      console.warn('receiveWorkspace called with null/invalid workspace:', workspace)
+    }
   }
 }
 

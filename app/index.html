@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Citylights</title>
+    <meta charset="utf-8">
+    <link rel="icon" type="image/png" href="https://fina.io/img/favicon.png">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+
+    <style>
+      .pl-app-loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #ccc;
+        width: 100vw;
+        height: 100vh;
+      }
+      .pl-app-loader .fa-spin {
+        position: relative;
+        top: 50%;
+        left: 50%;
+        margin-top: -80px;
+        margin-left: -80px;
+        width: auto;
+        height: auto;
+        font-size: 10em;
+      }
+    </style>
+
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css"
+      rel="stylesheet" type="text/css" />
+
+  </head>
+<body>
+
+  <div id="pl-app">
+  </div>
+
+  <div class="pl-app-loader">
+    <i class="fa fa-circle-o-notch fa-spin pl-app-loader"></i>
+  </div>
+
+  <!-- Socket.io client -->
+  <script src="http://localhost:3001/socket.io/socket.io.js"></script>
+  
+  <script>
+    // API configuration will be injected by Vite
+    window.Config = window.Config || {
+      API_URL: '//localhost:3001'
+    }
+  </script>
+
+  <script type="module" src="/index.jsx"></script>
+</body>
+</html>

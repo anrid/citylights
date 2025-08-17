@@ -1,6 +1,6 @@
 
-const Mongoose = require('mongoose')
-const Schema = Mongoose.Schema
+import mongoose from 'mongoose'
+const Schema = mongoose.Schema
 
 const schema = new Schema({
   workspaceId: { type: String, required: true },
@@ -10,4 +10,4 @@ const schema = new Schema({
 
 schema.index({ workspaceId: 1, userId: 1 }, { unique: true })
 
-module.exports = Mongoose.model('workspace_profile', schema)
+export default mongoose.model('workspace_profile', schema)

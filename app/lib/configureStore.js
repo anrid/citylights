@@ -1,25 +1,31 @@
 'use strict'
 
-import { createStore, applyMiddleware, combineReducers } from 'redux'
-import thunk from 'redux-thunk'
-import reducers from '../reducers'
-import { hashHistory } from 'react-router'
-import { routerMiddleware } from 'react-router-redux'
+import { configureStore as configureStoreRTK } from '@reduxjs/toolkit'
+import reducers from '../store'
 
 export default function configureStore (opts = { }) {
-  // Setup our store.
-  const reducer = combineReducers(reducers)
-  const store = createStore(
-    reducer,
-    opts.initialState,
-    applyMiddleware(thunk, routerMiddleware(hashHistory))
-  )
+  // Setup our store using Redux Toolkit
+  const store = configureStoreRTK({
+    reducer: reducers,
+    preloadedState: opts.initialState,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: {
+          // Ignore these action types
+          ignoredActions: ['persist/PERSIST'],
+          // Ignore these field paths in all actions
+          ignoredActionPaths: ['meta.arg', 'payload.timestamp'],
+          // Ignore these paths in the state
+          ignoredPaths: ['items.dates'],
+        },
+      }),
+    devTools: import.meta.env.DEV
+  })
 
-  if (module.hot) {
-    module.hot.accept(() => {
-      const _reducers = require('../reducers/index').default
-      const nextRootReducer = combineReducers(_reducers)
-      store.replaceReducer(nextRootReducer)
+  if (import.meta.hot) {
+    import.meta.hot.accept('../store/index', (newModule) => {
+      const _reducers = newModule.default
+      store.replaceReducer(_reducers)
     })
   }
 

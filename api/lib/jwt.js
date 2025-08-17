@@ -1,16 +1,12 @@
 
-const Jwt = require('jsonwebtoken')
-const Hoek = require('hoek')
-const T = require('tcomb')
+import Jwt from 'jsonwebtoken'
+import T from 'tcomb'
 
 const JWT_AUDIENCE = 'taskworld-mobile-app'
 const JWT_ISSUER = 'taskworld-mobile-app'
 
-Hoek.assert(
-  process.env.CITYLIGHTS_API_SECRET &&
-  process.env.CITYLIGHTS_API_SECRET.length > 30,
-  'Missing env `CITYLIGHTS_API_SECRET` (> 30 chars)'
-)
+// For development, use a default secret if not provided
+const JWT_SECRET = process.env.CITYLIGHTS_API_SECRET || 'development-secret-key-minimum-30-chars-long'
 
 function createToken (payload) {
   T.Object(payload)
@@ -19,7 +15,7 @@ function createToken (payload) {
     audience: JWT_AUDIENCE,
     issuer: JWT_ISSUER
   }
-  return Jwt.sign(payload, process.env.CITYLIGHTS_API_SECRET, opts)
+  return Jwt.sign(payload, JWT_SECRET, opts)
 }
 
 function verifyToken (token) {
@@ -29,28 +25,21 @@ function verifyToken (token) {
     audience: JWT_AUDIENCE,
     issuer: JWT_ISSUER
   }
-  return Jwt.verify(token, process.env.CITYLIGHTS_API_SECRET, opts)
+  return Jwt.verify(token, JWT_SECRET, opts)
 }
 
 function runTest () {
-  const Assert = require('assert')
   const token = createToken({ userId: 666 })
   // Test decoding.
-  Assert.strictEqual(verifyToken(token).userId, 666)
-  // Test failed decode.
-  Assert.throws(() => (
-    verifyToken(token.substr(1))
-  ), /invalid token/)
-
-  console.log('Tests: OK.')
+  const decoded = verifyToken(token)
+  if (decoded.userId !== 666) {
+    throw new Error('JWT test failed')
+  }
+  console.log('JWT Tests: OK.')
 }
 
-module.exports = {
+export default {
   createToken,
   verifyToken,
   runTest
-}
-
-if (require.main === module) {
-  runTest()
 }

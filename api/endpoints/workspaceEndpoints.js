@@ -1,43 +1,44 @@
-'use strict'
+import Joi from '@hapi/joi'
 
-const P = require('bluebird')
-const Joi = require('joi')
+import WorkspaceService from '../services/workspaceService.js'
+import Schemas from './schemas.js'
 
-const WorkspaceService = require('../services/workspaceService')
-const Schemas = require('./schemas')
-
-function create (payload, context) {
-  return P.try(() => {
+async function create(payload, context) {
+  try {
     const valid = Schemas.validateOrThrow(payload, createWorkspaceSchema)
-    return WorkspaceService.create(valid.name, context.userId)
-    .then((workspace) => {
-      const workspaceId = workspace._id.toString()
-      return {
-        topic: 'workspace:create',
-        payload: {
-          workspaceId,
-          workspace
-        }
+    const workspace = await WorkspaceService.create(valid.name, context.userId)
+    const workspaceId = workspace._id.toString()
+    
+    return {
+      topic: 'workspace:create',
+      payload: {
+        workspaceId,
+        workspace
       }
-    })
-  })
+    }
+  } catch (error) {
+    console.error('Create workspace failed:', error)
+    throw error
+  }
 }
 
-function update (payload, context) {
-  return P.try(() => {
+async function update(payload, context) {
+  try {
     const valid = Schemas.validateOrThrow(payload, updateWorkspaceSchema)
-    return WorkspaceService.update(valid.workspaceId, valid.update, context.userId)
-    .then((workspace) => {
-      const workspaceId = workspace._id.toString()
-      return {
-        topic: 'workspace:update',
-        payload: {
-          workspaceId,
-          workspace
-        }
+    const workspace = await WorkspaceService.update(valid.workspaceId, valid.update, context.userId)
+    const workspaceId = workspace._id.toString()
+    
+    return {
+      topic: 'workspace:update',
+      payload: {
+        workspaceId,
+        workspace
       }
-    })
-  })
+    }
+  } catch (error) {
+    console.error('Update workspace failed:', error)
+    throw error
+  }
 }
 
 const createWorkspaceSchema = Joi.object().keys({
@@ -52,7 +53,7 @@ const updateWorkspaceSchema = Joi.object().keys({
   }).xor('name', 'domain') // Force updating one field at a time.
 })
 
-module.exports = {
+export {
   create,
   update
 }

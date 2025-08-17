@@ -1,59 +1,62 @@
-'use strict'
+import Joi from '@hapi/joi'
 
-const P = require('bluebird')
-const Joi = require('joi')
+import ShiftService from '../services/shiftService.js'
+import Schemas from './schemas.js'
 
-const ShiftService = require('../services/shiftService')
-const Schemas = require('./schemas')
-
-function create (payload, context) {
-  return P.try(() => {
+async function create(payload, context) {
+  try {
     const valid = Schemas.validateOrThrow(payload, createShiftSchema)
-    return ShiftService.create(valid, context.userId)
-    .then((shift) => {
-      const shiftId = shift._id.toString()
-      return {
-        topic: 'shift:create',
-        payload: {
-          shiftId,
-          shift
-        }
+    const shift = await ShiftService.create(valid, context.userId)
+    const shiftId = shift._id.toString()
+    
+    return {
+      topic: 'shift:create',
+      payload: {
+        shiftId,
+        shift
       }
-    })
-  })
+    }
+  } catch (error) {
+    console.error('Create shift failed:', error)
+    throw error
+  }
 }
 
-function update (payload, context) {
-  return P.try(() => {
+async function update(payload, context) {
+  try {
     const valid = Schemas.validateOrThrow(payload, updateShiftSchema)
-    return ShiftService.update(valid.shiftId, valid.update, context.userId)
-    .then((shift) => {
-      const shiftId = shift._id.toString()
-      return {
-        skipSender: true,
-        topic: 'shift:update',
-        payload: {
-          shiftId,
-          shift
-        }
+    const shift = await ShiftService.update(valid.shiftId, valid.update, context.userId)
+    const shiftId = shift._id.toString()
+    
+    return {
+      skipSender: true,
+      topic: 'shift:update',
+      payload: {
+        shiftId,
+        shift
       }
-    })
-  })
+    }
+  } catch (error) {
+    console.error('Update shift failed:', error)
+    throw error
+  }
 }
 
-function remove (payload, context) {
-  return P.try(() => {
+async function remove(payload, context) {
+  try {
     const valid = Schemas.validateOrThrow(payload, removeShiftSchema)
-    return ShiftService.remove(valid.shiftId, context.userId)
-    .then((shift) => {
-      const shiftId = shift._id.toString()
-      return {
-        skipSender: true,
-        topic: 'shift:remove',
-        payload: { shiftId }
-      }
-    })
-  })
+    const shift = await ShiftService.remove(valid.shiftId, context.userId)
+    const shiftId = shift._id.toString()
+    
+    return {
+      skipSender: true,
+      topic: 'shift:remove',
+      payload: { shiftId }
+    }
+  } catch (error) {
+    console.error('Remove shift failed:', error)
+    throw error
+  }
 }
 
 const removeShiftSchema = Joi.object().keys({
@@ -96,7 +99,7 @@ const updateShiftSchema = Joi.object().keys({
   )
 })
 
-module.exports = {
+export {
   create,
   update,
   remove

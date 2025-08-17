@@ -1,6 +1,6 @@
 
-const Mongoose = require('mongoose')
-const Schema = Mongoose.Schema
+import mongoose from 'mongoose'
+const Schema = mongoose.Schema
 
 const schema = new Schema({
   workspaceId: {
@@ -13,4 +13,4 @@ const schema = new Schema({
   admins: [String]
 })
 
-module.exports = Mongoose.model('workspace_member', schema)
+export default mongoose.model('workspace_member', schema)

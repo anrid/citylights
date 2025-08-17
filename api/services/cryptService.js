@@ -1,11 +1,9 @@
-'use strict'
-
-const P = require('bluebird')
-const Scrypt = require('scrypt')
+import P from 'bluebird.js'
+import Scrypt from 'scrypt.js'
 P.promisifyAll(Scrypt)
 
-const Crypto = require('crypto')
-const Boom = require('boom')
+import Crypto from 'crypto.js'
+import Boom from 'boom.js'
 
 function createNewId () {
   return createPassword(String(Date.now()))
@@ -42,7 +40,8 @@ function _encrypt (password, salt) {
   return Scrypt.hashAsync(password, { N: 64, r: 8, p: 16 }, 64, salt)
 }
 
-module.exports = {
+export default {
+
   createRandomPassword,
   createPassword,
   createNewId,

@@ -1,38 +1,34 @@
-'use strict'
+import Boom from '@hapi/boom'
+import T from 'tcomb'
 
-const P = require('bluebird')
-const Boom = require('boom')
-const T = require('tcomb')
+import User from './userModel.js'
+import Workspace from './workspaceModel.js'
+import Project from './projectModel.js'
+import Shift from './shiftModel.js'
+import WorkspaceMember from './workspaceMemberModel.js'
 
-const User = require('./userModel')
-const Workspace = require('./workspaceModel')
-const Project = require('./projectModel')
-const Shift = require('./shiftModel')
-const WorkspaceMember = require('./workspaceMemberModel')
-
-function requireUser (userId) {
-  return P.try(() => {
-    T.String(userId)
-    return P.resolve(User.findOne({ _id: userId }))
-    .tap((user) => {
-      if (!user) {
-        throw Boom.unauthorized('User account does not exist.')
-      }
-      if (!user.isEnabled) {
-        throw Boom.unauthorized('User account is suspended.')
-      }
-      if (user.isDeleted) {
-        throw Boom.unauthorized('User account is deleted.')
-      }
-    })
-  })
+async function requireUser(userId) {
+  T.String(userId)
+  const user = await User.findOne({ _id: userId })
+  
+  if (!user) {
+    throw Boom.unauthorized('User account does not exist.')
+  }
+  if (!user.isEnabled) {
+    throw Boom.unauthorized('User account is suspended.')
+  }
+  if (user.isDeleted) {
+    throw Boom.unauthorized('User account is deleted.')
+  }
+  
+  return user
 }
 
-const requireWorkspace = P.coroutine(function * (workspaceId, userId, opts = { }) {
+async function requireWorkspace(workspaceId, userId, opts = {}) {
   T.String(workspaceId)
   T.String(userId)
 
-  const workspace = yield Workspace.findOne({
+  const workspace = await Workspace.findOne({
     _id: workspaceId,
     isEnabled: true,
     isDeleted: false
@@ -55,7 +51,7 @@ const requireWorkspace = P.coroutine(function * (workspaceId, userId, opts = { }
     ]
   }
 
-  const members = yield WorkspaceMember.findOne({
+  const members = await WorkspaceMember.findOne({
     workspaceId,
     $or: memberLevel
   })
@@ -64,13 +60,13 @@ const requireWorkspace = P.coroutine(function * (workspaceId, userId, opts = { }
   }
 
   return workspace
-})
+}
 
-const requireProject = P.coroutine(function * (projectId, userId) {
+async function requireProject(projectId, userId) {
   T.String(projectId)
   T.String(userId)
 
-  const project = yield Project.findOne({
+  const project = await Project.findOne({
     _id: projectId,
     $or: [
       { ownerId: userId },
@@ -86,16 +82,16 @@ const requireProject = P.coroutine(function * (projectId, userId) {
   }
 
   // Ensure user still has workspace access.
-  yield requireWorkspace(project.workspaceId, userId)
+  await requireWorkspace(project.workspaceId, userId)
 
   return project
-})
+}
 
-const requireShift = P.coroutine(function * (shiftId, userId) {
+async function requireShift(shiftId, userId) {
   T.String(shiftId)
   T.String(userId)
 
-  const shift = yield Shift.findOne({
+  const shift = await Shift.findOne({
     _id: shiftId,
     isEnabled: true,
     isDeleted: false
@@ -105,24 +101,24 @@ const requireShift = P.coroutine(function * (shiftId, userId) {
   }
 
   return shift
-})
+}
 
-const requireProjectAsAdmin = P.coroutine(function * (projectId, actorId) {
-  const project = yield requireProject(projectId, actorId)
+async function requireProjectAsAdmin(projectId, actorId) {
+  const project = await requireProject(projectId, actorId)
   const isOwner = project.ownerId === actorId
   const isAdmin = project.admins.find((x) => x === actorId)
   if (!isOwner && !isAdmin) {
     throw Boom.unauthorized('Is not project owner or admin')
   }
   return project
-})
+}
 
-const requireWorkspaceAsAdmin = P.coroutine(function * (workspaceId, actorId) {
-  const workspace = yield requireWorkspace(workspaceId, actorId, { admin: true })
+async function requireWorkspaceAsAdmin(workspaceId, actorId) {
+  const workspace = await requireWorkspace(workspaceId, actorId, { admin: true })
   return workspace
-})
+}
 
-module.exports = {
+export default {
   requireUser,
   requireWorkspace,
   requireProject,

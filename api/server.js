@@ -1,12 +1,18 @@
-'use strict'
+import 'dotenv/config'
+import * as Hoek from '@hapi/hoek'
+import * as Hapi from '@hapi/hapi'
+import path from 'path'
+import fs from 'fs'
+import chalk from 'chalk'
+import moment from 'moment'
+import qs from 'qs'
+import url from 'url'
 
-const Hoek = require('hoek')
+const Fs = fs.promises
 
-Hoek.assert(process.env.CITYLIGHTS_PRIVKEY, 'Missing env `CITYLIGHTS_PRIVKEY`')
-Hoek.assert(process.env.CITYLIGHTS_CERT, 'Missing env `CITYLIGHTS_CERT`')
-Hoek.assert(process.env.CITYLIGHTS_CA, 'Missing env `CITYLIGHTS_CA`')
-Hoek.assert(process.env.CITYLIGHTS_HOST, 'Missing env `CITYLIGHTS_HOST`')
-Hoek.assert(process.env.CITYLIGHTS_PORT, 'Missing env `CITYLIGHTS_PORT`')
+// Railway will handle TLS, so we only need port configuration
+const port = process.env.PORT || process.env.CITYLIGHTS_PORT || 3001
+const host = process.env.HOST || process.env.CITYLIGHTS_HOST || '0.0.0.0'
 // Hoek.assert(process.env.CITYLIGHTS_MONGO_DB, 'Missing env `CITYLIGHTS_MONGO_DB`')
 // Hoek.assert(process.env.CITYLIGHTS_MONGO_USER, 'Missing env `CITYLIGHTS_MONGO_USER`')
 // Hoek.assert(process.env.CITYLIGHTS_MONGO_PASS, 'Missing env `CITYLIGHTS_MONGO_PASS`')
@@ -16,118 +22,118 @@ if (!process.env.CITYLIGHTS_CDN) {
 
 const isProduction = process.env.NODE_ENV === 'production'
 
-const Hapi = require('hapi')
-const Path = require('path')
-const Fs = require('fs')
-const Chalk = require('chalk')
-const Moment = require('moment')
-
-const P = require('bluebird')
-P.promisifyAll(Fs)
-
-const Qs = require('qs')
-const Url = require('url')
-
-module.exports = preStart()
-.then((manifest) => {
-  const server = createServer()
-  return registerPlugins(server)
-  .then(() => {
-    setupViews(server, manifest)
-    setupRoutes(server)
-    startServer(server)
+// Modern async/await server initialization
+async function initServer() {
+  try {
+    const manifest = await preStart()
+    const server = createServer()
+    await registerPlugins(server)
+    await setupViews(server, manifest)
+    await setupRoutes(server)
+    await startServer(server)
     return server
-  })
-})
-.catch((reason) => (
-  console.error('Error:', reason, reason.stack)
-))
+  } catch (error) {
+    console.error('Error:', error, error.stack)
+    throw error
+  }
+}
 
-function preStart () {
-  return P.try(() => {
-    // Rock the DB.
-    require('./lib/database')()
+export default initServer()
+
+async function preStart() {
+  try {
+    // Initialize the database
+    const database = await import('./lib/database.js')
+    await database.default()
 
     if (isProduction) {
-      const version = require('../package.json').version
-      const Https = require('./lib/https')
+      const packageJson = await import('../package.json', { with: { type: 'json' } })
+      const version = packageJson.default.version
+      const Https = await import('./lib/https.js')
       const manifestUrl = `${process.env.CITYLIGHTS_CDN}/assets/release-manifest-${version}.json`
-      return Https.fetchGzipped(manifestUrl)
-      .then((json) => {
-        const manifest = JSON.parse(json)
-        Hoek.assert(manifest &&
-          manifest.assets &&
-          manifest.items.length,
-          'Fetched invalid manifest: ' + JSON.stringify(manifest, false, 2)
-        )
-        console.log('Loaded app manifest:', manifest)
-        return manifest
-      })
+      const json = await Https.default.fetchGzipped(manifestUrl)
+      const manifest = JSON.parse(json)
+      
+      Hoek.assert(manifest &&
+        manifest.assets &&
+        manifest.items.length,
+        'Fetched invalid manifest: ' + JSON.stringify(manifest, false, 2)
+      )
+      
+      console.log('Loaded app manifest:', manifest)
+      return manifest
     }
-  })
-  .tap(() => console.log('Prestart complete.'))
+    
+    console.log('Prestart complete.')
+    return null
+  } catch (error) {
+    console.error('Prestart failed:', error)
+    throw error
+  }
 }
 
-function createServer () {
-  const s = new Hapi.Server({
-    connections: {
-      router: {
-        isCaseSensitive: false,
-        stripTrailingSlash: true
-      }
+function createServer() {
+  // Simple Hapi v21 server for Railway deployment
+  const serverOptions = {
+    port: port,
+    host: host,
+    router: {
+      isCaseSensitive: false,
+      stripTrailingSlash: true
     }
-  })
-
-  if (!process.env.SKIP_TLS) {
-    const tls = {
-      key: Fs.readFileSync(process.env.CITYLIGHTS_PRIVKEY),
-      cert: Fs.readFileSync(process.env.CITYLIGHTS_CERT),
-      ca: [Fs.readFileSync(process.env.CITYLIGHTS_CA)]
-    }
-    s.connection({
-      host: process.env.CITYLIGHTS_HOST,
-      port: process.env.CITYLIGHTS_PORT,
-      tls
-    })
-  } else {
-    console.log(Chalk.bgYellow.black('Hapi is NOT using HTTPS'))
-    s.connection({ port: process.env.CITYLIGHTS_PORT })
   }
 
-  // Switch out the querystring parser.
-  function onRequest (request, reply) {
+  const server = new Hapi.Server(serverOptions)
+
+  // Modern Hapi v21 extension with toolkit  
+  server.ext('onRequest', (request, h) => {
     const uri = request.raw.req.url
-    const parsed = Url.parse(uri, false)
-    parsed.query = Qs.parse(parsed.query)
-    request.setUrl(parsed)
-    return reply.continue()
-  }
+    try {
+      const urlObj = new URL(uri, `http://${host}:${port}`)
+      const queryObject = qs.parse(urlObj.search.slice(1)) // Remove '?' from search
+      
+      // Create properly formatted URL for Hapi v21
+      const newUrl = {
+        pathname: urlObj.pathname,
+        search: urlObj.search,
+        query: queryObject
+      }
+      
+      request.setUrl(newUrl)
+    } catch (error) {
+      console.warn('URL parsing error:', error.message, 'for URL:', uri)
+    }
+    return h.continue
+  })
 
-  s.ext('onRequest', onRequest)
-
-  return s
+  return server
 }
 
-function registerPlugins (server) {
+async function registerPlugins(server) {
+  const vision = await import('@hapi/vision')
+  const inert = await import('@hapi/inert')
+  
   const plugins = [
-    require('vision'),
-    require('inert')
+    vision.default,
+    inert.default
   ]
 
-  return server.register(plugins)
+  await server.register(plugins)
 }
 
-function setupViews (server, manifest) {
+async function setupViews(server, manifest) {
   console.log('Setting up views.')
 
   const context = setupDefaultViewContext(server, manifest)
   console.log('Using default view context:', JSON.stringify(context, false, 2))
 
+  const handlebars = await import('handlebars')
+  
   server.views({
     engines: {
-      html: require('handlebars')
+      html: handlebars.default
     },
-    relativeTo: __dirname,
+    relativeTo: path.dirname(new URL(import.meta.url).pathname),
     path: 'views',
     context
   })
@@ -153,43 +159,62 @@ function setupDefaultViewContext (server, manifest) {
   return context
 }
 
-function setupRoutes (server) {
+async function setupRoutes(server) {
   console.log('Setting up routes.')
 
+  // Static file serving for production build
+  if (isProduction) {
+    server.route({
+      method: 'GET',
+      path: '/assets/{file*}',
+      handler: {
+        directory: {
+          path: path.join(path.dirname(new URL(import.meta.url).pathname), '../build/assets')
+        }
+      }
+    })
+  }
+
+  // SPA fallback route
   server.route({
     method: 'GET',
-    path: '/',
-    config: { cors: true },
-    handler (request, reply) {
-      console.log('[/]', Moment().format())
+    path: '/{path*}',
+    options: { 
+      cors: true 
+    },
+    handler(request, h) {
+      console.log(`[${request.path}]`, moment().format())
 
-      // Server the app in production mode !
+      // Serve the built app in production mode!
       if (isProduction) {
-        return reply.view('app.html')
+        return h.file(path.join(path.dirname(new URL(import.meta.url).pathname), '../build/index.html'))
       }
       // Take a chill pill otherwise.
-      reply(`Server in dev mode.\n\nStay a while, and Listen.`)
+      return `Server in dev mode.\n\nStay a while, and Listen.`
     }
   })
 
   // Setup Socket API.
-  require('./lib/socket')(server)
+  const socket = await import('./lib/socket.js')
+  socket.default(server)
 }
 
-function startServer (server) {
+async function startServer(server) {
   console.log('Starting server.')
 
-  if (!module.parent) {
-    server.start((err) => {
-      if (err) {
-        return console.error('Error:', err, err.stack)
-      }
-
-      server.table().forEach((x) => {
-        x.table.forEach((y) => console.log(`${y.method.toUpperCase()} ${y.path}`))
-      })
-      console.log('API server running at:', server.info.uri)
-      console.log('API server mode:', process.env.NODE_ENV || '`NODE_ENV` not set.')
+  // In ES modules, directly start the server since this is the entry point
+  try {
+    await server.start()
+    
+    // Print all registered routes
+    server.table().forEach((route) => {
+      console.log(`${route.method.toUpperCase()} ${route.path}`)
     })
+    
+    console.log('API server running at:', server.info.uri)
+    console.log('API server mode:', process.env.NODE_ENV || '`NODE_ENV` not set.')
+  } catch (error) {
+    console.error('Error starting server:', error, error.stack)
+    throw error
   }
 }

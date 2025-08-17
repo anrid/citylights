@@ -1,22 +1,20 @@
-'use strict'
+import Boom from '@hapi/boom'
+import * as Hoek from '@hapi/hoek'
+import { Server as SocketIOServer } from 'socket.io'
+import moment from 'moment'
 
-const Boom = require('boom')
-const P = require('bluebird')
-const Hoek = require('hoek')
-const SocketIO = require('socket.io')
-const Moment = require('moment')
+import socketEndpoints from '../endpoints/index.js'
+import Audit from './auditLog.js'
 
-const socketEndpoints = require('../endpoints')
-const Audit = require('./auditLog')
-
-function handleClientMessage (topic, payload, userId) {
-  return P.try(() => {
+async function handleClientMessage(topic, payload, userId) {
+  console.log('handleClientMessage called:', { topic, userId, payload: payload ? 'present' : 'null' })
+  try {
     const endpoint = socketEndpoints[topic]
     if (!endpoint) {
       throw Boom.notFound(`Missing endpoint for topic '${topic}'`)
     }
 
-    // Restrict access unless explicity stated that this endpoint is open
+    // Restrict access unless explicitly stated that this endpoint is open
     // to the public.
     if (endpoint.auth !== false) {
       if (!userId) {
@@ -24,14 +22,18 @@ function handleClientMessage (topic, payload, userId) {
       }
     }
 
-    return P.resolve(endpoint.func(payload, { userId }))
-    .tap((response) => {
-      // Audit all the things, assuming request was successful.
-      if (endpoint.audit !== false) {
-        Audit.log(userId, topic, payload)
-      }
-    })
-  })
+    const response = await endpoint.func(payload, { userId })
+    
+    // Audit all the things, assuming request was successful.
+    if (endpoint.audit !== false) {
+      await Audit.log(userId, topic, payload)
+    }
+    
+    return response
+  } catch (error) {
+    console.error('Handle client message error:', error)
+    throw error
+  }
 }
 
 function getErrorHandler (message, socket) {
@@ -71,19 +73,19 @@ function authenticateSocket (socket) {
   }
 }
 
-function setupSocketHandlers (socket) {
+function setupSocketHandlers(socket) {
   console.log('Socket connected:', socket.id)
 
   // Handle API calls.
-  socket.on('client:message', (message, ack) => {
-    return P.try(() => {
+  socket.on('client:message', async (message, ack) => {
+    try {
       Hoek.assert(message.topic, 'missing `topic` prop')
       Hoek.assert(message.payload, 'missing `payload` prop')
       Hoek.assert(message.requestId, 'missing `requestId` prop')
 
       // Log it.
       const id = socket.userId || socket.id
-      console.log('API: client message, topic=', message.topic, id, Moment().format())
+      console.log('API: client message, topic=', message.topic, id, moment().format())
 
       if (ack) {
         // Ack incoming message.
@@ -95,9 +97,9 @@ function setupSocketHandlers (socket) {
 
       // Handle incoming message.
       // NOTE: Adds userId as final argument if client is authenticated.
-      return handleClientMessage(message.topic, message.payload, socket.userId)
-    })
-    .then((response) => {
+      console.log('About to call handleClientMessage:', { topic: message.topic, userId: socket.userId })
+      const response = await handleClientMessage(message.topic, message.payload, socket.userId)
+      
       // Include the original request id always.
       response.requestId = message.requestId
 
@@ -109,7 +111,7 @@ function setupSocketHandlers (socket) {
       }
 
       if (response.skipSender) {
-        // Do not broadcast a full payload to the sender as they’ve already
+        // Do not broadcast a full payload to the sender as they've already
         // performed an optimistic update.
         // Send a simple acknowledgement instead.
         const newResponse = {
@@ -124,13 +126,22 @@ function setupSocketHandlers (socket) {
 
       // Finally, respond.
       socket.emit('server:message', response)
-    })
-    .catch(getErrorHandler(message, socket))
+    } catch (error) {
+      getErrorHandler(message, socket)(error)
+    }
   })
 }
 
-module.exports = function (server) {
-  const io = SocketIO.listen(server.listener)
+// Modern Socket.io v4 setup
+export default function setupSocket(server) {
+  const io = new SocketIOServer(server.listener, {
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"]
+    }
+  })
+  
   io.on('connection', setupSocketHandlers)
-  console.log('Setup SocketIO.')
+  console.log('Setup SocketIO v4.')
+  return io
 }

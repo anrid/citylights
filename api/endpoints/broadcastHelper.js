@@ -1,5 +1,3 @@
-'use strict'
-
 function workspaceWide (workspace, payload) {
   const _userIds = [].concat(
     workspace.ownerId,
@@ -14,6 +12,6 @@ function workspaceWide (workspace, payload) {
   }]
 }
 
-module.exports = {
+export default {
   workspaceWide
 }

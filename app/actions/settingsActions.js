@@ -1,12 +1,14 @@
 'use strict'
 
-import { push, pop } from 'react-router-redux'
+// Modern React Router v6 navigation will be handled differently
+// import { push, pop } from 'react-router-redux' // Deprecated - removed
 
 import * as types from './actionTypes'
 import { apiRequest } from './backendActions'
 import { request } from '../lib/apiClient'
 
 import * as Storage from '../lib/storage'
+import { setSetting, setIdentity as setIdentityAction, clearIdentity as clearIdentityAction, setAppLoadingStatus } from '../store/settingsSlice'
 
 export function restoreState (store) {
   // Load stored app state, including userId, email and accessToken.
@@ -15,18 +17,12 @@ export function restoreState (store) {
 
   // Restore saved settings.
   if (saved) {
-    store.dispatch({
-      type: types.SET_SETTING,
-      payload: { saved }
-    })
+    store.dispatch(setSetting({ saved }))
   }
 
   // Restore identity.
   if (identity) {
-    store.dispatch({
-      type: types.SET_SETTING,
-      payload: { identity }
-    })
+    store.dispatch(setSetting({ identity }))
   }
 
   console.log('Restored app state:', store.getState())
@@ -70,11 +66,11 @@ export function setIdentity (payload) {
 
 export function fetchAppStarter (workspaceId) {
   return (dispatch) => {
-    setAppLoaded(false)
+    dispatch(setAppLoadingStatus({ loading: true, loaded: false }))
     console.log('Fetching app starter for workspace id:', workspaceId)
-    request('app:starter', { workspaceId }, { buffer: false })
+    return request('app:starter', { workspaceId }, { buffer: false })
     .catch((error) => {
-      console.log('Couldn’t fetch app starter! Bailing out with error=', error)
+      console.log('Could not fetch app starter! Bailing out with error=', error)
       dispatch(clearIdentity())
     })
   }
@@ -85,12 +81,9 @@ export function clearIdentity () {
     // Remove from long-term storage.
     Storage.removeIdentity()
     // Clear identity until next successful login.
-    dispatch({
-      type: types.CLEAR_IDENTITY,
-      payload: { }
-    })
-    // Go to login page.
-    dispatch(routeTo({ url: '/login' }))
+    dispatch(clearIdentityAction())
+    // Let React Router handle navigation to login - ProtectedRoute will redirect when identity is null
+    console.log('Identity cleared, user will be redirected to login by ProtectedRoute')
   }
 }
 
@@ -116,10 +109,13 @@ export function routeTo (_route) {
 
     // Always reset server error messages between routes.
     dispatch(showServerError(null))
+    
+    // Modern React Router v6 navigation using window.location
     if (route.back) {
-      dispatch(pop())
+      window.history.back()
     } else {
-      dispatch(push(route.url))
+      console.log('Navigating to:', route.url)
+      window.location.href = route.url
     }
   }
 }

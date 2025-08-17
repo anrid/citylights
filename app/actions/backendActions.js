@@ -1,6 +1,7 @@
 
 import * as userActions from './userActions'
 import * as settingsActions from './settingsActions'
+import { setServerStatus, setAppLoadingStatus, setIdentity } from '../store/settingsSlice'
 import * as workspaceActions from './workspaceActions'
 import * as projectActions from './projectActions'
 import * as shiftActions from './shiftActions'
@@ -22,10 +23,10 @@ export function receiveBackendEvent (event) {
     console.log('Received backend event, payload=', event)
     switch (event.topic) {
       case 'connected':
-        return dispatch(settingsActions.setConnectedToServer(true))
+        return dispatch(setServerStatus({ connected: true, waiting: false }))
 
       case 'disconnected':
-        return dispatch(settingsActions.setConnectedToServer(false))
+        return dispatch(setServerStatus({ connected: false, waiting: false }))
 
       case 'echo':
         return dispatch(settingsActions.increaseEchoCounter())
@@ -87,21 +88,10 @@ function onAppStarter (payload) {
     dispatch(shiftActions.receiveShiftList(payload.shiftList))
 
     // Declare app `loaded` at this point.
-    dispatch(settingsActions.setAppLoaded(true))
+    dispatch(setAppLoadingStatus({ loading: false, loaded: true }))
 
-    // Finally, route to the Overview page.
-    const { routing } = getState()
-    let routeToUrl = '/overview'
-    if (routing && routing.locationBeforeTransitions) {
-      // Preserve current route unless we’re coming from /login or /signup.
-      const currentUrl = routing.locationBeforeTransitions.pathname
-      if (currentUrl !== '/signup' && currentUrl !== '/login') {
-        console.log('Preserving current route:', currentUrl)
-        routeToUrl = currentUrl
-      }
-    }
-
-    dispatch(settingsActions.routeTo({ url: routeToUrl }))
+    // No automatic routing - let React Router handle it based on current URL
+    console.log('App starter loaded successfully, app is now ready')
   }
 }
 
@@ -117,7 +107,7 @@ function onAuthSuccessful (payload) {
   return (dispatch, getState) => {
     const settings = { ...payload.info }
     dispatch(settingsActions.saveSettings(settings))
-    dispatch(settingsActions.setIdentity(payload))
+    dispatch(setIdentity(payload.identity))
     // Fetch an app starter for the workspaceId returned from the backend.
     dispatch(settingsActions.fetchAppStarter(payload.info.workspaceId))
   }
