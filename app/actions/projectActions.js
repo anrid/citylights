@@ -4,6 +4,7 @@ import ObjectId from 'bson-objectid'
 
 import * as types from './actionTypes'
 import * as settingsActions from './settingsActions'
+import { createProject as createProjectSlice, receiveProject as receiveProjectSlice, receiveProjectList as receiveProjectListSlice } from '../store/projectsSlice'
 
 import { apiRequest } from './backendActions'
 
@@ -27,12 +28,18 @@ export function createAndEditProject (title) {
   return (dispatch, getState) => {
     const data = {
       _id: ObjectId.generate(),
-      title: 'New Untitled Project',
+      title: title || 'New Untitled Project',
       ownerId: getState().settings.identity.userId,
-      workspaceId: getState().settings.saved.workspaceId
+      workspaceId: getState().settings.saved.workspaceId,
+      members: [],
+      admins: [],
+      isEnabled: true,
+      created: new Date().toISOString(),
+      updated: new Date().toISOString()
     }
 
-    dispatch({ type: types.CREATE_PROJECT, payload: data })
+    // Use Redux Toolkit slice action
+    dispatch(createProjectSlice({ project: data }))
 
     dispatch(settingsActions.showProjectProperties(data._id))
 
@@ -77,17 +84,9 @@ export function removeProject (projectId) {
 }
 
 export function receiveProject (project) {
-  return (dispatch) => {
-    dispatch({
-      type: types.RECEIVE_PROJECT,
-      payload: { project }
-    })
-  }
+  return receiveProjectSlice({ project })
 }
 
 export function receiveProjectList (projectList) {
-  return {
-    type: types.RECEIVE_PROJECT_LIST,
-    payload: { projectList }
-  }
+  return receiveProjectListSlice({ projectList })
 }

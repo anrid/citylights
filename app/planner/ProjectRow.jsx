@@ -25,12 +25,18 @@ function ProjectRow({ projectId, pivotDate, showHours }) {
   // Get data from Redux store
   const project = useSelector(state => state.projects.data[projectId])
   const usersData = useSelector(state => state.users.data)
-  const members = project.members.map((x) => usersData[x])
+  
+  // Safety check for undefined project
+  if (!project) {
+    return null
+  }
+  
+  const members = (project.members || []).map((x) => usersData[x])
   const shifts = useSelector(state => projectsToShiftsMapSelector(state)[project._id] || [])
   
   const userId = useSelector(state => state.settings.identity.userId)
   const isOwner = project.ownerId === userId
-  const isAdmin = project.admins.find((x) => x === userId)
+  const isAdmin = project.admins && project.admins.find((x) => x === userId)
   const isOwnerOrAdmin = isOwner || isAdmin
 
   const [showMembersWidget, setShowMembersWidget] = useState(false)

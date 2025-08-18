@@ -17,7 +17,7 @@ function ProjectControlBar({
 }) {
   return (
     <div className='pl-time-planner-project-control-bar'>
-      <Button onClick={actions.createAndEditProject}>
+      <Button onClick={() => actions.createAndEditProject()}>
         <i className='fa fa-fw fa-plus' /> Create a new Project
       </Button>
       <div className='pl-time-planner-project-control-bar__text'>

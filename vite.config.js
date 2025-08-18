@@ -50,8 +50,17 @@ export default defineConfig(({ command, mode }) => {
       rollupOptions: {
         input: {
           main: path.resolve(__dirname, 'app/index.html')
+        },
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom', 'react-router-dom'],
+            redux: ['@reduxjs/toolkit', 'react-redux'],
+            ui: ['react-motion', 'react-draggable', 'react-resizable'],
+            utils: ['moment', 'lodash.debounce', 'classnames']
+          }
         }
-      }
+      },
+      chunkSizeWarningLimit: 600
     },
     
     css: {

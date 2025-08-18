@@ -6,7 +6,7 @@
 import * as types from './actionTypes'
 import { apiRequest } from './backendActions'
 import { request } from '../lib/apiClient'
-import { setSavedSetting } from '../store/settingsSlice'
+import { setSavedSetting, openPropertiesPanel, closePropertiesPanel } from '../store/settingsSlice'
 
 import * as Storage from '../lib/storage'
 import { setSetting, setIdentity as setIdentityAction, clearIdentity as clearIdentityAction, setAppLoadingStatus } from '../store/settingsSlice'
@@ -193,51 +193,28 @@ export function showServerError (error) {
 }
 
 export function showConsultantProperties (userId) {
-  return {
-    type: types.SET_SETTING,
-    payload: {
-      isPropertiesPanelOpen: true,
-      propertiesPanelData: {
-        type: 'consultant',
-        userId
-      }
-    }
-  }
+  return openPropertiesPanel({
+    type: 'consultant',
+    userId
+  })
 }
 
 export function showShiftProperties (shiftId) {
-  return {
-    type: types.SET_SETTING,
-    payload: {
-      isPropertiesPanelOpen: true,
-      propertiesPanelData: {
-        type: 'shift',
-        shiftId
-      }
-    }
-  }
+  return openPropertiesPanel({
+    type: 'shift',
+    shiftId
+  })
 }
 
 export function showProjectProperties (projectId) {
-  return {
-    type: types.SET_SETTING,
-    payload: {
-      isPropertiesPanelOpen: true,
-      propertiesPanelData: {
-        type: 'project',
-        projectId
-      }
-    }
-  }
+  return openPropertiesPanel({
+    type: 'project',
+    projectId
+  })
 }
 
 export function setPropertiesPanelOpen (value) {
-  return {
-    type: types.SET_SETTING,
-    payload: {
-      isPropertiesPanelOpen: value
-    }
-  }
+  return value ? openPropertiesPanel({}) : closePropertiesPanel()
 }
 
 export function increaseEchoCounter () {

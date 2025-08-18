@@ -1,6 +1,9 @@
-import { expect, afterEach } from 'vitest'
+import { expect, afterEach, beforeAll } from 'vitest'
 import { cleanup } from '@testing-library/react'
 import * as matchers from '@testing-library/jest-dom/matchers'
+
+// Set test environment
+process.env.NODE_ENV = 'test'
 
 // Extend Vitest's expect with testing-library matchers
 expect.extend(matchers)

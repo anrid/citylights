@@ -92,7 +92,7 @@ function ProjectPropertiesForm(props) {
             <div className='pl-project-properties-form__consultants-widget'>
               {showConsultantsWidget && (
                 <ConsultantsWidget
-                  selected={originalProject.members}
+                  selected={originalProject.members || []}
                   onSelect={onToggleProjectMember}
                   onClose={toggle}
                 />
@@ -100,7 +100,7 @@ function ProjectPropertiesForm(props) {
             </div>
 
             <div className='pl-project-properties-form__members'>
-              {originalProject.members.map((x) => <ConsultantCard key={x} userId={x} />)}
+              {(originalProject.members || []).map((x) => <ConsultantCard key={x} userId={x} />)}
             </div>
           </div>
         </div>
